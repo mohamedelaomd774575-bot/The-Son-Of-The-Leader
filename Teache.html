@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة المستر</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    :root{--bg:#020617;--card:#0d1525;--border:rgba(255,255,255,.08);--gold:#fbbf24;--blue:#3b82f6;--text:#e2e8f0;--muted:#94a3b8;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:linear-gradient(135deg,#020617,#0f172a);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;padding:20px;}
+    .wrap{max-width:1100px;margin:0 auto;}
+    .login-box{max-width:380px;margin:80px auto;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px;}
+    .login-box h1{color:var(--gold);font-size:1.3rem;margin-bottom:20px;text-align:center;}
+    input{width:100%;padding:12px;margin-bottom:12px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Cairo',sans-serif;}
+    button{width:100%;padding:12px;background:linear-gradient(135deg,#f5a623,#ffd17a);color:#1a1a1a;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;}
+    .err{color:#f87171;font-size:.85rem;margin-top:8px;text-align:center;}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+    header h1{color:var(--gold);font-size:1.4rem;}
+    header .sub{color:var(--muted);font-size:.85rem;}
+    .logout-btn{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;width:auto;}
+    .search-box{margin-bottom:20px;}
+    .course-card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:18px;overflow:hidden;}
+    .course-head{padding:14px 18px;background:rgba(59,130,246,.08);display:flex;justify-content:space-between;align-items:center;}
+    .course-head h2{font-size:1.05rem;color:#fff;}
+    .course-head span{color:var(--muted);font-size:.8rem;}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:10px 14px;text-align:right;font-size:.85rem;border-bottom:1px solid var(--border);}
+    th{color:var(--muted);font-weight:700;}
+    td{color:var(--text);}
+    .empty{padding:40px;text-align:center;color:var(--muted);}
+    .loading{text-align:center;padding:60px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="login-box" id="loginBox">
+        <h1>🎓 لوحة تحكم المستر</h1>
+        <input type="email" id="tEmail" placeholder="البريد الإلكتروني">
+        <input type="password" id="tPass" placeholder="كلمة المرور">
+        <button onclick="teacherLogin()">دخول</button>
+        <div class="err" id="loginErr"></div>
+    </div>
+
+    <div id="dashboard" style="display:none;">
+        <header>
+            <div>
+                <h1 id="teacherTitle">لوحة المستر</h1>
+                <div class="sub" id="teacherSub"></div>
+            </div>
+            <button class="logout-btn" onclick="teacherLogout()">خروج</button>
+        </header>
+        <input class="search-box" id="searchBox" oninput="renderCourses()" placeholder="🔍 ابحث باسم الطالب أو رقم الموبايل...">
+        <div id="coursesContainer"><div class="loading">جاري التحميل...</div></div>
+    </div>
+</div>
+
+<script>
+    const supabaseUrl = "https://yxhajhwdbsxblbcpjtci.supabase.co";
+    const supabaseKey = "sb_publishable_yGLQXnUVYejPs83WF3wiPA_a3VvpsZx";
+    const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let allCourses = [];
+    let allStudents = [];
+
+    async function teacherLogin() {
+        const email = document.getElementById('tEmail').value.trim();
+        const pass = document.getElementById('tPass').value;
+        const errBox = document.getElementById('loginErr');
+        errBox.textContent = '';
+        if (!email || !pass) { errBox.textContent = 'من فضلك أدخل البريد وكلمة المرور'; return; }
+
+        const { data, error } = await client.auth.signInWithPassword({ email, password: pass });
+        if (error) { errBox.textContent = 'بيانات الدخول غير صحيحة'; return; }
+
+        const { data: profile } = await client.from('students').select('*').eq('user_id', data.user.id).maybeSingle();
+        if (!profile || profile.role !== 'teacher') {
+            errBox.textContent = 'هذا الحساب ليس حساب مستر';
+            await client.auth.signOut();
+            return;
+        }
+
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('teacherTitle').textContent = 'أهلاً أستاذ ' + (profile.name || '');
+        document.getElementById('teacherSub').textContent = 'كورسات: ' + (profile.instructor_name || '—');
+        loadData();
+    }
+
+    async function teacherLogout() {
+        await client.auth.signOut();
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginBox').style.display = 'block';
+        document.getElementById('tEmail').value = ''; document.getElementById('tPass').value = '';
+    }
+
+    async function loadData() {
+        const [{ data: courses, error: e1 }, { data: students, error: e2 }] = await Promise.all([
+            client.rpc('teacher_get_my_courses'),
+            client.rpc('teacher_get_my_students')
+        ]);
+        if (e1 || e2) {
+            document.getElementById('coursesContainer').innerHTML = '<div class="empty">حصل خطأ في تحميل البيانات، حاول تاني</div>';
+            return;
+        }
+        allCourses = courses || [];
+        allStudents = students || [];
+        renderCourses();
+    }
+
+    function renderCourses() {
+        const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+        const container = document.getElementById('coursesContainer');
+
+        if (allCourses.length === 0) {
+            container.innerHTML = '<div class="empty">لا توجد كورسات مسجلة باسمك حاليًا</div>';
+            return;
+        }
+
+        let html = '';
+        allCourses.forEach(course => {
+            let students = allStudents.filter(s => s.course_id === course.id);
+            if (q) students = students.filter(s =>
+                (s.student_name || '').toLowerCase().includes(q) ||
+                (s.phone || '').includes(q) || (s.father_phone || '').includes(q)
+            );
+            html += `<div class="course-card">
+                <div class="course-head"><h2>${course.title || ''}</h2><span>${students.length} طالب</span></div>
+                ${students.length ? `<table><thead><tr>
+                    <th>الاسم</th><th>موبايل الطالب</th><th>موبايل ولي الأمر (أب)</th><th>موبايل ولي الأمر (أم)</th><th>الصف</th><th>المجموعة</th>
+                </tr></thead><tbody>
+                ${students.map(s => `<tr>
+                    <td>${s.student_name || ''}</td><td>${s.phone || '—'}</td>
+                    <td>${s.father_phone || '—'}</td><td>${s.mother_phone || '—'}</td>
+                    <td>${s.grade || '—'}</td><td>${s.group_number || '—'}</td>
+                </tr>`).join('')}
+                </tbody></table>` : '<div class="empty">لا يوجد طلاب مشتركين في هذا الكورس بعد</div>'}
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // استرجاع الجلسة لو المستر فاتح الصفحة وهو مسجل دخول بالفعل
+    (async () => {
+        const { data: { session } } = await client.auth.getSession();
+        if (session) {
+            const { data: profile } = await client.from('students').select('*').eq('user_id', session.user.id).maybeSingle();
+            if (profile && profile.role === 'teacher') {
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('teacherTitle').textContent = 'أهلاً أستاذ ' + (profile.name || '');
+                document.getElementById('teacherSub').textContent = 'كورسات: ' + (profile.instructor_name || '—');
+                loadData();
+            }
+        }
+    })();
+</script>
+</body>
+</html>

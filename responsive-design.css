@@ -1,0 +1,594 @@
+/* 📱 نظام Responsive Design الشامل */
+
+:root {
+    /* الألوان */
+    --primary: #fbbf24;
+    --secondary: #3b82f6;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --bg-dark: #020617;
+    --glass: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.08);
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+
+    /* الفواصل (Breakpoints) */
+    --mobile: 480px;
+    --tablet: 768px;
+    --desktop: 1024px;
+    --lg-desktop: 1440px;
+    --xl-desktop: 1920px;
+    --xxl-desktop: 2560px;
+
+    /* Font Sizes */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+}
+
+/* ==================== الهاتف الذكي (480px وما دون) ==================== */
+
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        padding: var(--spacing-sm);
+    }
+
+    .container {
+        padding: var(--spacing-sm);
+        margin: 0;
+    }
+
+    /* الـ Header */
+    .auth-page {
+        padding: var(--spacing-sm);
+    }
+
+    .main-card {
+        padding: 20px;
+        max-width: 100%;
+        width: 100%;
+        border-radius: 20px;
+    }
+
+    /* الأزرار */
+    .btn-action {
+        padding: 12px;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    /* الـ Grid */
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* النماذج */
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px;
+        font-size: 16px;
+        /* منع الـ zoom في iOS */
+    }
+
+    /* الـ Sidebar */
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        width: 250px;
+        height: 100vh;
+        background: var(--glass);
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .main-content {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* الجداول */
+    table {
+        font-size: 0.8rem;
+    }
+
+    th,
+    td {
+        padding: 8px;
+    }
+
+    /* العناوين */
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    h3 {
+        font-size: 1rem;
+    }
+
+    /* النوافذ المنبثقة */
+    .modal {
+        width: 95vw;
+        max-width: 100%;
+        padding: 15px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .payment-content {
+        padding: 15px;
+    }
+
+    /* Accessibility: تكبير مناطق اللمس */
+    button,
+    a,
+    input[type="checkbox"],
+    input[type="radio"],
+    .menu-item {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* الـ Tabs */
+    .tab-btn {
+        padding: 12px 12px;
+        font-size: 0.85rem;
+        flex: 1;
+        white-space: normal;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 50px;
+    }
+
+    .tab-btn.active {
+        background: linear-gradient(135deg, #f5a623 0%, #ffd17a 100%) !important;
+    }
+
+    /* إخفاء العناصر غير الضرورية */
+    .desktop-only {
+        display: none;
+    }
+
+    .mobile-full-width {
+        width: 100% !important;
+    }
+}
+
+/* ==================== الـ Tablet (481px - 768px) ==================== */
+
+@media (min-width: 481px) and (max-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+
+    body {
+        padding: var(--spacing-md);
+    }
+
+    .container {
+        padding: var(--spacing-md);
+    }
+
+    .main-card {
+        padding: 25px;
+        max-width: 100%;
+    }
+
+    .courses-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .sidebar {
+        width: 250px;
+        position: relative;
+    }
+
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    .modal {
+        width: 90vw;
+        max-height: 85vh;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+}
+
+/* ==================== الـ Desktop (769px - 1024px) ==================== */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding: var(--spacing-lg);
+        max-width: 100%;
+    }
+
+    .courses-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .dashboard-header {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .sidebar {
+        width: 280px;
+        position: relative;
+    }
+
+    table {
+        font-size: 0.95rem;
+    }
+
+    .modal {
+        width: 80vw;
+        max-width: 600px;
+    }
+}
+
+/* ==================== الـ Large Desktop (1025px - 1440px) ==================== */
+
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .container {
+        padding: var(--spacing-xl);
+        max-width: 1200px;
+    }
+
+    .courses-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .sidebar {
+        width: 300px;
+    }
+
+    .main-content {
+        width: calc(100% - 300px);
+    }
+
+    table {
+        font-size: 1rem;
+    }
+}
+
+/* ==================== الـ Extra Large (1441px - 1920px) ==================== */
+
+@media (min-width: 1441px) and (max-width: 1920px) {
+    html {
+        font-size: 16px;
+    }
+
+    .container {
+        padding: var(--spacing-2xl);
+        max-width: 1400px;
+    }
+
+    .courses-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 30px;
+    }
+
+    .sidebar {
+        width: 350px;
+    }
+
+    .main-content {
+        width: calc(100% - 350px);
+    }
+
+    .main-card {
+        max-width: 500px;
+    }
+}
+
+/* ==================== الـ Ultra HD (2560px وما فوق) ==================== */
+
+@media (min-width: 2560px) {
+    html {
+        font-size: 18px;
+    }
+
+    .container {
+        padding: 40px;
+        max-width: 2000px;
+    }
+
+    .courses-grid {
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 40px;
+    }
+
+    .sidebar {
+        width: 400px;
+    }
+
+    .main-content {
+        width: calc(100% - 400px);
+    }
+
+    .main-card {
+        max-width: 600px;
+    }
+
+    h1 {
+        font-size: 3rem;
+    }
+
+    h2 {
+        font-size: 2.2rem;
+    }
+
+    table {
+        font-size: 1.1rem;
+    }
+
+    .btn-action {
+        padding: 20px;
+        font-size: 1.2rem;
+    }
+}
+
+/* ==================== الاتجاه (Orientation) ==================== */
+
+@media (orientation: landscape) and (max-height: 500px) {
+    .main-card {
+        padding: 15px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .form-group {
+        margin-bottom: 8px;
+    }
+}
+
+/* ==================== الأجهزة بدون Touch ==================== */
+
+@media (hover: hover) {
+    .btn-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(251, 191, 36, 0.4);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+}
+
+/* ==================== الأجهزة مع Touch ==================== */
+
+@media (hover: none) and (pointer: coarse) {
+    .btn-action {
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+
+    .btn-action:active {
+        transform: scale(0.95);
+    }
+
+    /* إزالة التأثيرات غير الضرورية */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* ==================== دعم الـ Dark Mode ==================== */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-dark: #0f172a;
+        --glass: rgba(255, 255, 255, 0.02);
+        --border: rgba(255, 255, 255, 0.06);
+    }
+}
+
+/* ==================== دعم الـ Light Mode (إذا كان مفعلاً) ==================== */
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-dark: #ffffff;
+        --text-primary: #000000;
+        --text-secondary: #475569;
+    }
+}
+
+/* ==================== دعم الـ Reduced Motion ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ==================== دعم الـ High Contrast ==================== */
+
+@media (prefers-contrast: more) {
+    body {
+        color: #000000;
+        background: #ffffff;
+    }
+
+    .btn-action {
+        border: 2px solid #000000;
+    }
+}
+
+/* ==================== تحسينات الأداء ==================== */
+
+@media (max-width: 480px) {
+
+    /* تقليل الرسوم المتحركة على الأجهزة الضعيفة */
+    .live-update {
+        animation: pulse 0.3s ease !important;
+    }
+
+    /* تقليل ظلال الـ Shadow */
+    .card {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    }
+}
+
+/* ==================== طباعة (Print) ==================== */
+
+@media print {
+
+    .sidebar,
+    .modal,
+    .btn-action,
+    .payment-modal {
+        display: none !important;
+    }
+
+    .main-content {
+        width: 100%;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9pt;
+    }
+
+    th,
+    td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: right;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        color: black;
+    }
+}
+
+/* ==================== الفلترة حسب المتصفح ==================== */
+
+/* Chrome & Edge */
+@supports (-webkit-appearance: none) {
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+/* Firefox */
+@-moz-document url-prefix() {
+    .container {
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary) var(--bg-dark);
+    }
+}
+
+/* Safari */
+@supports (-webkit-touch-callout: none) {
+    body {
+        -webkit-user-select: none;
+    }
+
+    input,
+    textarea {
+        -webkit-user-select: text;
+    }
+}
+
+/* ==================== الحد الأقصى للعرض ==================== */
+
+@media (min-width: 2560px) {
+    .container {
+        max-width: 2200px;
+        margin: 0 auto;
+    }
+}
+
+/* ==================== تحديثات فعالة في الوقت الفعلي ==================== */
+
+.live-updating {
+    border: 2px solid var(--success);
+    animation: pulse 0.5s ease;
+}
+
+.updated-item {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+/* ==================== إمكانية الوصول (Accessibility) ==================== */
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: var(--text-primary);
+        background: var(--bg-dark);
+    }
+}
+
+/* تحسين التباين للـ Links */
+a {
+    color: var(--secondary);
+    text-decoration: underline;
+}

@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مشغّل الفيديو | ابن القائد</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/son.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/son.png">
+
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Video.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.10.0/video-js.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.10.0/video.min.js"></script>
+    <!-- videojs-youtube plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/3.0.1/Youtube.min.js"></script>
+
+    <style>
+        /* ====================================================
+           DESIGN TOKENS
+        ==================================================== */
+        :root {
+            --bg: #080d18;
+            --bg-2: #0e1525;
+            --bg-3: #131d30;
+            --surface: rgba(19, 29, 48, 0.90);
+            --gold: #f5c518;
+            --gold-glow: rgba(245, 197, 24, 0.25);
+            --brand: #2563eb;
+            --brand-light: #3b82f6;
+            --brand-glow: rgba(37, 99, 235, 0.35);
+            --brand-dim: rgba(37, 99, 235, 0.12);
+            --text: #e8edf5;
+            --text-2: #8b96aa;
+            --text-3: #4d5a70;
+            --border: rgba(255, 255, 255, 0.07);
+            --border-2: rgba(255, 255, 255, 0.13);
+            --radius: 12px;
+            --shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 15px;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(37, 99, 235, 0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.018) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(37, 99, 235, 0.07) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 960px;
+            padding: 20px 16px 40px;
+        }
+
+        /* ====================================================
+           TOPBAR
+        ==================================================== */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .topbar-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .topbar-logo-text {
+            font-size: 1.1rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold), var(--brand-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--brand-dim);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            color: var(--brand-light);
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            min-height: 40px;
+        }
+
+        .back-btn:hover {
+            background: rgba(37, 99, 235, 0.2);
+            border-color: var(--brand-light);
+        }
+
+        .student-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border-2);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .student-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--brand));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.8rem;
+            color: var(--bg);
+            flex-shrink: 0;
+        }
+
+        /* ====================================================
+           COURSE HEADER
+        ==================================================== */
+        .course-header {
+            margin-bottom: 14px;
+        }
+
+        .course-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.78rem;
+            color: var(--text-2);
+        }
+
+        .meta-badge i {
+            color: var(--brand-light);
+            font-size: 0.75rem;
+        }
+
+        /* ====================================================
+           PLAYER SHELL
+        ==================================================== */
+        .player-shell {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow:
+                var(--shadow),
+                0 0 0 1px var(--border-2),
+                0 0 60px rgba(37, 99, 235, 0.1);
+            background: #000;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Watermark layer */
+        #wm-layer {
+            position: absolute !important;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2147483647 !important;
+            overflow: hidden;
+        }
+
+        .wm-item {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.45);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.5);
+            -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.08em;
+            transform: rotate(-25deg);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        /* Security overlay */
+        .sec-shield {
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            pointer-events: none;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 80px,
+                    rgba(245, 197, 24, 0.0065) 80px,
+                    rgba(245, 197, 24, 0.0065) 82px);
+        }
+
+        /* ====================================================
+           VIDEO.JS WRAPPER
+        ==================================================== */
+        #vjs-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        /* Make Video.js fill the wrapper */
+        #gl-player {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            inset: 0;
+        }
+
+        /* ── Hide ALL YouTube branding from the iframe ── */
+        #gl-player iframe {
+            /* push the iframe up to cut the bottom bar where YT logo sits */
+            top: -60px !important;
+            height: calc(100% + 120px) !important;
+            pointer-events: none !important;
+        }
+
+        /* Transparent click-blocker over iframe corners (logo / watch-on-yt) */
+        #yt-corner-guard {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        #yt-corner-guard span {
+            position: absolute;
+            pointer-events: all;
+            background: transparent;
+        }
+
+        /* Top-right (YouTube logo in some embeds) */
+        #yt-corner-guard .g-tr {
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 60px;
+        }
+
+        /* Bottom-left (YT logo) */
+        #yt-corner-guard .g-bl {
+            bottom: 55px;
+            left: 0;
+            width: 100%;
+            height: 55px;
+        }
+
+        /* Bottom-right (watch on YouTube) */
+        #yt-corner-guard .g-br {
+            bottom: 55px;
+            right: 0;
+            width: 100%;
+            height: 55px;
+        }
+
+        /* Top-left */
+        #yt-corner-guard .g-tl {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+        }
+
+        /* ====================================================
+           VIDEO.JS CUSTOM SKIN — override default theme
+        ==================================================== */
+
+        /* Big play button */
+        .video-js .vjs-big-play-button {
+            background: var(--brand) !important;
+            border: none !important;
+            border-radius: 50% !important;
+            width: 80px !important;
+            height: 80px !important;
+            line-height: 80px !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            margin: 0 !important;
+            transition: transform 0.2s, background 0.2s !important;
+            box-shadow: 0 4px 24px rgba(37, 99, 235, 0.5) !important;
+        }
+
+        .video-js .vjs-big-play-button:hover {
+            background: var(--brand-light) !important;
+            transform: translate(-50%, -50%) scale(1.08) !important;
+        }
+
+        .video-js .vjs-big-play-button .vjs-icon-placeholder::before {
+            font-size: 2rem !important;
+            line-height: 80px !important;
+        }
+
+        /* Control bar */
+        .video-js .vjs-control-bar {
+            background: linear-gradient(transparent, rgba(4, 8, 16, 0.95)) !important;
+            padding: 6px 10px 8px !important;
+            height: 44px !important;
+            font-family: 'Cairo', sans-serif !important;
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            gap: 0 !important;
+        }
+
+        /* Buttons */
+        .video-js .vjs-button>.vjs-icon-placeholder::before,
+        .video-js .vjs-control::before {
+            font-size: 1.05rem !important;
+            line-height: 44px !important;
+        }
+
+        /* ── Play / Mute / Fullscreen — أكبر حجم ── */
+        .video-js .vjs-play-control,
+        .video-js .vjs-mute-control,
+        .video-js .vjs-fullscreen-control {
+            width: 50px !important;
+            min-width: 50px !important;
+        }
+
+        .video-js .vjs-play-control .vjs-icon-placeholder::before,
+        .video-js .vjs-mute-control .vjs-icon-placeholder::before,
+        .video-js .vjs-fullscreen-control .vjs-icon-placeholder::before {
+            font-size: 1.5rem !important;
+        }
+
+        .video-js .vjs-control:focus,
+        .video-js .vjs-control:hover {
+            color: #fff !important;
+        }
+
+        .video-js .vjs-control {
+            flex-shrink: 0 !important;
+        }
+
+        /* Progress bar — takes all remaining space */
+        .video-js .vjs-progress-control {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            height: 44px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .video-js .vjs-progress-holder {
+            height: 4px !important;
+            border-radius: 4px !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            transition: height 0.15s !important;
+            margin: 0 !important;
+            flex: 1 !important;
+        }
+
+        .video-js:hover .vjs-progress-holder {
+            height: 7px !important;
+        }
+
+        .video-js .vjs-play-progress {
+            background: var(--brand) !important;
+            border-radius: 4px !important;
+        }
+
+        .video-js .vjs-play-progress::before {
+            font-size: 0.7rem !important;
+            top: -0.35em !important;
+            color: #fff !important;
+        }
+
+        .video-js .vjs-load-progress {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-radius: 4px !important;
+        }
+
+        .video-js .vjs-load-progress div {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Volume */
+        .video-js .vjs-volume-bar {
+            background: rgba(255, 255, 255, 0.25) !important;
+        }
+
+        .video-js .vjs-volume-level {
+            background: var(--brand-light) !important;
+        }
+
+        /* Time display */
+        .video-js .vjs-time-control {
+            font-size: 0.72rem !important;
+            font-family: monospace !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+            min-width: 0 !important;
+            padding: 0 3px !important;
+            line-height: 44px !important;
+            flex-shrink: 0 !important;
+            white-space: nowrap !important;
+        }
+
+        .video-js .vjs-current-time,
+        .video-js .vjs-duration {
+            display: flex !important;
+        }
+
+        .video-js .vjs-time-divider {
+            display: flex !important;
+            min-width: 10px !important;
+            padding: 0 !important;
+        }
+
+        /* Hide remaining time completely */
+        .video-js .vjs-remaining-time {
+            display: none !important;
+        }
+
+
+
+        /* Fullscreen */
+        .video-js.vjs-fullscreen {
+            border-radius: 0 !important;
+        }
+
+        .video-js.vjs-fullscreen #vjs-wrapper {
+            border-radius: 0 !important;
+        }
+
+        /* Hide default Video.js poster area */
+        .video-js .vjs-poster {
+            background-color: #000 !important;
+        }
+
+        /* Remove the default Video.js loading spinner (keep our skeleton) */
+        .video-js .vjs-loading-spinner {
+            display: none !important;
+        }
+
+        /* ====================================================
+           LOADING SKELETON
+        ==================================================== */
+        .player-skeleton {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: var(--radius);
+            background: linear-gradient(90deg,
+                    var(--bg-3) 25%,
+                    rgba(30, 44, 70, 0.4) 50%,
+                    var(--bg-3) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            color: var(--text-3);
+            font-size: 0.88rem;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .skeleton-icon {
+            font-size: 2.5rem;
+            color: var(--brand-dim);
+            animation: pulse-icon 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        /* ====================================================
+           LANDSCAPE / FULLSCREEN GUARD
+        ==================================================== */
+        #fs-guard {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2147483646;
+            pointer-events: none;
+        }
+
+        #fs-guard .guard-tl,
+        #fs-guard .guard-tr,
+        #fs-guard .guard-bl,
+        #fs-guard .guard-br {
+            position: absolute;
+            pointer-events: all;
+            background: transparent;
+        }
+
+        #fs-guard .guard-tl {
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 70px;
+        }
+
+        #fs-guard .guard-tr {
+            top: 0;
+            right: 0;
+            width: 240px;
+            height: 70px;
+        }
+
+        #fs-guard .guard-bl {
+            bottom: 0;
+            left: 0;
+            width: 200px;
+            height: 70px;
+        }
+
+        #fs-guard .guard-br {
+            bottom: 0;
+            right: 0;
+            width: 240px;
+            height: 70px;
+        }
+
+        @media screen and (orientation: landscape) and (max-width: 1024px) {
+            #fs-guard {
+                display: block;
+            }
+        }
+
+        :fullscreen #fs-guard {
+            display: block;
+        }
+
+        :-webkit-full-screen #fs-guard {
+            display: block;
+        }
+
+        :-moz-full-screen #fs-guard {
+            display: block;
+        }
+
+        /* ====================================================
+           CONTROLS BELOW PLAYER
+        ==================================================== */
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border-2);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ctrl-label {
+            font-size: 0.78rem;
+            color: var(--text-3);
+            font-weight: 700;
+        }
+
+        .speed-btns {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .speed-btn {
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid var(--border-2);
+            background: transparent;
+            color: var(--text-2);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 32px;
+        }
+
+        .speed-btn:hover {
+            background: var(--brand-dim);
+            color: var(--brand-light);
+            border-color: rgba(37, 99, 235, 0.4);
+        }
+
+        .speed-btn.active {
+            background: var(--brand);
+            color: #fff;
+            border-color: var(--brand);
+        }
+
+
+
+        /* ====================================================
+           QUALITY BUTTON & MENU
+        ==================================================== */
+        .quality-wrap {
+            position: relative;
+        }
+
+        .quality-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: 1px solid var(--border-2);
+            background: transparent;
+            color: var(--text-2);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 32px;
+            white-space: nowrap;
+        }
+
+        .quality-btn i {
+            font-size: 0.82rem;
+        }
+
+        .quality-btn:hover {
+            background: var(--brand-dim);
+            color: var(--brand-light);
+            border-color: rgba(37, 99, 235, 0.4);
+        }
+
+        .quality-btn.active-q {
+            background: var(--brand);
+            color: #fff;
+            border-color: var(--brand);
+        }
+
+        #quality-menu {
+            position: fixed;
+            background: rgba(8, 13, 24, 0.97);
+            border: 1px solid var(--border-2);
+            border-radius: 10px;
+            overflow: hidden;
+            min-width: 120px;
+            z-index: 9000;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        #quality-menu.open {
+            display: block;
+            animation: qFadeIn 0.15s ease;
+        }
+
+        @keyframes qFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Menu header label */
+        #quality-menu-title {
+            padding: 7px 14px 5px;
+            font-size: 0.68rem;
+            font-family: 'Cairo', sans-serif;
+            color: var(--text-3);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .q-opt {
+            padding: 10px 18px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .q-opt:hover {
+            background: var(--brand-dim);
+            color: var(--brand-light);
+        }
+
+        .q-opt.active {
+            color: var(--brand-light);
+            font-weight: 800;
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .q-opt .q-check {
+            font-size: 0.85rem;
+            opacity: 0;
+            color: var(--brand-light);
+        }
+
+        .q-opt.active .q-check {
+            opacity: 1;
+        }
+
+        /* ====================================================
+           TOAST
+        ==================================================== */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(8, 13, 24, 0.97);
+            border: 1px solid var(--border-2);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 220px;
+            justify-content: center;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #toast.success {
+            border-color: rgba(34, 212, 160, 0.4);
+            color: #22d4a0;
+        }
+
+        #toast.error {
+            border-color: rgba(255, 91, 91, 0.4);
+            color: #ff5b5b;
+        }
+
+        #toast.info {
+            border-color: rgba(37, 99, 235, 0.4);
+            color: var(--brand-light);
+        }
+
+        /* ====================================================
+           RESPONSIVE
+        ==================================================== */
+        @media (max-width: 640px) {
+            html {
+                font-size: 14px;
+            }
+
+            .page-wrapper {
+                padding: 10px 10px 32px;
+            }
+
+            .topbar {
+                margin-bottom: 12px;
+            }
+
+            .student-badge .student-name {
+                display: none;
+            }
+
+            .course-title {
+                font-size: 1.05rem;
+            }
+
+            .controls-row {
+                padding: 10px 12px;
+                gap: 8px;
+            }
+
+            .speed-btns {
+                gap: 4px;
+            }
+
+            .speed-btn {
+                padding: 5px 8px;
+                font-size: 0.75rem;
+            }
+
+            .ctrl-label {
+                display: none;
+            }
+        }
+
+        /* وضع Landscape على الموبايل — الفيديو يملا الشاشة كاملة بدون قص */
+        @media (max-height: 500px) and (orientation: landscape) {
+
+            body {
+                overflow: hidden;
+            }
+
+            .page-wrapper {
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .topbar,
+            .course-header,
+            .controls-row {
+                display: none !important;
+            }
+
+            .player-shell {
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                height: 100vh;
+                width: 100vw;
+            }
+
+            #vjsContainer {
+                height: 100vh !important;
+                width: 100vw !important;
+            }
+
+            #vjs-wrapper {
+                height: 100vh !important;
+                width: 100vw !important;
+                aspect-ratio: unset !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+            }
+
+            /* نحتفظ بالـ offset لإخفاء شريط اليوتيوب — لا نعيد تعيينه */
+            #gl-player iframe {
+                top: -60px !important;
+                height: calc(100% + 120px) !important;
+            }
+
+            /* نكبر الـ corner guards في الـ landscape لتغطية كل الشعارات */
+            #yt-corner-guard .g-tl,
+            #yt-corner-guard .g-tr {
+                width: 100% !important;
+                height: 70px !important;
+            }
+
+            #yt-corner-guard .g-bl,
+            #yt-corner-guard .g-br {
+                width: 100% !important;
+                height: 70px !important;
+                bottom: 55px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <a href="index.html" class="topbar-logo">
+                <img src="son.png" alt="Grand Leader" onerror="this.style.display='none'">
+                <span class="topbar-logo-text">ابن القائد</span>
+            </a>
+            <div class="topbar-right">
+                <div class="student-badge">
+                    <div class="student-avatar" id="studentAvatar">ط</div>
+                    <span class="student-name" id="studentNameDisplay">جاري التحميل...</span>
+                </div>
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>رجوع</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- COURSE HEADER -->
+        <div class="course-header">
+            <h1 class="course-title" id="courseTitle">جاري تحميل الدرس...</h1>
+            <div class="course-meta">
+                <span class="meta-badge"><i class="fas fa-user-shield"></i> <span id="metaStudent">—</span></span>
+            </div>
+        </div>
+
+        <!-- PLAYER SHELL -->
+        <div class="player-shell" id="playerShell">
+
+            <!-- Skeleton -->
+            <div class="player-skeleton" id="playerSkeleton">
+                <i class="fas fa-circle-play skeleton-icon"></i>
+                <span>جاري تحميل الفيديو...</span>
+            </div>
+
+            <!-- Security pattern -->
+            <div class="sec-shield" id="secShield"></div>
+
+            <!-- Watermark layer -->
+            <div id="wm-layer"></div>
+
+            <!-- Video.js player container -->
+            <div id="vjsContainer" style="display:none; position:relative;">
+                <div id="vjs-wrapper">
+                    <!-- Corner guards to block YouTube logo / "Watch on YouTube" -->
+                    <div id="yt-corner-guard">
+                        <span class="g-tl"></span>
+                        <span class="g-tr"></span>
+                        <span class="g-bl"></span>
+                        <span class="g-br"></span>
+                    </div>
+                    <!-- Video.js element -->
+                    <video id="gl-player" class="video-js vjs-theme-city" playsinline preload="none"></video>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls row below player -->
+        <div class="controls-row" id="controlsRow" style="display:none;">
+            <div class="ctrl-group">
+                <span class="ctrl-label"><i class="fas fa-gauge-high"></i> السرعة:</span>
+                <div class="speed-btns">
+                    <button class="speed-btn" onclick="GL.setSpeed(0.5)">0.5×</button>
+                    <button class="speed-btn" onclick="GL.setSpeed(0.75)">0.75×</button>
+                    <button class="speed-btn active" id="spd-1" onclick="GL.setSpeed(1)">1×</button>
+                    <button class="speed-btn" onclick="GL.setSpeed(1.25)">1.25×</button>
+                    <button class="speed-btn" onclick="GL.setSpeed(1.5)">1.5×</button>
+                    <button class="speed-btn" onclick="GL.setSpeed(2)">2×</button>
+                </div>
+            </div>
+            <div class="ctrl-group">
+                <!-- Quality Button -->
+                <div class="quality-wrap">
+                    <button class="quality-btn" id="qualityBtn" onclick="GL.toggleQuality(event)">
+                        <i class="fas fa-film"></i>
+                        <span id="qualityLabel">جودة</span>
+                        <i class="fas fa-chevron-up" style="font-size:0.6rem;opacity:0.6;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /page-wrapper -->
+
+    <!-- Landscape / Fullscreen Guard -->
+    <div id="fs-guard">
+        <div class="guard-tl"></div>
+        <div class="guard-tr"></div>
+        <div class="guard-bl"></div>
+        <div class="guard-br"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast"></div>
+
+    <script>
+        // ============================================================
+        //  ⚙️ VIDEO CONFIG — same API as before
+        // ============================================================
+        const VIDEO_CONFIG = {
+            videoId: _getParamVideoId(),
+            fallbackId: 'dQw4w9WgXcQ',
+            courseId: _getParam('courseId') || 'demo_001',
+            title: _getParam('title') || 'درس تجريبي',
+            wmCount: 5,
+            wmInterval: 10000,
+        };
+
+        function _getParam(k) {
+            try { return new URLSearchParams(location.search).get(k) || ''; } catch (e) { return ''; }
+        }
+
+        // جيب الـ param خام بدون أي URL decoding (للـ url المشفر)
+        function _getRawParam(k) {
+            try {
+                const match = location.search.match(new RegExp('[?&]' + k + '=([^&]*)'));
+                return match ? match[1] : '';
+            } catch (e) { return ''; }
+        }
+
+        function _unmask(s) {
+            try {
+                if (!s) return '';
+                // فك الـ encodeURIComponent اللي عملاه في _mask
+                let decoded = s;
+                try { decoded = decodeURIComponent(s); } catch (_) {}
+                // لو URL مباشر → رجّعه زي ما هو
+                if (decoded.startsWith('http')) return decoded;
+                // فك التشفير: reverse ثم atob
+                const reversed = decoded.split('').reverse().join('');
+                return decodeURIComponent(escape(atob(reversed)));
+            } catch (e) { return ''; }
+        }
+
+        function _getParamVideoId() {
+            let id = _getParam('videoId');
+            if (id) return id;
+            // نجيب الـ url خام بدون double-decode
+            let rawUrl = _getRawParam('url');
+            if (rawUrl) {
+                let url = _unmask(rawUrl);
+                return _extractYTId(url);
+            }
+            return '';
+        }
+        function _extractYTId(url) {
+            if (!url) return '';
+            // يدعم كل أشكال روابط يوتيوب: watch?v=, youtu.be/, /embed/, /shorts/, /live/
+            let m = url.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([a-zA-Z0-9_-]{11})/);
+            return m ? m[1] : '';
+        }
+
+        // ============================================================
+        //  🔐 SECURITY MODULE
+        // ============================================================
+        const Security = (function () {
+            const SESSION = _randomHex(24);
+
+            function _randomHex(n) {
+                const b = new Uint8Array(n);
+                crypto.getRandomValues(b);
+                return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('');
+            }
+
+            function blockContextMenu() {
+                document.addEventListener('contextmenu', e => {
+                    e.preventDefault();
+                    GL.toast('🔒 محتوى محمي', 'error');
+                    return false;
+                });
+            }
+
+            function blockLongPress() {
+                const shell = document.getElementById('playerShell');
+                let t;
+                shell.addEventListener('touchstart', () => { t = setTimeout(() => GL.toast('🔒 محتوى محمي', 'error'), 600); });
+                shell.addEventListener('touchend', () => clearTimeout(t));
+                shell.addEventListener('touchmove', () => clearTimeout(t));
+            }
+
+            function devToolsGuard() {
+                // طريقة 1: فرق الحجم (docked devtools)
+                const _check = () => {
+                    const wDiff = window.outerWidth - window.innerWidth;
+                    const hDiff = window.outerHeight - window.innerHeight;
+                    const open = wDiff > 160 || hDiff > 160;
+                    const shell = document.getElementById('playerShell');
+                    if (shell) shell.style.filter = open ? 'blur(18px)' : '';
+                    if (open) GL.toast('🔒 أغلق DevTools لمتابعة الفيديو', 'error');
+                };
+                setInterval(_check, 800);
+
+                // طريقة 2: debugger trap
+                setInterval(() => {
+                    const t = performance.now();
+                    (function() { debugger; })();
+                    if (performance.now() - t > 100) {
+                        const shell = document.getElementById('playerShell');
+                        if (shell) shell.style.filter = 'blur(18px)';
+                        GL.toast('🔒 أغلق DevTools لمتابعة الفيديو', 'error');
+                    }
+                }, 3000);
+            }
+
+            function blockHotkeys() {
+                document.addEventListener('keydown', e => {
+                    const ctrl = e.ctrlKey || e.metaKey;
+                    const shift = e.shiftKey;
+                    const key = e.key;
+                    const K = key.toUpperCase();
+
+                    const blocked =
+                        key === 'F12' ||
+                        key === 'F11' ||
+                        key === 'F10' ||
+                        key === 'F9'  ||
+                        key === 'F8'  ||
+                        key === 'F5'  ||
+                        (ctrl && K === 'U') ||
+                        (ctrl && K === 'S') ||
+                        (ctrl && K === 'P') ||
+                        (ctrl && shift && K === 'I') ||
+                        (ctrl && shift && K === 'J') ||
+                        (ctrl && shift && K === 'C') ||
+                        (ctrl && shift && K === 'K') ||
+                        (ctrl && shift && K === 'E') ||
+                        (ctrl && shift && K === 'M') ||
+                        (ctrl && shift && K === 'P') ||
+                        (ctrl && shift && K === 'S') ||
+                        (ctrl && K === 'F5');
+
+                    if (blocked) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        GL.toast('🔒 هذا الإجراء محظور لحماية المحتوى', 'error');
+                        return false;
+                    }
+                }, true);
+            }
+
+            function _landscapeGuard() {
+                const guard = document.getElementById('fs-guard');
+                if (!guard) return;
+                function check() {
+                    const isLandscape = window.innerWidth > window.innerHeight;
+                    const isMobile = window.innerWidth <= 1024;
+                    if (isLandscape && isMobile) {
+                        guard.style.display = 'block';
+                    } else if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                        guard.style.display = '';
+                    }
+                }
+                window.addEventListener('orientationchange', () => setTimeout(check, 300));
+                window.addEventListener('resize', check);
+                check();
+            }
+
+            function init() {
+                blockContextMenu();
+                blockLongPress();
+                blockHotkeys();
+                devToolsGuard();
+                _landscapeGuard();
+            }
+
+            return { init, session: SESSION };
+        })();
+
+        // ============================================================
+        //  💧 WATERMARK MODULE
+        // ============================================================
+        const Watermark = (function () {
+            let _text = '';
+            let _nodes = [];
+            let _timer = null;
+
+            function _getStudentText() {
+                // وضع studentData في البداية لضمان سحب البيانات الكاملة
+                const keys = ['studentData', 'leader_user', 'userData', 'student'];
+                for (const k of keys) {
+                    try {
+                        const raw = localStorage.getItem(k);
+                        if (!raw) continue;
+                        if (!raw.startsWith('{')) continue; // تخطي النصوص المباشرة للبحث عن كائن كامل
+                        const obj = JSON.parse(raw);
+                        const name = obj.name || obj.studentName || obj.fullName || '';
+                        const phone = obj.phone || obj.studentPhone || obj.mobile || '';
+                        if (name || phone) {
+                            let t = name;
+                            if (phone) { const p = phone.toString().replace(/\D/g, ''); t += ' | ' + p; }
+                            return t;
+                        }
+                    } catch (e) { }
+                }
+                const n = _getParam('studentName') || _getParam('name');
+                const p = _getParam('studentPhone') || _getParam('phone');
+                if (n || p) {
+                    let t = n || '';
+                    if (p) { const pp = p.toString().replace(/\D/g, ''); t += (t ? '  ' : '') + pp; }
+                    return t.trim();
+                }
+                const nameEl = document.getElementById('studentNameDisplay');
+                const metaEl = document.getElementById('metaStudent');
+                let result = '';
+                if (nameEl && nameEl.textContent && nameEl.textContent !== 'جاري التحميل...') result = nameEl.textContent;
+                if (metaEl && metaEl.textContent && metaEl.textContent !== '—') result = metaEl.textContent;
+                return result;
+            }
+
+            function _createNodes() {
+                const layer = document.getElementById('wm-layer');
+                if (!layer) return;
+                layer.innerHTML = '';
+                _nodes = [];
+                for (let i = 0; i < VIDEO_CONFIG.wmCount; i++) {
+                    const el = document.createElement('span');
+                    el.className = 'wm-item';
+                    el.textContent = _text || 'ابن القائد';
+                    layer.appendChild(el);
+                    _nodes.push(el);
+                }
+            }
+
+            function _placeNodes() {
+                const layer = document.getElementById('wm-layer');
+                if (!layer || !_nodes.length) return;
+                const w = layer.offsetWidth, h = layer.offsetHeight;
+                _nodes.forEach(el => {
+                    el.style.opacity = '0';
+                    setTimeout(() => {
+                        const x = 10 + Math.random() * 75;
+                        const y = 10 + Math.random() * 75;
+                        el.style.left = x + '%';
+                        el.style.top = y + '%';
+                        el.style.opacity = '1';
+                    }, 100);
+                });
+            }
+
+            function init() {
+                _text = _getStudentText();
+                _createNodes();
+                _placeNodes();
+                _timer = setInterval(_placeNodes, VIDEO_CONFIG.wmInterval);
+            }
+
+            return { init };
+        })();
+
+        // ============================================================
+        //  👤 STUDENT MODULE
+        // ============================================================
+        const Student = (function () {
+            function _load() {
+                const keys = ['studentData', 'leader_user', 'userData', 'student'];
+                for (const k of keys) {
+                    try {
+                        const raw = localStorage.getItem(k);
+                        if (!raw) continue;
+                        if (!raw.startsWith('{')) continue;
+                        const obj = JSON.parse(raw);
+                        const name = obj.name || obj.studentName || obj.fullName || '';
+                        const phone = obj.phone || obj.studentPhone || obj.mobile || '';
+                        if (name) return { name, phone };
+                    } catch (e) { }
+                }
+                const n = _getParam('studentName') || _getParam('name') || 'طالب';
+                const p = _getParam('studentPhone') || _getParam('phone') || '';
+                return { name: n, phone: p };
+            }
+
+            function init() {
+                const s = _load();
+                const nameEl = document.getElementById('studentNameDisplay');
+                const avatEl = document.getElementById('studentAvatar');
+                const metaEl = document.getElementById('metaStudent');
+
+                if (nameEl) nameEl.textContent = s.name;
+                if (avatEl) avatEl.textContent = s.name.charAt(0) || 'ط';
+                if (metaEl) {
+                    let t = s.name;
+                    if (s.phone) {
+                        const p = s.phone.toString().replace(/\D/g, '');
+                        t += ' — ' + (p.length >= 7 ? p.slice(0, 3) + '****' + p.slice(-3) : p);
+                    }
+                    metaEl.textContent = t;
+                }
+            }
+
+            return { init };
+        })();
+
+        // ============================================================
+        //  🎬 PLAYER MODULE — Video.js + videojs-youtube
+        // ============================================================
+        const Player = (function () {
+            let _player = null;
+            let _speed = 1;
+            let _ready = false;
+
+            function _build(videoId) {
+                const skeleton = document.getElementById('playerSkeleton');
+                const container = document.getElementById('vjsContainer');
+                const ctrlsRow = document.getElementById('controlsRow');
+
+                // Show player container
+                if (skeleton) skeleton.style.display = 'none';
+                if (container) container.style.display = 'block';
+                if (ctrlsRow) ctrlsRow.style.display = 'flex';
+
+                // Initialise Video.js with YouTube tech
+                _player = videojs('gl-player', {
+                    techOrder: ['youtube'],
+                    sources: [{
+                        type: 'video/youtube',
+                        src: 'https://www.youtube.com/watch?v=' + videoId,
+                    }],
+                    youtube: {
+                        // Key params to strip all YouTube UI
+                        ytControls: 0,
+                        rel: 0,
+                        showinfo: 0,
+                        modestbranding: 1,
+                        iv_load_policy: 3,
+                        cc_load_policy: 0,
+                        fs: 0,               // disable YT fullscreen button
+                        disablekb: 1,        // disable YT keyboard shortcuts
+                        playsinline: 1,
+                        enablejsapi: 1,
+                        origin: location.origin,
+                    },
+                    controls: true,
+                    autoplay: false,
+                    preload: 'none',
+                    fluid: true,
+                    aspectRatio: '16:9',
+                    controlBar: {
+                        children: [
+                            'playToggle',
+                            'volumePanel',
+                            'currentTimeDisplay',
+                            'timeDivider',
+                            'durationDisplay',
+                            'progressControl',
+                            'fullscreenToggle',
+                        ],
+                        volumePanel: { inline: true, vertical: false },
+                        remainingTimeDisplay: false,
+                        pictureInPictureToggle: false,
+                        chaptersButton: false,
+                        descriptionsButton: false,
+                        subtitlesButton: false,
+                        captionsButton: false,
+                        audioTrackButton: false,
+                    },
+                });
+
+                _player.ready(function () {
+                    _ready = true;
+                    _player.playbackRate(_speed);
+
+                    // نقل طبقات الحماية داخل المشغل لضمان ظهورها في وضع ملء الشاشة
+                    const playerEl = _player.el();
+                    const wm = document.getElementById('wm-layer');
+                    const guards = document.getElementById('yt-corner-guard');
+                    const shield = document.getElementById('secShield');
+
+                    if (wm) playerEl.appendChild(wm);
+                    if (guards) playerEl.appendChild(guards);
+                    if (shield) playerEl.appendChild(shield);
+
+                    GL.toast('✅ الفيديو جاهز', 'success');
+
+                    // بعد ما الفيديو يبدأ تشغيل فعلاً — ytPlayer بيبقى جاهز
+                    _player.one('playing', function () {
+                        GL.initQuality();
+                    });
+                });
+
+                _player.on('error', function () {
+                    GL.toast('❌ خطأ في تحميل الفيديو', 'error');
+                    // إظهار رسالة واضحة مع زرار للفتح على YouTube مباشرة
+                    const skeleton = document.getElementById('playerSkeleton');
+                    const container = document.getElementById('vjsContainer');
+                    if (container) container.style.display = 'none';
+                    if (skeleton) {
+                        skeleton.style.display = 'flex';
+                        skeleton.innerHTML = `
+                            <i class="fas fa-circle-exclamation" style="font-size:2.5rem;color:#ff5b5b;"></i>
+                            <span style="color:#e8edf5;font-weight:700;">تعذّر تشغيل الفيديو هنا</span>
+                            <span style="color:#8b96aa;font-size:0.82rem;">قد يكون الفيديو غير متاح للتشغيل المضمّن</span>
+    
+                            </a>`;
+                    }
+                });
+            }
+
+            function init(videoId) {
+                if (!videoId) {
+                    // لو مفيش videoId — اعرض رسالة خطأ بدل الـ fallback
+                    const skeleton = document.getElementById('playerSkeleton');
+                    if (skeleton) {
+                        skeleton.innerHTML = `
+                            <i class="fas fa-circle-exclamation" style="font-size:2.5rem;color:#ff5b5b;"></i>
+                            <span style="color:#e8edf5;font-weight:700;">لا يوجد فيديو لهذا الدرس</span>
+                            <span style="color:#8b96aa;font-size:0.82rem;">يرجى التواصل مع الإدارة</span>`;
+                    }
+                    return;
+                }
+                _build(videoId);
+            }
+
+            function setSpeed(s) {
+                _speed = s;
+                if (_ready && _player) {
+                    try { _player.playbackRate(s); } catch (e) { }
+                }
+                document.querySelectorAll('.speed-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseFloat(btn.textContent) === s);
+                });
+            }
+
+            // expose raw YT player for quality control
+            function getYtPlayer() {
+                try { return _player.tech({ IWillNotUseThisInPlugins: true }).ytPlayer; } catch (e) { return null; }
+            }
+
+            return { init, setSpeed, getYtPlayer, getInstance: () => _player };
+        })();
+
+        // ============================================================
+        //  🌐 MAIN APP (GL)
+        // ============================================================
+        const GL = {
+
+            toast(msg, type = 'info', dur = 2800) {
+                const el = document.getElementById('toast');
+                el.textContent = '';
+                const icon = document.createElement('i');
+                icon.className =
+                    type === 'success' ? 'fas fa-circle-check' :
+                        type === 'error' ? 'fas fa-circle-xmark' :
+                            'fas fa-circle-info';
+                el.appendChild(icon);
+                el.appendChild(document.createTextNode(' ' + msg));
+                el.className = 'show ' + type;
+                clearTimeout(GL._toastTimer);
+                GL._toastTimer = setTimeout(() => { el.className = ''; }, dur);
+            },
+            _toastTimer: null,
+
+            setSpeed(s) { Player.setSpeed(s); },
+
+            // ── Quality ──
+            _qualityOpen: false,
+            _currentQuality: -1,
+
+            // Quality labels map
+            _qLabels: {
+                2160: '4K',
+                1440: '1440p',
+                1080: '1080p HD',
+                720: '720p HD',
+                480: '480p',
+                360: '360p',
+                240: '240p',
+                144: '144p',
+                '-1': 'تلقائي',
+            },
+
+            initQuality() {
+                const menu = document.getElementById('quality-menu');
+                const btn = document.getElementById('qualityBtn');
+                if (!menu || !btn) return;
+
+                // جيب الـ ytPlayer من Video.js tech
+                let yt = null;
+                try { yt = Player.getYtPlayer(); } catch (_) { }
+
+                const labelMap = {
+                    'hd2160': '4K 2160p', 'highres': '4K',
+                    'hd1440': '1440p',
+                    'hd1080': '1080p',
+                    'hd720': '720p',
+                    'large': '480p',
+                    'medium': '360p',
+                    'small': '240p',
+                    'tiny': '144p',
+                };
+
+                let levels = [];
+                if (yt && typeof yt.getAvailableQualityLevels === 'function') {
+                    levels = yt.getAvailableQualityLevels().filter(l => l !== 'auto' && l !== 'tiny');
+                }
+
+                // لو مرجعتش levels — مش هنكمل
+                if (!levels.length) return;
+
+                const opts = [{ label: 'تلقائي', val: 'auto' }].concat(
+                    levels.map(l => ({ label: labelMap[l] || l, val: l }))
+                );
+
+                menu.innerHTML =
+                    '<div id="quality-menu-title">الجودة</div>' +
+                    opts.map(o =>
+                        `<div class="q-opt${o.val === 'auto' ? ' active' : ''}" data-val="${o.val}">
+                    <span>${o.label}</span><span class="q-check">✓</span>
+                </div>`
+                    ).join('');
+
+                menu.querySelectorAll('.q-opt').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const val = el.dataset.val;
+                        try {
+                            if (yt) {
+                                yt.setPlaybackQuality(val);
+                                // نطلب من المشغل التحديث فوراً قدر الإمكان
+                                if (val !== 'auto') yt.setPlaybackQualityRange(val, val);
+                            }
+                        } catch (_) { }
+                        const labelText = el.querySelector('span').textContent;
+                        const labelEl = document.getElementById('qualityLabel');
+                        if (labelEl) labelEl.textContent = val === 'auto' ? 'جودة' : labelText;
+                        menu.querySelectorAll('.q-opt').forEach(x => x.classList.remove('active'));
+                        el.classList.add('active');
+                        GL._closeQuality();
+                        btn.classList.toggle('active-q', val !== 'auto');
+                        GL.toast('🎬 ' + labelText, 'info');
+                    });
+                });
+            },
+
+            _closeQuality() {
+                this._qualityOpen = false;
+                document.getElementById('quality-menu').classList.remove('open');
+            },
+
+            toggleQuality(e) {
+                e.stopPropagation();
+                this._qualityOpen = !this._qualityOpen;
+                const menu = document.getElementById('quality-menu');
+                const btn = document.getElementById('qualityBtn');
+                if (this._qualityOpen) {
+                    const r = btn.getBoundingClientRect();
+
+                    // تحسين التموضع لضمان الوضوح وعدم الخروج عن الشاشة
+                    let leftPos = r.left;
+                    if (window.innerWidth < 480) {
+                        leftPos = Math.max(10, Math.min(leftPos, window.innerWidth - 160));
+                    }
+                    menu.style.left = leftPos + 'px';
+                    menu.style.bottom = '';
+                    menu.style.top = (r.top - (menu.offsetHeight || 200) - 10) + 'px';
+                    menu.classList.add('open');
+                } else {
+                    menu.classList.remove('open');
+                }
+            },
+
+            toggleFullscreen() {
+                const shell = document.getElementById('playerShell');
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (shell.requestFullscreen) shell.requestFullscreen();
+                    else if (shell.webkitRequestFullscreen) shell.webkitRequestFullscreen();
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                }
+            },
+
+            _updateFsUI() {
+                const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+                const icon = document.getElementById('fsIcon');
+                const label = document.getElementById('fsLabel');
+                if (icon) icon.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
+                if (label) label.textContent = isFs ? 'تصغير' : 'ملء الشاشة';
+            },
+
+            goBack() {
+                if (document.referrer && document.referrer.includes(location.hostname)) {
+                    history.back();
+                } else {
+                    location.href = 'index.html';
+                }
+            },
+
+            init() {
+                // Title
+                const titleEl = document.getElementById('courseTitle');
+                if (titleEl && VIDEO_CONFIG.title) titleEl.textContent = VIDEO_CONFIG.title;
+
+                // Student
+                Student.init();
+
+                // Security
+                Security.init();
+
+                // Player
+                Player.init(VIDEO_CONFIG.videoId);
+
+                // Watermark
+                setTimeout(() => Watermark.init(), 1200);
+
+                // Close quality menu on outside click
+                document.addEventListener('click', () => {
+                    if (GL._qualityOpen) GL._closeQuality();
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+
+                    const player = Player.getInstance();
+                    if (!player) return;
+
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        if (player.paused()) player.play(); else player.pause();
+                    } else if (e.code === 'ArrowRight') {
+                        e.preventDefault();
+                        player.currentTime(player.currentTime() + 10);
+                        GL.toast('⏩ +10 ثواني', 'info', 800);
+                    } else if (e.code === 'ArrowLeft') {
+                        e.preventDefault();
+                        player.currentTime(Math.max(0, player.currentTime() - 10));
+                        GL.toast('⏪ -10 ثواني', 'info', 800);
+                    }
+                });
+
+                // Seek gestures (Double click)
+                const wrapper = document.getElementById('vjs-wrapper');
+                if (wrapper) {
+                    wrapper.addEventListener('dblclick', (e) => {
+                        const player = Player.getInstance();
+                        if (!player) return;
+                        const rect = wrapper.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        if (x > rect.width / 2) {
+                            player.currentTime(player.currentTime() + 10);
+                            GL.toast('⏩ +10 ثواني', 'info', 800);
+                        } else {
+                            player.currentTime(Math.max(0, player.currentTime() - 10));
+                            GL.toast('⏪ -10 ثواني', 'info', 800);
+                        }
+                    });
+                }
+            }
+        };
+
+        function goBack() { GL.goBack(); }
+
+        document.addEventListener('DOMContentLoaded', () => GL.init());
+    </script>
+
+    <!-- Quality Menu (fixed, outside all containers) -->
+    <div id="quality-menu"></div>
+
+</body>
+
+</html>

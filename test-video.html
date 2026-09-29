@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الفيديو</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: white;
+            font-family: Cairo, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #3b82f6;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #fbbf24;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        video {
+            width: 100%;
+            background: #000;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        /* دعم اللغة العربية */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap');
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎬 اختبار مشغل الفيديو</h1>
+
+        <!-- الاختبار 1: فيديو محلي -->
+        <div class="test-section">
+            <h2>1️⃣ اختبار HTML5 Video الأساسي</h2>
+            <div class="info">
+                ℹ️ اختبار عرض الفيديو باستخدام عناصر HTML5 الأساسية
+            </div>
+            <video id="video1" controls style="aspect-ratio: 16/9;">
+                <source src="sample-video.mp4" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو
+            </video>
+            <p style="font-size: 0.9rem; color: #94a3b8;">
+                ملاحظة: الفيديو سيعمل إذا كان ملف sample-video.mp4 موجوداً في نفس المجلد
+            </p>
+        </div>
+
+        <!-- الاختبار 2: فيديو YouTube -->
+        <div class="test-section">
+            <h2>2️⃣ اختبار YouTube Embed</h2>
+            <div class="info">
+                ℹ️ اختبار عرض فيديو YouTube عبر iframe
+            </div>
+            <iframe width="100%" height="450" style="border-radius: 8px; border: 2px solid #3b82f6;"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <!-- الاختبار 3: فيديو عبر رابط مباشر -->
+        <div class="test-section">
+            <h2>3️⃣ اختبار رابط مباشر</h2>
+            <div class="info">
+                ℹ️ أدخل رابط الفيديو أدناه
+            </div>
+            <input type="text" id="videoUrl" placeholder="ادخل رابط الفيديو..."
+                style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.1); border: 1px solid #3b82f6; color: white; border-radius: 6px;">
+            <button onclick="loadVideoByUrl()">تحميل الفيديو</button>
+            <video id="video3" controls style="display:none; aspect-ratio: 16/9;">
+                متصفحك لا يدعم تشغيل الفيديو
+            </video>
+        </div>
+
+        <!-- الاختبار 4: معلومات النظام -->
+        <div class="test-section">
+            <h2>4️⃣ معلومات النظام والمتصفح</h2>
+            <button onclick="checkSystemInfo()">فحص المعلومات</button>
+            <div id="systemInfo"
+                style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; font-family: monospace;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // اختبار تحميل الفيديو من رابط
+        function loadVideoByUrl() {
+            const url = document.getElementById('videoUrl').value.trim();
+            if (!url) {
+                alert('يرجى إدخال رابط صحيح');
+                return;
+            }
+
+            const video3 = document.getElementById('video3');
+            video3.innerHTML = `<source src="${url}" type="video/mp4">`;
+            video3.style.display = 'block';
+
+            // محاولة لتحميل الفيديو
+            video3.addEventListener('loadedmetadata', () => {
+                console.log('✅ تم تحميل الفيديو بنجاح');
+                alert('✅ تم تحميل الفيديو بنجاح!');
+            });
+
+            video3.addEventListener('error', () => {
+                console.error('❌ خطأ في تحميل الفيديو:', video3.error);
+                alert('❌ خطأ في تحميل الفيديو. قد يكون الرابط غير صحيح أو هناك مشكلة CORS');
+            });
+        }
+
+        // فحص معلومات النظام
+        function checkSystemInfo() {
+            const info = {
+                'المتصفح': navigator.userAgent.substring(0, 50) + '...',
+                'دعم Video HTML5': document.createElement('video').canPlayType ? '✅ نعم' : '❌ لا',
+                'دعم MP4': document.createElement('video').canPlayType('video/mp4') ? '✅ نعم' : '❌ لا',
+                'دعم WebM': document.createElement('video').canPlayType('video/webm') ? '✅ نعم' : '❌ لا',
+                'دعم Ogg': document.createElement('video').canPlayType('video/ogg') ? '✅ نعم' : '❌ لا',
+                'الدقة': window.devicePixelRatio ? window.devicePixelRatio + 'x' : 'غير محدد',
+                'حجم الشاشة': window.innerWidth + 'x' + window.innerHeight,
+                'اتصال الإنترنت': navigator.onLine ? '✅ متصل' : '❌ غير متصل'
+            };
+
+            let html = '<table style="width:100%; border-collapse:collapse;">';
+            for (const [key, value] of Object.entries(info)) {
+                html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <td style="padding:8px; color:#fbbf24; text-align:right;">${key}:</td>
+                    <td style="padding:8px; color:#94a3b8;">${value}</td>
+                </tr>`;
+            }
+            html += '</table>';
+
+            document.getElementById('systemInfo').innerHTML = html;
+            console.log('معلومات النظام:', info);
+        }
+
+        // تحميل معلومات النظام عند فتح الصفحة
+        window.addEventListener('load', () => {
+            console.log('✅ تم تحميل صفحة الاختبار بنجاح');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">InstaPay</title>
+  <rect width="64" height="64" rx="14" fill="#fff"/>
+  <path d="M16 34c0-10 7-17 17-17 7 0 12 3 15 9l-7 4c-2-4-4-6-8-6-5 0-8 4-8 10s3 10 8 10c4 0 7-2 9-6l7 4c-3 6-9 10-16 10-10 0-17-8-17-18z" fill="#6336a5"/>
+  <path d="M44 17h7v7h-7z" fill="#16a085"/>
+</svg>
