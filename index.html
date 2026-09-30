@@ -24,7 +24,6 @@
     <!-- ====== SEO: Google Search Console Verification ====== -->
     <!--  استبدل "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" بكود التحقق الخاص بك من GSC -->
     <meta name="google-site-verification" content="nItVipsUKj8UX1vFa5cGndU6jlY_Dfq8nu-K5j6fecg" />
-    <meta name="google-site-verification" content="6yXSbuE9Bv4Olgd-dA9UkikE_60anKqgwvLSazLG2ho" />
     <!-- ====== SEO: hreflang — تحديد اللغة والجمهور المستهدف ====== -->
     <link rel="alternate" hreflang="ar-EG" href="https://the-son-of-the-leader-edu.vercel.app/">
     <link rel="alternate" hreflang="ar" href="https://the-son-of-the-leader-edu.vercel.app/">
@@ -5456,6 +5455,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* بعد تغيير مفاتيح Supabase: تنظيف مرة واحدة لأي جلسة قديمة محفوظة في المتصفح (بتخلي الاتصال يفشل) */
+try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(localStorage).forEach(function(k){if(/^sb-.*-auth-token/.test(k))localStorage.removeItem(k)});localStorage.setItem('sb_key_ver',V)}}catch(e){}
+</script>
 
     <script>
         // ═══════════════════════════════════════════════════════════════
@@ -5689,7 +5692,7 @@
         const StudentApp = {
             config: {
                 supabaseUrl: "https://yxhajhwdbsxblbcpjtci.supabase.co",
-                supabaseKey: "sb_publishable_yGLQXnUVYejPs83WF3wiPA_a3VvpsZx"
+                supabaseKey: "sb_publishable_ipr1S60Tq_u3pJQOqgvgNw_o1FMkGeX"
             },
             client: null,
             state: {
