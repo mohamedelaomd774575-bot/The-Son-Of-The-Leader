@@ -5909,7 +5909,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     let buttonContent = '', buttonClass = 'course-button', buttonDisabled = false;
                     if (isSubscribed) {
                         if (courseType === 'video') buttonContent = '<i class="fas fa-play"></i> شاهد الدرس';
-                        else if (courseType === 'pdf') buttonContent = '<i class="fas fa-download"></i> تحميل ملف PDF';
+                        else if (courseType === 'pdf') buttonContent = '<i class="fas fa-book-open"></i> قراءة الملف';
                         else if (courseType === 'playlist') buttonContent = '<i class="fas fa-folder-open"></i> تصفح القائمة';
                     } else if (isPending) {
                         buttonContent = ' الطلب قيد المراجعة';
@@ -6032,7 +6032,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                     const { data: content, error: contentErr } = await StudentApp.client
                                         .rpc('get_course_content', { p_course_id: courseId });
                                     if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
-                                    StudentApp.actions.downloadPDF(content.pdf_url || pdfUrl);
+                                    StudentApp.actions.downloadPDF(content.pdf_url || pdfUrl, courseId, title);
                                 } catch (fetchErr) {
                                     StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الملف', 'error');
                                 }
@@ -6833,8 +6833,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     controls.innerHTML = '';
 
                     if (pdfMode) {
-                        // PDF بيتفتح في تاب جديد (تحميل حقيقي) — مش سرّي بنفس درجة الفيديو
-                        window.open(url, '_blank');
+                        // PDF بيتفتح في القارئ المدمج
+                        StudentApp.actions.downloadPDF(url, courseId, title);
                         return;
                     }
 
@@ -7114,7 +7114,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                 StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل المحتوى', 'error');
                                 return;
                             }
-                            if (type === 'pdf') StudentApp.actions.downloadPDF(pdfUrl);
+                            if (type === 'pdf') StudentApp.actions.downloadPDF(pdfUrl, courseId, title);
                             else watchVideo(courseId, title, videoUrl);
                         }
                     }
@@ -7224,7 +7224,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                     btn2.disabled = false;
                                     btn2.className = 'course-button';
                                     const ct = card.dataset.courseType;
-                                    btn2.innerHTML = ct === 'pdf' ? '<i class="fas fa-download"></i> تحميل ملف PDF'
+                                    btn2.innerHTML = ct === 'pdf' ? '<i class="fas fa-book-open"></i> قراءة الملف'
                                         : ct === 'playlist' ? '<i class="fas fa-folder-open"></i> تصفح القائمة'
                                             : '<i class="fas fa-play"></i> شاهد الدرس';
                                 }
@@ -7300,7 +7300,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                     btn2.disabled = false;
                                     btn2.className = 'course-button';
                                     const ct = card.dataset.courseType;
-                                    btn2.innerHTML = ct === 'pdf' ? '<i class="fas fa-download"></i> تحميل ملف PDF'
+                                    btn2.innerHTML = ct === 'pdf' ? '<i class="fas fa-book-open"></i> قراءة الملف'
                                         : ct === 'playlist' ? '<i class="fas fa-folder-open"></i> تصفح القائمة'
                                             : '<i class="fas fa-play"></i> شاهد الدرس';
                                 }
@@ -7449,9 +7449,16 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     }
                 },
 
-                downloadPDF: (pdfUrl) => {
-                    if (pdfUrl) window.open(pdfUrl, '_blank');
-                    else StudentApp.ui.showAlert('رابط الملف غير متوفر', 'error');
+                downloadPDF: (pdfUrl, courseId, title) => {
+                    if (!pdfUrl) { StudentApp.ui.showAlert('رابط الملف غير متوفر', 'error'); return; }
+                    // 📖 الملف بيتفتح في القارئ المدمج (render.html) — الرابط متشفّر ومبيظهرش في شريط العنوان
+                    try {
+                        const masked = btoa(unescape(encodeURIComponent(String(pdfUrl)))).split('').reverse().join('');
+                        const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, t: String(Date.now()) });
+                        window.location.href = 'render.html?' + qs.toString();
+                    } catch (_) {
+                        window.open(pdfUrl, '_blank');
+                    }
                 },
 
                 openPlaylist: async (playlistId, title, contentData) => {
