@@ -250,7 +250,28 @@
             z-index: 1;
         }
 
-        /* الـ iframe بيتحجّم بالـ JS: بيكبر فوق وتحت الفيديو عشان أي شريط ليوتيوب يخرج بره الإطار */
+        /* صندوق بنفس مقاس الفيديو بالظبط (16:9) — أي حاجة برّاه (شريط يوتيوب) بتتقص حتى لو الشاشة أطول من الفيديو */
+        .vbox {
+            position: absolute;
+            overflow: hidden;
+            background: #000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+
+        /* وقت تغيّر الحجم (ملء الشاشة / تدوير): الفيديو يتخفّي فورًا لحد ما كل حاجة تستقر */
+        .stage.tx .yt-clip {
+            opacity: 0;
+            transition: none;
+        }
+
+        .yt-clip {
+            transition: opacity .18s ease;
+        }
+
+        /* الـ iframe بيتحجّم بالـ JS: بيكبر فوق وتحت الفيديو عشان أي شريط ليوتيوب يخرج بره الصندوق */
         .yt-clip iframe {
             position: absolute;
             border: 0;
@@ -1042,7 +1063,9 @@
             <section class="stage" id="stage" tabindex="0" aria-label="مشغل الفيديو">
 
                 <div class="yt-clip" id="ytClip">
-                    <div id="ytMount"></div>
+                    <div class="vbox" id="vbox">
+                        <div id="ytMount"></div>
+                    </div>
                 </div>
 
                 <div class="wm" id="wm"></div>
@@ -1262,17 +1285,41 @@
 
             const POS_KEY = 'vp_pos_' + ((ctx && ctx.c) || (ctx && ctx.v) || 'x');
 
+            const vbox = $('vbox');
             function fitFrame() {
-                if (!ifr) return;
                 const w = stage.clientWidth, h = stage.clientHeight;
                 if (!w || !h) return;
-                const vh = Math.min(h, w * 9 / 16), vw = vh * 16 / 9, e = 80;
+                const vh = Math.min(h, w * 9 / 16), vw = vh * 16 / 9, e = 90;
+                vbox.style.width = Math.ceil(vw) + 'px';
+                vbox.style.height = Math.ceil(vh) + 'px';
+                vbox.style.left = Math.floor((w - vw) / 2) + 'px';
+                vbox.style.top = Math.floor((h - vh) / 2) + 'px';
+                if (!ifr) return;
                 ifr.style.width = Math.ceil(vw) + 'px';
                 ifr.style.height = Math.ceil(vh + e * 2) + 'px';
-                ifr.style.left = Math.floor((w - vw) / 2) + 'px';
-                ifr.style.top = Math.floor((h - vh) / 2 - e) + 'px';
+                ifr.style.left = '0px';
+                ifr.style.top = (-e) + 'px';
             }
-            new ResizeObserver(fitFrame).observe(stage);
+
+            // إخفاء مؤقت أثناء أي تغيير في الحجم، وبعدين إظهار بعد ما الأبعاد تثبت
+            let txT = null;
+            function maskResize(ms) {
+                stage.classList.add('tx');
+                fitFrame();
+                clearTimeout(txT);
+                txT = setTimeout(() => {
+                    fitFrame();
+                    requestAnimationFrame(() => requestAnimationFrame(() => { fitFrame(); stage.classList.remove('tx'); }));
+                }, ms || 420);
+            }
+            fitFrame();
+            let lastW = 0, lastH = 0;
+            new ResizeObserver(() => {
+                const w = stage.clientWidth, h = stage.clientHeight;
+                if ((w !== lastW || h !== lastH) && lastW) maskResize(380);
+                lastW = w; lastH = h; fitFrame();
+            }).observe(stage);
+            window.addEventListener('orientationchange', () => maskResize(600));
 
             function loadAPI() {
                 return new Promise((res, rej) => {
@@ -1501,9 +1548,10 @@
                 const f = isFS();
                 bFs.innerHTML = f ? I.fsx : I.fs;
                 stage.classList.toggle('isfs', f);
-                setTimeout(fitFrame, 60);
+                maskResize(450);
             }
             async function toggleFS() {
+                maskResize(700);
                 if (isFS()) {
                     if (stage.classList.contains('pfs')) { stage.classList.remove('pfs'); document.body.classList.remove('noscroll'); }
                     else if (document.exitFullscreen) { try { await document.exitFullscreen(); } catch (e) { } }
