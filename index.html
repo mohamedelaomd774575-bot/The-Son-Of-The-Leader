@@ -6843,6 +6843,14 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     if (type === 'youtube') {
                         const vid = this._extractYouTubeId(url);
                         if (!vid) { StudentApp.ui.showAlert('رابط يوتيوب غير صحيح', 'error'); return; }
+                        // 🔒 دروس يوتيوب بتتفتح في المشغّل المخصص (video-player.html): من غير أي واجهة أو رابط ليوتيوب،
+                        // والرابط بيتشال من شريط العنوان فور فتح الصفحة
+                        try {
+                            const masked = btoa(unescape(encodeURIComponent('https://youtu.be/' + vid))).split('').reverse().join('');
+                            const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, t: String(Date.now()) });
+                            window.location.href = 'video-player.html?' + qs.toString();
+                            return;
+                        } catch (_) { }
                         el = document.createElement('iframe');
                         el.src = `https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1&playsinline=1`;
                         el.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
