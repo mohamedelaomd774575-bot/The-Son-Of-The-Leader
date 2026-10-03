@@ -3,46 +3,53 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مشغّل الفيديو | ابن القائد</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="robots" content="noindex, nofollow">
+    <title>الدرس | ابن القائد</title>
+    <link rel="icon" type="image/png" href="/son.png">
 
-    <link rel="icon" type="image/png" sizes="32x32" href="/son.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/son.png">
-
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Video.js -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.10.0/video-js.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.10.0/video.min.js"></script>
-    <!-- videojs-youtube plugin -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/3.0.1/Youtube.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
-        /* ====================================================
-           DESIGN TOKENS
-        ==================================================== */
+        /* ==========================================================
+           TOKENS — نفس لغة iOS 26 Liquid Glass بتاعة المنصة
+        ========================================================== */
         :root {
-            --bg: #080d18;
-            --bg-2: #0e1525;
-            --bg-3: #131d30;
-            --surface: rgba(19, 29, 48, 0.90);
-            --gold: #f5c518;
-            --gold-glow: rgba(245, 197, 24, 0.25);
-            --brand: #2563eb;
-            --brand-light: #3b82f6;
-            --brand-glow: rgba(37, 99, 235, 0.35);
-            --brand-dim: rgba(37, 99, 235, 0.12);
-            --text: #e8edf5;
-            --text-2: #8b96aa;
-            --text-3: #4d5a70;
-            --border: rgba(255, 255, 255, 0.07);
-            --border-2: rgba(255, 255, 255, 0.13);
-            --radius: 12px;
-            --shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: "IBM Plex Sans Arabic", "SF Arabic", -apple-system, "Segoe UI", Cairo, Tahoma, system-ui, sans-serif;
+            --accent: #0a84ff;
+            --accent-soft: rgba(10, 132, 255, .18);
+            --bg: #000;
+            --surface: rgba(255, 255, 255, .065);
+            --surface-2: rgba(255, 255, 255, .11);
+            --hair: rgba(255, 255, 255, .11);
+            --t1: #fff;
+            --t2: rgba(255, 255, 255, .68);
+            --t3: rgba(255, 255, 255, .42);
+            --hl: inset 0 1px 0 rgba(255, 255, 255, .16);
+            --ease: cubic-bezier(.25, .8, .25, 1);
+            --top: 64px;
+
+            /* زجاج المشغّل (فوق الفيديو دايمًا داكن) */
+            --g-bg: rgba(38, 38, 42, .52);
+            --g-brd: rgba(255, 255, 255, .16);
+            --g-hl: inset 0 1px 0 rgba(255, 255, 255, .28), inset 0 -1px 0 rgba(255, 255, 255, .04);
+        }
+
+        body.light {
+            --accent: #007aff;
+            --accent-soft: rgba(0, 122, 255, .12);
+            --bg: #fff;
+            --surface: #f5f5f7;
+            --surface-2: #ebebef;
+            --hair: rgba(0, 0, 0, .09);
+            --t1: #111114;
+            --t2: rgba(17, 17, 20, .7);
+            --t3: rgba(17, 17, 20, .46);
+            --hl: inset 0 1px 0 rgba(255, 255, 255, .9);
         }
 
         *,
@@ -51,927 +58,961 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html {
-            font-size: 15px;
+            -webkit-text-size-adjust: 100%;
         }
 
         body {
-            font-family: 'Cairo', sans-serif;
+            font-family: var(--font);
             background: var(--bg);
-            color: var(--text);
+            color: var(--t1);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
+            min-height: 100dvh;
             overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(37, 99, 235, 0.018) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(37, 99, 235, 0.018) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 0;
+        body.noscroll {
+            overflow: hidden;
         }
 
-        body::after {
-            content: '';
-            position: fixed;
-            top: -15%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 700px;
-            height: 400px;
-            background: radial-gradient(ellipse, rgba(37, 99, 235, 0.07) 0%, transparent 65%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .page-wrapper {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 960px;
-            padding: 20px 16px 40px;
-        }
-
-        /* ====================================================
-           TOPBAR
-        ==================================================== */
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .topbar-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-
-        .topbar-logo img {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            object-fit: contain;
-        }
-
-        .topbar-logo-text {
-            font-size: 1.1rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--gold), var(--brand-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .back-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            background: var(--brand-dim);
-            border: 1px solid rgba(37, 99, 235, 0.3);
-            color: var(--brand-light);
-            border-radius: 10px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.88rem;
-            font-weight: 700;
+        button {
+            font-family: inherit;
+            color: inherit;
+            border: 0;
+            background: none;
             cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            min-height: 40px;
+            touch-action: manipulation;
         }
 
-        .back-btn:hover {
-            background: rgba(37, 99, 235, 0.2);
-            border-color: var(--brand-light);
+        svg {
+            display: block;
+            fill: currentColor;
         }
 
-        .student-badge {
+        @media print {
+            body {
+                display: none !important;
+            }
+        }
+
+        /* ==========================================================
+           PAGE CHROME
+        ========================================================== */
+        .app {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 clamp(10px, 2.4vw, 28px) calc(24px + env(safe-area-inset-bottom));
+        }
+
+        .bar {
+            height: var(--top);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: env(safe-area-inset-top);
+            box-sizing: content-box;
+        }
+
+        .circle {
+            width: 42px;
+            height: 42px;
+            flex: none;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--surface-2);
+            box-shadow: var(--hl);
+            transition: transform .2s var(--ease), background .2s var(--ease);
+        }
+
+        .circle:active {
+            transform: scale(.92);
+        }
+
+        .circle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .bar-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .bar-title h1 {
+            font-size: clamp(.95rem, 2.6vw, 1.12rem);
+            font-weight: 700;
+            line-height: 1.35;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bar-title span {
+            display: block;
+            font-size: .74rem;
+            color: var(--t3);
+            margin-top: 1px;
+        }
+
+        .chip {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 7px 14px;
+            padding: 5px 5px 5px 14px;
+            border-radius: 999px;
             background: var(--surface);
-            border: 1px solid var(--border-2);
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            box-shadow: var(--hl);
+            font-size: .82rem;
+            font-weight: 500;
+            max-width: 46%;
         }
 
-        .student-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--brand));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 0.8rem;
-            color: var(--bg);
-            flex-shrink: 0;
-        }
-
-        /* ====================================================
-           COURSE HEADER
-        ==================================================== */
-        .course-header {
-            margin-bottom: 14px;
-        }
-
-        .course-title {
-            font-size: 1.25rem;
-            font-weight: 900;
-            color: var(--text);
-            line-height: 1.4;
-        }
-
-        .course-meta {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-top: 6px;
-            flex-wrap: wrap;
-        }
-
-        .meta-badge {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.78rem;
-            color: var(--text-2);
-        }
-
-        .meta-badge i {
-            color: var(--brand-light);
-            font-size: 0.75rem;
-        }
-
-        /* ====================================================
-           PLAYER SHELL
-        ==================================================== */
-        .player-shell {
-            position: relative;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow:
-                var(--shadow),
-                0 0 0 1px var(--border-2),
-                0 0 60px rgba(37, 99, 235, 0.1);
-            background: #000;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        /* Watermark layer */
-        #wm-layer {
-            position: absolute !important;
-            inset: 0;
-            pointer-events: none;
-            z-index: 2147483647 !important;
-            overflow: hidden;
-        }
-
-        .wm-item {
-            position: absolute;
-            color: rgba(255, 255, 255, 0.45);
-            font-family: 'Cairo', sans-serif;
-            font-weight: 900;
-            font-size: 1.15rem;
+        .chip .nm {
             white-space: nowrap;
-            pointer-events: none;
-            user-select: none;
-            -webkit-user-select: none;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.5);
-            -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);
-            letter-spacing: 0.08em;
-            transform: rotate(-25deg);
-            opacity: 0;
-            transition: opacity 0.6s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Security overlay */
-        .sec-shield {
+        .chip .av {
+            width: 30px;
+            height: 30px;
+            flex: none;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            font-size: .85rem;
+        }
+
+        /* ==========================================================
+           STAGE (المشغّل نفسه)
+        ========================================================== */
+        .stage {
+            --pad: clamp(8px, 2.2cqw, 18px);
+            position: relative;
+            width: min(100%, calc((100vh - var(--top) - 28px) * 16 / 9));
+            width: min(100%, calc((100dvh - var(--top) - env(safe-area-inset-top) - 28px) * 16 / 9));
+            aspect-ratio: 16 / 9;
+            margin: 0 auto;
+            background: #000;
+            border-radius: clamp(14px, 2.4vw, 26px);
+            overflow: hidden;
+            container-type: inline-size;
+            isolation: isolate;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, .55), 0 0 0 1px var(--hair);
+            direction: ltr;
+            outline: none;
+            -webkit-user-select: none;
+            user-select: none;
+            color: #fff;
+        }
+
+        .stage:fullscreen,
+        .stage:-webkit-full-screen {
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            aspect-ratio: auto;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .stage.pfs {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            max-width: none;
+            aspect-ratio: auto;
+            border-radius: 0;
+            z-index: 9999;
+            box-shadow: none;
+        }
+
+        .yt-clip {
             position: absolute;
             inset: 0;
-            z-index: 50;
-            pointer-events: none;
-            background: repeating-linear-gradient(45deg,
-                    transparent,
-                    transparent 80px,
-                    rgba(245, 197, 24, 0.0065) 80px,
-                    rgba(245, 197, 24, 0.0065) 82px);
+            overflow: hidden;
+            background: #000;
+            z-index: 1;
         }
 
-        /* ====================================================
-           VIDEO.JS WRAPPER
-        ==================================================== */
-        #vjs-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
-            border-radius: var(--radius);
+        /* الـ iframe بيتحجّم بالـ JS: بيكبر فوق وتحت الفيديو عشان أي شريط ليوتيوب يخرج بره الإطار */
+        .yt-clip iframe {
+            position: absolute;
+            border: 0;
+            pointer-events: none !important;
+            max-width: none;
+        }
+
+        .wm {
+            position: absolute;
+            inset: 0;
+            z-index: 8;
+            pointer-events: none;
             overflow: hidden;
         }
 
-        /* Make Video.js fill the wrapper */
-        #gl-player {
-            width: 100% !important;
-            height: 100% !important;
+        .wm i {
             position: absolute;
-            inset: 0;
+            font-style: normal;
+            font-weight: 700;
+            font-size: clamp(.7rem, 2.3cqw, 1.05rem);
+            letter-spacing: .06em;
+            white-space: nowrap;
+            color: rgba(255, 255, 255, .34);
+            text-shadow: 0 1px 6px rgba(0, 0, 0, .8);
+            transform: rotate(-14deg);
+            transition: left 1.6s var(--ease), top 1.6s var(--ease);
+            direction: rtl;
         }
 
-        /* ── Hide ALL YouTube branding from the iframe ── */
-        #gl-player iframe {
-            /* push the iframe up to cut the bottom bar where YT logo sits */
-            top: -60px !important;
-            height: calc(100% + 120px) !important;
-            pointer-events: none !important;
-        }
-
-        /* Transparent click-blocker over iframe corners (logo / watch-on-yt) */
-        #yt-corner-guard {
+        .surface {
             position: absolute;
             inset: 0;
             z-index: 10;
-            pointer-events: none;
+            touch-action: manipulation;
         }
 
-        #yt-corner-guard span {
+        /* زجاج */
+        .glass {
+            background: var(--g-bg);
+            border: 1px solid var(--g-brd);
+            box-shadow: var(--g-hl), 0 8px 30px rgba(0, 0, 0, .35);
+            -webkit-backdrop-filter: blur(26px) saturate(180%);
+            backdrop-filter: blur(26px) saturate(180%);
+        }
+
+        /* ---------- الغلاف (قبل التشغيل / بعد الانتهاء / الخطأ) ---------- */
+        .cover {
             position: absolute;
-            pointer-events: all;
-            background: transparent;
-        }
-
-        /* Top-right (YouTube logo in some embeds) */
-        #yt-corner-guard .g-tr {
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 60px;
-        }
-
-        /* Bottom-left (YT logo) */
-        #yt-corner-guard .g-bl {
-            bottom: 55px;
-            left: 0;
-            width: 100%;
-            height: 55px;
-        }
-
-        /* Bottom-right (watch on YouTube) */
-        #yt-corner-guard .g-br {
-            bottom: 55px;
-            right: 0;
-            width: 100%;
-            height: 55px;
-        }
-
-        /* Top-left */
-        #yt-corner-guard .g-tl {
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-        }
-
-        /* ====================================================
-           VIDEO.JS CUSTOM SKIN — override default theme
-        ==================================================== */
-
-        /* Big play button */
-        .video-js .vjs-big-play-button {
-            background: var(--brand) !important;
-            border: none !important;
-            border-radius: 50% !important;
-            width: 80px !important;
-            height: 80px !important;
-            line-height: 80px !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            margin: 0 !important;
-            transition: transform 0.2s, background 0.2s !important;
-            box-shadow: 0 4px 24px rgba(37, 99, 235, 0.5) !important;
-        }
-
-        .video-js .vjs-big-play-button:hover {
-            background: var(--brand-light) !important;
-            transform: translate(-50%, -50%) scale(1.08) !important;
-        }
-
-        .video-js .vjs-big-play-button .vjs-icon-placeholder::before {
-            font-size: 2rem !important;
-            line-height: 80px !important;
-        }
-
-        /* Control bar */
-        .video-js .vjs-control-bar {
-            background: linear-gradient(transparent, rgba(4, 8, 16, 0.95)) !important;
-            padding: 6px 10px 8px !important;
-            height: 44px !important;
-            font-family: 'Cairo', sans-serif !important;
-            display: flex !important;
-            align-items: center !important;
-            flex-wrap: nowrap !important;
-            gap: 0 !important;
-        }
-
-        /* Buttons */
-        .video-js .vjs-button>.vjs-icon-placeholder::before,
-        .video-js .vjs-control::before {
-            font-size: 1.05rem !important;
-            line-height: 44px !important;
-        }
-
-        /* ── Play / Mute / Fullscreen — أكبر حجم ── */
-        .video-js .vjs-play-control,
-        .video-js .vjs-mute-control,
-        .video-js .vjs-fullscreen-control {
-            width: 50px !important;
-            min-width: 50px !important;
-        }
-
-        .video-js .vjs-play-control .vjs-icon-placeholder::before,
-        .video-js .vjs-mute-control .vjs-icon-placeholder::before,
-        .video-js .vjs-fullscreen-control .vjs-icon-placeholder::before {
-            font-size: 1.5rem !important;
-        }
-
-        .video-js .vjs-control:focus,
-        .video-js .vjs-control:hover {
-            color: #fff !important;
-        }
-
-        .video-js .vjs-control {
-            flex-shrink: 0 !important;
-        }
-
-        /* Progress bar — takes all remaining space */
-        .video-js .vjs-progress-control {
-            flex: 1 1 auto !important;
-            min-width: 0 !important;
-            height: 44px !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-
-        .video-js .vjs-progress-holder {
-            height: 4px !important;
-            border-radius: 4px !important;
-            background: rgba(255, 255, 255, 0.2) !important;
-            transition: height 0.15s !important;
-            margin: 0 !important;
-            flex: 1 !important;
-        }
-
-        .video-js:hover .vjs-progress-holder {
-            height: 7px !important;
-        }
-
-        .video-js .vjs-play-progress {
-            background: var(--brand) !important;
-            border-radius: 4px !important;
-        }
-
-        .video-js .vjs-play-progress::before {
-            font-size: 0.7rem !important;
-            top: -0.35em !important;
-            color: #fff !important;
-        }
-
-        .video-js .vjs-load-progress {
-            background: rgba(255, 255, 255, 0.15) !important;
-            border-radius: 4px !important;
-        }
-
-        .video-js .vjs-load-progress div {
-            background: rgba(255, 255, 255, 0.1) !important;
-        }
-
-        /* Volume */
-        .video-js .vjs-volume-bar {
-            background: rgba(255, 255, 255, 0.25) !important;
-        }
-
-        .video-js .vjs-volume-level {
-            background: var(--brand-light) !important;
-        }
-
-        /* Time display */
-        .video-js .vjs-time-control {
-            font-size: 0.72rem !important;
-            font-family: monospace !important;
-            color: rgba(255, 255, 255, 0.85) !important;
-            min-width: 0 !important;
-            padding: 0 3px !important;
-            line-height: 44px !important;
-            flex-shrink: 0 !important;
-            white-space: nowrap !important;
-        }
-
-        .video-js .vjs-current-time,
-        .video-js .vjs-duration {
-            display: flex !important;
-        }
-
-        .video-js .vjs-time-divider {
-            display: flex !important;
-            min-width: 10px !important;
-            padding: 0 !important;
-        }
-
-        /* Hide remaining time completely */
-        .video-js .vjs-remaining-time {
-            display: none !important;
-        }
-
-
-
-        /* Fullscreen */
-        .video-js.vjs-fullscreen {
-            border-radius: 0 !important;
-        }
-
-        .video-js.vjs-fullscreen #vjs-wrapper {
-            border-radius: 0 !important;
-        }
-
-        /* Hide default Video.js poster area */
-        .video-js .vjs-poster {
-            background-color: #000 !important;
-        }
-
-        /* Remove the default Video.js loading spinner (keep our skeleton) */
-        .video-js .vjs-loading-spinner {
-            display: none !important;
-        }
-
-        /* ====================================================
-           LOADING SKELETON
-        ==================================================== */
-        .player-skeleton {
-            width: 100%;
-            aspect-ratio: 16/9;
-            border-radius: var(--radius);
-            background: linear-gradient(90deg,
-                    var(--bg-3) 25%,
-                    rgba(30, 44, 70, 0.4) 50%,
-                    var(--bg-3) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.6s infinite;
+            inset: 0;
+            z-index: 22;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-            gap: 12px;
-            color: var(--text-3);
-            font-size: 0.88rem;
+            gap: clamp(8px, 2.4cqw, 18px);
+            padding: 20px;
+            text-align: center;
+            direction: rtl;
+            background:
+                radial-gradient(120% 90% at 50% 0%, rgba(10, 132, 255, .30), transparent 60%),
+                radial-gradient(90% 70% at 85% 100%, rgba(94, 92, 230, .22), transparent 60%),
+                #050507;
+            transition: opacity .45s var(--ease), visibility .45s;
         }
 
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-
-            100% {
-                background-position: 200% 0;
-            }
-        }
-
-        .skeleton-icon {
-            font-size: 2.5rem;
-            color: var(--brand-dim);
-            animation: pulse-icon 1.8s ease-in-out infinite;
-        }
-
-        @keyframes pulse-icon {
-
-            0%,
-            100% {
-                opacity: 0.4;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.8;
-                transform: scale(1.05);
-            }
-        }
-
-        /* ====================================================
-           LANDSCAPE / FULLSCREEN GUARD
-        ==================================================== */
-        #fs-guard {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 2147483646;
+        .cover.off {
+            opacity: 0;
+            visibility: hidden;
             pointer-events: none;
         }
 
-        #fs-guard .guard-tl,
-        #fs-guard .guard-tr,
-        #fs-guard .guard-bl,
-        #fs-guard .guard-br {
+        .cover h2 {
+            font-size: clamp(.95rem, 3.4cqw, 1.5rem);
+            font-weight: 700;
+            line-height: 1.45;
+            max-width: 80%;
+        }
+
+        .cover p {
+            font-size: clamp(.75rem, 2.2cqw, .95rem);
+            color: rgba(255, 255, 255, .62);
+            max-width: 80%;
+            line-height: 1.6;
+        }
+
+        .big-play {
+            width: clamp(60px, 13cqw, 96px);
+            height: clamp(60px, 13cqw, 96px);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            transition: transform .25s var(--ease);
+        }
+
+        .big-play svg {
+            width: 42%;
+            height: 42%;
+        }
+
+        .big-play:active {
+            transform: scale(.93);
+        }
+
+        .pill-btn {
+            padding: 10px 22px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: .9rem;
+            color: #fff;
+        }
+
+        .cover .ico-err {
+            width: clamp(34px, 7cqw, 52px);
+            height: clamp(34px, 7cqw, 52px);
+            color: #ff6961;
+        }
+
+        /* ---------- spinner ---------- */
+        .spinner {
             position: absolute;
-            pointer-events: all;
-            background: transparent;
+            left: 50%;
+            top: 50%;
+            z-index: 12;
+            width: clamp(34px, 7cqw, 50px);
+            height: clamp(34px, 7cqw, 50px);
+            margin: calc(clamp(34px, 7cqw, 50px) / -2) 0 0 calc(clamp(34px, 7cqw, 50px) / -2);
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, .22);
+            border-top-color: #fff;
+            animation: spin .8s linear infinite;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s;
         }
 
-        #fs-guard .guard-tl {
+        .spinner.on {
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ---------- seek ripple ---------- */
+        .fx {
+            position: absolute;
             top: 0;
-            left: 0;
-            width: 200px;
-            height: 70px;
+            bottom: 0;
+            width: 34%;
+            z-index: 15;
+            display: grid;
+            place-items: center;
+            pointer-events: none;
+            opacity: 0;
+            background: radial-gradient(closest-side, rgba(255, 255, 255, .22), transparent);
+            font-weight: 700;
+            font-size: clamp(.8rem, 2.6cqw, 1.05rem);
         }
 
-        #fs-guard .guard-tr {
+        .fx.l {
+            left: 0;
+        }
+
+        .fx.r {
+            right: 0;
+        }
+
+        .fx.pop {
+            animation: pop .6s var(--ease);
+        }
+
+        @keyframes pop {
+            0% {
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* ---------- الواجهة (controls) ---------- */
+        .ui {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .3s var(--ease);
+            background:
+                linear-gradient(to bottom, rgba(0, 0, 0, .45), transparent 22%),
+                linear-gradient(to top, rgba(0, 0, 0, .55), transparent 38%);
+        }
+
+        .stage.show .ui,
+        .stage.paused .ui {
+            opacity: 1;
+        }
+
+        .stage.cov .ui {
+            display: none;
+        }
+
+        .stage:not(.show):not(.paused):not(.cov) {
+            cursor: none;
+        }
+
+        .toptitle {
+            display: none;
+            position: absolute;
+            top: calc(var(--pad) + env(safe-area-inset-top));
+            right: var(--pad);
+            left: var(--pad);
+            direction: rtl;
+            font-weight: 600;
+            font-size: clamp(.85rem, 2.4cqw, 1.1rem);
+            text-shadow: 0 1px 8px rgba(0, 0, 0, .7);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stage.isfs .toptitle {
+            display: block;
+        }
+
+        .center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: clamp(16px, 8cqw, 64px);
+        }
+
+        .cbtn {
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            pointer-events: auto;
+            color: #fff;
+            transition: transform .2s var(--ease);
+        }
+
+        .cbtn:active {
+            transform: scale(.9);
+        }
+
+        .cbtn.sk {
+            width: clamp(44px, 9cqw, 68px);
+            height: clamp(44px, 9cqw, 68px);
+        }
+
+        .cbtn.pl {
+            width: clamp(56px, 12cqw, 88px);
+            height: clamp(56px, 12cqw, 88px);
+        }
+
+        .cbtn svg {
+            width: 46%;
+            height: 46%;
+        }
+
+        .cbtn.sk svg {
+            width: 58%;
+            height: 58%;
+        }
+
+        .dock {
+            position: absolute;
+            left: var(--pad);
+            right: var(--pad);
+            bottom: calc(var(--pad) + env(safe-area-inset-bottom));
+            border-radius: clamp(18px, 4cqw, 28px);
+            padding: clamp(8px, 1.6cqw, 12px) clamp(12px, 2.4cqw, 20px) clamp(6px, 1.2cqw, 10px);
+            pointer-events: auto;
+        }
+
+        /* scrubber */
+        .scrub {
+            position: relative;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .track {
+            position: relative;
+            width: 100%;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, .22);
+            transition: height .15s var(--ease);
+        }
+
+        .scrub:hover .track,
+        .scrub.drag .track {
+            height: 8px;
+        }
+
+        .track .buf,
+        .track .cur {
+            position: absolute;
+            left: 0;
             top: 0;
-            right: 0;
-            width: 240px;
-            height: 70px;
+            bottom: 0;
+            border-radius: inherit;
         }
 
-        #fs-guard .guard-bl {
-            bottom: 0;
+        .track .buf {
+            background: rgba(255, 255, 255, .28);
+            width: 0;
+        }
+
+        .track .cur {
+            background: #fff;
+            width: 0;
+        }
+
+        .knob {
+            position: absolute;
+            top: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, .5);
             left: 0;
-            width: 200px;
-            height: 70px;
+            transform: scale(.0);
+            transition: transform .15s var(--ease);
         }
 
-        #fs-guard .guard-br {
-            bottom: 0;
-            right: 0;
-            width: 240px;
-            height: 70px;
+        .scrub:hover .knob,
+        .scrub.drag .knob {
+            transform: scale(1);
         }
 
-        @media screen and (orientation: landscape) and (max-width: 1024px) {
-            #fs-guard {
+        @media (hover:none) {
+            .knob {
+                transform: scale(.8);
+            }
+
+            .scrub.drag .knob {
+                transform: scale(1.25);
+            }
+        }
+
+        .tip {
+            position: absolute;
+            bottom: 26px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: .72rem;
+            font-weight: 600;
+            background: rgba(0, 0, 0, .7);
+            transform: translateX(-50%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .scrub.drag .tip {
+            opacity: 1;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .grp {
+            display: flex;
+            align-items: center;
+            gap: clamp(2px, 1cqw, 8px);
+            min-width: 0;
+        }
+
+        .ib {
+            width: clamp(34px, 6.6cqw, 44px);
+            height: clamp(34px, 6.6cqw, 44px);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            flex: none;
+            transition: background .2s var(--ease), transform .15s var(--ease);
+        }
+
+        .ib:hover {
+            background: rgba(255, 255, 255, .14);
+        }
+
+        .ib:active {
+            transform: scale(.9);
+        }
+
+        .ib svg {
+            width: 55%;
+            height: 55%;
+        }
+
+        .time {
+            font-size: clamp(.68rem, 2cqw, .82rem);
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+            color: rgba(255, 255, 255, .88);
+            white-space: nowrap;
+            padding: 0 4px;
+            direction: ltr;
+        }
+
+        .time b {
+            color: rgba(255, 255, 255, .5);
+            font-weight: 400;
+        }
+
+        .spd {
+            min-width: 44px;
+            height: clamp(30px, 5.6cqw, 36px);
+            padding: 0 12px;
+            border-radius: 999px;
+            font-size: clamp(.7rem, 2cqw, .82rem);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            background: rgba(255, 255, 255, .14);
+            color: #fff;
+            direction: ltr;
+        }
+
+        .vol {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 0;
+            opacity: 0;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, .28);
+            transition: width .25s var(--ease), opacity .2s;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .vol::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .vol::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border: 0;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        @media (hover:hover) and (pointer:fine) {
+
+            .vgrp:hover .vol,
+            .vol:focus {
+                width: 78px;
+                opacity: 1;
+                margin-inline: 4px 8px;
+            }
+        }
+
+        @container (max-width: 420px) {
+            .vgrp {
+                display: none;
+            }
+        }
+
+        @container (max-width: 330px) {
+            .time b {
+                display: none;
+            }
+        }
+
+        /* ---------- قائمة الإعدادات (bottom sheet زجاجي) ---------- */
+        .menu {
+            position: absolute;
+            z-index: 40;
+            right: var(--pad);
+            bottom: calc(var(--pad) + env(safe-area-inset-bottom) + 84px);
+            width: min(300px, calc(100% - var(--pad) * 2));
+            max-height: calc(100% - 110px);
+            overflow: auto;
+            border-radius: 22px;
+            padding: 6px;
+            direction: rtl;
+            background: rgba(34, 34, 38, .78);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px) scale(.96);
+            transform-origin: bottom right;
+            transition: opacity .22s var(--ease), transform .22s var(--ease), visibility .22s;
+            overscroll-behavior: contain;
+        }
+
+        .menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+        }
+
+        @media (max-height: 520px) {
+            .menu {
+                bottom: var(--pad);
+                max-height: calc(100% - var(--pad) * 2);
+            }
+        }
+
+        .mrow {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            font-size: .92rem;
+            font-weight: 500;
+            text-align: start;
+            color: #fff;
+        }
+
+        .mrow:hover,
+        .mrow:active {
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .mrow .v {
+            margin-inline-start: auto;
+            color: rgba(255, 255, 255, .55);
+            font-size: .84rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mrow svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .mrow .ck {
+            margin-inline-start: auto;
+            color: var(--accent);
+            opacity: 0;
+        }
+
+        .mrow.sel .ck {
+            opacity: 1;
+        }
+
+        .mhead {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px 6px;
+            font-weight: 700;
+            font-size: .88rem;
+            color: rgba(255, 255, 255, .9);
+        }
+
+        .mhead button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+        }
+
+        .mhead svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .mnote {
+            padding: 6px 14px 10px;
+            font-size: .74rem;
+            color: rgba(255, 255, 255, .45);
+            line-height: 1.6;
+        }
+
+        /* ---------- toast ---------- */
+        .toast {
+            position: absolute;
+            z-index: 50;
+            top: calc(var(--pad) + env(safe-area-inset-top));
+            left: 50%;
+            transform: translate(-50%, -14px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: clamp(.72rem, 2.1cqw, .85rem);
+            font-weight: 600;
+            direction: rtl;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            transition: opacity .25s var(--ease), transform .25s var(--ease);
+        }
+
+        .toast.on {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        /* ---------- قفل (DevTools) ---------- */
+        .lock {
+            position: absolute;
+            inset: 0;
+            z-index: 60;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            direction: rtl;
+            font-weight: 600;
+            background: rgba(0, 0, 0, .55);
+            -webkit-backdrop-filter: blur(40px);
+            backdrop-filter: blur(40px);
+        }
+
+        .stage.locked .lock {
+            display: flex;
+        }
+
+        /* ==========================================================
+           INFO (تحت المشغّل)
+        ========================================================== */
+        .info {
+            max-width: min(100%, 1280px);
+            margin: 16px auto 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--surface);
+            box-shadow: var(--hl);
+            border-radius: 22px;
+            padding: clamp(14px, 3vw, 22px);
+        }
+
+        .card h2 {
+            font-size: clamp(1.02rem, 2.8vw, 1.3rem);
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            font-size: .78rem;
+            font-weight: 500;
+            color: var(--t2);
+        }
+
+        .tag svg {
+            width: 14px;
+            height: 14px;
+            color: var(--accent);
+        }
+
+        .keys {
+            display: none;
+            font-size: .8rem;
+            color: var(--t3);
+            line-height: 2;
+        }
+
+        .keys kbd {
+            font-family: inherit;
+            padding: 1px 8px;
+            border-radius: 7px;
+            background: var(--surface-2);
+            color: var(--t2);
+            margin-inline: 2px;
+        }
+
+        @media (hover:hover) and (pointer:fine) {
+            .keys {
                 display: block;
             }
         }
 
-        :fullscreen #fs-guard {
-            display: block;
-        }
-
-        :-webkit-full-screen #fs-guard {
-            display: block;
-        }
-
-        :-moz-full-screen #fs-guard {
-            display: block;
-        }
-
-        /* ====================================================
-           CONTROLS BELOW PLAYER
-        ==================================================== */
-        .controls-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            background: var(--surface);
-            border: 1px solid var(--border-2);
-            border-top: none;
-            border-radius: 0 0 var(--radius) var(--radius);
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .ctrl-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .ctrl-label {
-            font-size: 0.78rem;
-            color: var(--text-3);
-            font-weight: 700;
-        }
-
-        .speed-btns {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .speed-btn {
-            padding: 5px 10px;
-            border-radius: 7px;
-            border: 1px solid var(--border-2);
-            background: transparent;
-            color: var(--text-2);
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            min-height: 32px;
-        }
-
-        .speed-btn:hover {
-            background: var(--brand-dim);
-            color: var(--brand-light);
-            border-color: rgba(37, 99, 235, 0.4);
-        }
-
-        .speed-btn.active {
-            background: var(--brand);
-            color: #fff;
-            border-color: var(--brand);
-        }
-
-
-
-        /* ====================================================
-           QUALITY BUTTON & MENU
-        ==================================================== */
-        .quality-wrap {
-            position: relative;
-        }
-
-        .quality-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 12px;
-            border-radius: 7px;
-            border: 1px solid var(--border-2);
-            background: transparent;
-            color: var(--text-2);
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            min-height: 32px;
-            white-space: nowrap;
-        }
-
-        .quality-btn i {
-            font-size: 0.82rem;
-        }
-
-        .quality-btn:hover {
-            background: var(--brand-dim);
-            color: var(--brand-light);
-            border-color: rgba(37, 99, 235, 0.4);
-        }
-
-        .quality-btn.active-q {
-            background: var(--brand);
-            color: #fff;
-            border-color: var(--brand);
-        }
-
-        #quality-menu {
-            position: fixed;
-            background: rgba(8, 13, 24, 0.97);
-            border: 1px solid var(--border-2);
-            border-radius: 10px;
-            overflow: hidden;
-            min-width: 120px;
-            z-index: 9000;
-            display: none;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-        }
-
-        #quality-menu.open {
-            display: block;
-            animation: qFadeIn 0.15s ease;
-        }
-
-        @keyframes qFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
+        /* موبايل أفقي / شاشات قصيرة: المشغّل ياخد الشاشة */
+        @media (orientation: landscape) and (max-height: 520px) {
+            :root {
+                --top: 48px;
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Menu header label */
-        #quality-menu-title {
-            padding: 7px 14px 5px;
-            font-size: 0.68rem;
-            font-family: 'Cairo', sans-serif;
-            color: var(--text-3);
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .q-opt {
-            padding: 10px 18px;
-            color: var(--text);
-            font-size: 0.95rem;
-            font-family: 'Cairo', sans-serif;
-            cursor: pointer;
-            transition: background 0.15s;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .q-opt:hover {
-            background: var(--brand-dim);
-            color: var(--brand-light);
-        }
-
-        .q-opt.active {
-            color: var(--brand-light);
-            font-weight: 800;
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        .q-opt .q-check {
-            font-size: 0.85rem;
-            opacity: 0;
-            color: var(--brand-light);
-        }
-
-        .q-opt.active .q-check {
-            opacity: 1;
-        }
-
-        /* ====================================================
-           TOAST
-        ==================================================== */
-        #toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: rgba(8, 13, 24, 0.97);
-            border: 1px solid var(--border-2);
-            border-radius: 12px;
-            padding: 12px 20px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text);
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 220px;
-            justify-content: center;
-        }
-
-        #toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        #toast.success {
-            border-color: rgba(34, 212, 160, 0.4);
-            color: #22d4a0;
-        }
-
-        #toast.error {
-            border-color: rgba(255, 91, 91, 0.4);
-            color: #ff5b5b;
-        }
-
-        #toast.info {
-            border-color: rgba(37, 99, 235, 0.4);
-            color: var(--brand-light);
-        }
-
-        /* ====================================================
-           RESPONSIVE
-        ==================================================== */
-        @media (max-width: 640px) {
-            html {
-                font-size: 14px;
+            .app {
+                padding-bottom: 8px;
             }
 
-            .page-wrapper {
-                padding: 10px 10px 32px;
+            .circle {
+                width: 36px;
+                height: 36px;
             }
 
-            .topbar {
-                margin-bottom: 12px;
+            .stage {
+                width: 100%;
+                aspect-ratio: auto;
+                height: calc(100vh - var(--top) - 12px);
+                height: calc(100dvh - var(--top) - env(safe-area-inset-top) - 12px);
+                border-radius: 18px;
             }
 
-            .student-badge .student-name {
-                display: none;
-            }
-
-            .course-title {
-                font-size: 1.05rem;
-            }
-
-            .controls-row {
-                padding: 10px 12px;
-                gap: 8px;
-            }
-
-            .speed-btns {
-                gap: 4px;
-            }
-
-            .speed-btn {
-                padding: 5px 8px;
-                font-size: 0.75rem;
-            }
-
-            .ctrl-label {
+            .info {
                 display: none;
             }
         }
 
-        /* وضع Landscape على الموبايل — الفيديو يملا الشاشة كاملة بدون قص */
-        @media (max-height: 500px) and (orientation: landscape) {
-
-            body {
-                overflow: hidden;
+        @media (max-width: 480px) {
+            .chip {
+                padding-left: 5px;
+                max-width: 42%;
             }
 
-            .page-wrapper {
-                padding: 0 !important;
-                max-width: 100% !important;
+            .chip .nm {
+                display: none;
             }
+        }
 
-            .topbar,
-            .course-header,
-            .controls-row {
-                display: none !important;
-            }
+        @media (prefers-reduced-motion: reduce) {
 
-            .player-shell {
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                height: 100vh;
-                width: 100vw;
-            }
-
-            #vjsContainer {
-                height: 100vh !important;
-                width: 100vw !important;
-            }
-
-            #vjs-wrapper {
-                height: 100vh !important;
-                width: 100vw !important;
-                aspect-ratio: unset !important;
-                border-radius: 0 !important;
-                overflow: hidden !important;
-            }
-
-            /* نحتفظ بالـ offset لإخفاء شريط اليوتيوب — لا نعيد تعيينه */
-            #gl-player iframe {
-                top: -60px !important;
-                height: calc(100% + 120px) !important;
-            }
-
-            /* نكبر الـ corner guards في الـ landscape لتغطية كل الشعارات */
-            #yt-corner-guard .g-tl,
-            #yt-corner-guard .g-tr {
-                width: 100% !important;
-                height: 70px !important;
-            }
-
-            #yt-corner-guard .g-bl,
-            #yt-corner-guard .g-br {
-                width: 100% !important;
-                height: 70px !important;
-                bottom: 55px !important;
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
             }
         }
     </style>
@@ -979,766 +1020,635 @@
 
 <body>
 
-    <div class="page-wrapper">
+    <div class="app">
 
-        <!-- TOPBAR -->
-        <div class="topbar">
-            <a href="index.html" class="topbar-logo">
-                <img src="son.png" alt="Grand Leader" onerror="this.style.display='none'">
-                <span class="topbar-logo-text">ابن القائد</span>
-            </a>
-            <div class="topbar-right">
-                <div class="student-badge">
-                    <div class="student-avatar" id="studentAvatar">ط</div>
-                    <span class="student-name" id="studentNameDisplay">جاري التحميل...</span>
+        <header class="bar">
+            <button class="circle" id="backBtn" aria-label="رجوع">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9.3 5.3a1 1 0 0 0 0 1.4l5.3 5.3-5.3 5.3a1 1 0 1 0 1.4 1.4l6-6a1 1 0 0 0 0-1.4l-6-6a1 1 0 0 0-1.4 0z" />
+                </svg>
+            </button>
+            <div class="bar-title">
+                <h1 id="lessonTitle">جاري التحميل…</h1>
+                <span>ابن القائد</span>
+            </div>
+            <div class="chip" id="studentChip">
+                <span class="nm" id="stuName"></span>
+                <span class="av" id="stuAv">ط</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="stage" id="stage" tabindex="0" aria-label="مشغل الفيديو">
+
+                <div class="yt-clip" id="ytClip">
+                    <div id="ytMount"></div>
                 </div>
-                <button class="back-btn" onclick="goBack()">
-                    <i class="fas fa-arrow-right"></i>
-                    <span>رجوع</span>
-                </button>
-            </div>
-        </div>
 
-        <!-- COURSE HEADER -->
-        <div class="course-header">
-            <h1 class="course-title" id="courseTitle">جاري تحميل الدرس...</h1>
-            <div class="course-meta">
-                <span class="meta-badge"><i class="fas fa-user-shield"></i> <span id="metaStudent">—</span></span>
-            </div>
-        </div>
+                <div class="wm" id="wm"></div>
 
-        <!-- PLAYER SHELL -->
-        <div class="player-shell" id="playerShell">
+                <div class="spinner" id="spinner"></div>
+                <div class="surface" id="surface"></div>
+                <div class="fx l" id="fxL">‎−10</div>
+                <div class="fx r" id="fxR">+10</div>
 
-            <!-- Skeleton -->
-            <div class="player-skeleton" id="playerSkeleton">
-                <i class="fas fa-circle-play skeleton-icon"></i>
-                <span>جاري تحميل الفيديو...</span>
-            </div>
+                <!-- الواجهة -->
+                <div class="ui" id="ui">
+                    <div class="toptitle" id="topTitle"></div>
 
-            <!-- Security pattern -->
-            <div class="sec-shield" id="secShield"></div>
-
-            <!-- Watermark layer -->
-            <div id="wm-layer"></div>
-
-            <!-- Video.js player container -->
-            <div id="vjsContainer" style="display:none; position:relative;">
-                <div id="vjs-wrapper">
-                    <!-- Corner guards to block YouTube logo / "Watch on YouTube" -->
-                    <div id="yt-corner-guard">
-                        <span class="g-tl"></span>
-                        <span class="g-tr"></span>
-                        <span class="g-bl"></span>
-                        <span class="g-br"></span>
+                    <div class="center">
+                        <button class="cbtn sk glass" id="bBack" aria-label="رجوع 10 ثواني">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 5V2.2a.5.5 0 0 0-.8-.4L7 5.3a.5.5 0 0 0 0 .8l4.2 3.5a.5.5 0 0 0 .8-.4V6.5A6.5 6.5 0 1 1 5.5 13a1 1 0 1 0-2 0A8.5 8.5 0 1 0 12 5z" />
+                                <text x="12" y="16.4" font-size="6.6" font-weight="700" text-anchor="middle" font-family="sans-serif">10</text>
+                            </svg>
+                        </button>
+                        <button class="cbtn pl glass" id="bCenter" aria-label="تشغيل / إيقاف"></button>
+                        <button class="cbtn sk glass" id="bFwd" aria-label="تقديم 10 ثواني">
+                            <svg viewBox="0 0 24 24" style="transform:scaleX(-1)">
+                                <path d="M12 5V2.2a.5.5 0 0 0-.8-.4L7 5.3a.5.5 0 0 0 0 .8l4.2 3.5a.5.5 0 0 0 .8-.4V6.5A6.5 6.5 0 1 1 5.5 13a1 1 0 1 0-2 0A8.5 8.5 0 1 0 12 5z" />
+                            </svg>
+                            <span style="position:absolute;font-size:.62em;font-weight:700;margin-top:1px">10</span>
+                        </button>
                     </div>
-                    <!-- Video.js element -->
-                    <video id="gl-player" class="video-js vjs-theme-city" playsinline preload="none"></video>
-                </div>
-            </div>
-        </div>
 
-        <!-- Controls row below player -->
-        <div class="controls-row" id="controlsRow" style="display:none;">
-            <div class="ctrl-group">
-                <span class="ctrl-label"><i class="fas fa-gauge-high"></i> السرعة:</span>
-                <div class="speed-btns">
-                    <button class="speed-btn" onclick="GL.setSpeed(0.5)">0.5×</button>
-                    <button class="speed-btn" onclick="GL.setSpeed(0.75)">0.75×</button>
-                    <button class="speed-btn active" id="spd-1" onclick="GL.setSpeed(1)">1×</button>
-                    <button class="speed-btn" onclick="GL.setSpeed(1.25)">1.25×</button>
-                    <button class="speed-btn" onclick="GL.setSpeed(1.5)">1.5×</button>
-                    <button class="speed-btn" onclick="GL.setSpeed(2)">2×</button>
+                    <div class="dock glass" id="dock">
+                        <div class="scrub" id="scrub">
+                            <div class="track">
+                                <div class="buf" id="sBuf"></div>
+                                <div class="cur" id="sCur"></div>
+                                <div class="knob" id="sKnob"></div>
+                            </div>
+                            <div class="tip" id="sTip">0:00</div>
+                        </div>
+                        <div class="row">
+                            <div class="grp">
+                                <button class="ib" id="bPlay" aria-label="تشغيل / إيقاف"></button>
+                                <div class="grp vgrp">
+                                    <button class="ib" id="bMute" aria-label="كتم"></button>
+                                    <input class="vol" id="vol" type="range" min="0" max="100" value="100" aria-label="الصوت">
+                                </div>
+                                <div class="time" id="time">0:00 <b>/ 0:00</b></div>
+                            </div>
+                            <div class="grp">
+                                <button class="spd" id="bSpd" aria-label="السرعة">1×</button>
+                                <button class="ib" id="bSet" aria-label="الإعدادات"></button>
+                                <button class="ib" id="bFs" aria-label="ملء الشاشة"></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="ctrl-group">
-                <!-- Quality Button -->
-                <div class="quality-wrap">
-                    <button class="quality-btn" id="qualityBtn" onclick="GL.toggleQuality(event)">
-                        <i class="fas fa-film"></i>
-                        <span id="qualityLabel">جودة</span>
-                        <i class="fas fa-chevron-up" style="font-size:0.6rem;opacity:0.6;"></i>
-                    </button>
+
+                <div class="menu glass" id="menu"></div>
+                <div class="toast glass" id="toast"></div>
+
+                <!-- غلاف: بداية / نهاية / خطأ -->
+                <div class="cover" id="cover"></div>
+
+                <div class="lock">
+                    <div>أغلق أدوات المطوّر عشان تكمل الدرس</div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-    </div><!-- /page-wrapper -->
-
-    <!-- Landscape / Fullscreen Guard -->
-    <div id="fs-guard">
-        <div class="guard-tl"></div>
-        <div class="guard-tr"></div>
-        <div class="guard-bl"></div>
-        <div class="guard-br"></div>
+            <section class="info">
+                <div class="card">
+                    <h2 id="infoTitle"></h2>
+                    <div class="tags">
+                        <span class="tag" id="tagStu">
+                            <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4 0-8 2-8 5v1.5a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5V19c0-3-4-5-8-5z" /></svg>
+                            <span id="tagStuTxt"></span>
+                        </span>
+                        <span class="tag">
+                            <svg viewBox="0 0 24 24"><path d="M12 2 4 5.5v5.6c0 5 3.4 9.3 8 10.9 4.6-1.6 8-5.9 8-10.9V5.5L12 2zm-1.2 13.6-3-3 1.4-1.4 1.6 1.6 4-4 1.4 1.4-5.4 5.4z" /></svg>
+                            محتوى محمي ببيانات حسابك
+                        </span>
+                    </div>
+                </div>
+                <div class="card keys">
+                    <kbd>Space</kbd> تشغيل / إيقاف &nbsp;·&nbsp; <kbd>←</kbd><kbd>→</kbd> ±10 ثواني &nbsp;·&nbsp;
+                    <kbd>↑</kbd><kbd>↓</kbd> الصوت &nbsp;·&nbsp; <kbd>M</kbd> كتم &nbsp;·&nbsp; <kbd>F</kbd> ملء الشاشة
+                </div>
+            </section>
+        </main>
     </div>
 
-    <!-- Toast -->
-    <div id="toast"></div>
-
     <script>
-        // ============================================================
-        //  ⚙️ VIDEO CONFIG — same API as before
-        // ============================================================
-        const VIDEO_CONFIG = {
-            videoId: _getParamVideoId(),
-            fallbackId: 'dQw4w9WgXcQ',
-            courseId: _getParam('courseId') || 'demo_001',
-            title: _getParam('title') || 'درس تجريبي',
-            wmCount: 5,
-            wmInterval: 10000,
-        };
+        (function () {
+            'use strict';
 
-        function _getParam(k) {
-            try { return new URLSearchParams(location.search).get(k) || ''; } catch (e) { return ''; }
-        }
+            /* ======================================================
+               أدوات صغيرة
+            ====================================================== */
+            const $ = id => document.getElementById(id);
+            const stage = $('stage');
 
-        // جيب الـ param خام بدون أي URL decoding (للـ url المشفر)
-        function _getRawParam(k) {
-            try {
-                const match = location.search.match(new RegExp('[?&]' + k + '=([^&]*)'));
-                return match ? match[1] : '';
-            } catch (e) { return ''; }
-        }
+            try { if (localStorage.getItem('son-leader-theme') === 'light') document.body.classList.add('light'); } catch (e) { }
 
-        function _unmask(s) {
-            try {
-                if (!s) return '';
-                // فك الـ encodeURIComponent اللي عملاه في _mask
-                let decoded = s;
-                try { decoded = decodeURIComponent(s); } catch (_) {}
-                // لو URL مباشر → رجّعه زي ما هو
-                if (decoded.startsWith('http')) return decoded;
-                // فك التشفير: reverse ثم atob
-                const reversed = decoded.split('').reverse().join('');
-                return decodeURIComponent(escape(atob(reversed)));
-            } catch (e) { return ''; }
-        }
+            // ---- أيقونات SVG (من غير أي مكتبة خارجية) ----
+            const I = {
+                play: '<svg viewBox="0 0 24 24"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg>',
+                pause: '<svg viewBox="0 0 24 24"><rect x="6" y="4.5" width="4.2" height="15" rx="1.4"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.4"/></svg>',
+                vol: '<svg viewBox="0 0 24 24"><path d="M3 9.5v5a1 1 0 0 0 1 1h3l4.3 3.6a1 1 0 0 0 1.7-.77V5.67a1 1 0 0 0-1.7-.77L7 8.5H4a1 1 0 0 0-1 1z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+                mute: '<svg viewBox="0 0 24 24"><path d="M3 9.5v5a1 1 0 0 0 1 1h3l4.3 3.6a1 1 0 0 0 1.7-.77V5.67a1 1 0 0 0-1.7-.77L7 8.5H4a1 1 0 0 0-1 1z"/><path d="m16 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+                gear: '<svg viewBox="0 0 24 24"><path d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.4 7.4 0 0 0-1.7-1l-.4-2.5a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.5 8.8a.5.5 0 0 0 .1.6l2 1.6a7.7 7.7 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3c.1.2.4.3.6.2l2.4-1c.5.4 1.1.7 1.7 1l.4 2.5c0 .2.2.4.5.4h3.8c.3 0 .5-.2.5-.4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1c.2.1.5 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6l-2-1.6zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>',
+                fs: '<svg viewBox="0 0 24 24"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                fsx: '<svg viewBox="0 0 24 24"><path d="M9 4v3.5A1.5 1.5 0 0 1 7.5 9H4M20 9h-3.5A1.5 1.5 0 0 1 15 7.5V4M15 20v-3.5a1.5 1.5 0 0 1 1.5-1.5H20M4 15h3.5A1.5 1.5 0 0 1 9 16.5V20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                chev: '<svg viewBox="0 0 24 24"><path d="M14.7 5.3a1 1 0 0 1 0 1.4L9.4 12l5.3 5.3a1 1 0 0 1-1.4 1.4l-6-6a1 1 0 0 1 0-1.4l6-6a1 1 0 0 1 1.4 0z"/></svg>',
+                chevr: '<svg viewBox="0 0 24 24"><path d="M9.3 5.3a1 1 0 0 0 0 1.4l5.3 5.3-5.3 5.3a1 1 0 1 0 1.4 1.4l6-6a1 1 0 0 0 0-1.4l-6-6a1 1 0 0 0-1.4 0z"/></svg>',
+                check: '<svg viewBox="0 0 24 24"><path d="M9.5 17.2 4.8 12.5l1.4-1.4 3.3 3.3 8.3-8.3 1.4 1.4z"/></svg>',
+                replay: '<svg viewBox="0 0 24 24"><path d="M12 5V2.2a.5.5 0 0 0-.8-.4L7 5.3a.5.5 0 0 0 0 .8l4.2 3.5a.5.5 0 0 0 .8-.4V7a5.5 5.5 0 1 1-5.5 5.5 1 1 0 1 0-2 0A7.5 7.5 0 1 0 12 5z"/></svg>',
+                warn: '<svg class="ico-err" viewBox="0 0 24 24"><path d="M12 2.5a1.6 1.6 0 0 1 1.4.8l9 15.6a1.6 1.6 0 0 1-1.4 2.4H3a1.6 1.6 0 0 1-1.4-2.4l9-15.6A1.6 1.6 0 0 1 12 2.5zm-1 6.5v5h2V9h-2zm0 7v2h2v-2h-2z"/></svg>'
+            };
 
-        function _getParamVideoId() {
-            let id = _getParam('videoId');
-            if (id) return id;
-            // نجيب الـ url خام بدون double-decode
-            let rawUrl = _getRawParam('url');
-            if (rawUrl) {
-                let url = _unmask(rawUrl);
-                return _extractYTId(url);
+            /* ======================================================
+               سياق الدرس — الرابط بيتفك مرة واحدة، وبيتشال من شريط العنوان
+               ومن الـ history، وبيفضل جوه الـ closure بس (مش global)
+            ====================================================== */
+            function mask(s) { try { return btoa(unescape(encodeURIComponent(s))).split('').reverse().join(''); } catch (e) { return ''; } }
+            function unmask(s) {
+                try {
+                    if (!s) return '';
+                    if (/^https?:/i.test(s)) return s;
+                    return decodeURIComponent(escape(atob(s.split('').reverse().join(''))));
+                } catch (e) { return ''; }
             }
-            return '';
-        }
-        function _extractYTId(url) {
-            if (!url) return '';
-            // يدعم كل أشكال روابط يوتيوب: watch?v=, youtu.be/, /embed/, /shorts/, /live/
-            let m = url.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([a-zA-Z0-9_-]{11})/);
-            return m ? m[1] : '';
-        }
-
-        // ============================================================
-        //  🔐 SECURITY MODULE
-        // ============================================================
-        const Security = (function () {
-            const SESSION = _randomHex(24);
-
-            function _randomHex(n) {
-                const b = new Uint8Array(n);
-                crypto.getRandomValues(b);
-                return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('');
+            function ytId(u) {
+                if (!u) return '';
+                if (/^[\w-]{11}$/.test(u)) return u;
+                const m = u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
+                return m ? m[1] : '';
             }
 
-            function blockContextMenu() {
-                document.addEventListener('contextmenu', e => {
-                    e.preventDefault();
-                    GL.toast('🔒 محتوى محمي', 'error');
-                    return false;
-                });
-            }
-
-            function blockLongPress() {
-                const shell = document.getElementById('playerShell');
-                let t;
-                shell.addEventListener('touchstart', () => { t = setTimeout(() => GL.toast('🔒 محتوى محمي', 'error'), 600); });
-                shell.addEventListener('touchend', () => clearTimeout(t));
-                shell.addEventListener('touchmove', () => clearTimeout(t));
-            }
-
-            function devToolsGuard() {
-                // طريقة 1: فرق الحجم (docked devtools)
-                const _check = () => {
-                    const wDiff = window.outerWidth - window.innerWidth;
-                    const hDiff = window.outerHeight - window.innerHeight;
-                    const open = wDiff > 160 || hDiff > 160;
-                    const shell = document.getElementById('playerShell');
-                    if (shell) shell.style.filter = open ? 'blur(18px)' : '';
-                    if (open) GL.toast('🔒 أغلق DevTools لمتابعة الفيديو', 'error');
-                };
-                setInterval(_check, 800);
-
-                // طريقة 2: debugger trap
-                setInterval(() => {
-                    const t = performance.now();
-                    (function() { debugger; })();
-                    if (performance.now() - t > 100) {
-                        const shell = document.getElementById('playerShell');
-                        if (shell) shell.style.filter = 'blur(18px)';
-                        GL.toast('🔒 أغلق DevTools لمتابعة الفيديو', 'error');
-                    }
-                }, 3000);
-            }
-
-            function blockHotkeys() {
-                document.addEventListener('keydown', e => {
-                    const ctrl = e.ctrlKey || e.metaKey;
-                    const shift = e.shiftKey;
-                    const key = e.key;
-                    const K = key.toUpperCase();
-
-                    const blocked =
-                        key === 'F12' ||
-                        key === 'F11' ||
-                        key === 'F10' ||
-                        key === 'F9'  ||
-                        key === 'F8'  ||
-                        key === 'F5'  ||
-                        (ctrl && K === 'U') ||
-                        (ctrl && K === 'S') ||
-                        (ctrl && K === 'P') ||
-                        (ctrl && shift && K === 'I') ||
-                        (ctrl && shift && K === 'J') ||
-                        (ctrl && shift && K === 'C') ||
-                        (ctrl && shift && K === 'K') ||
-                        (ctrl && shift && K === 'E') ||
-                        (ctrl && shift && K === 'M') ||
-                        (ctrl && shift && K === 'P') ||
-                        (ctrl && shift && K === 'S') ||
-                        (ctrl && K === 'F5');
-
-                    if (blocked) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        GL.toast('🔒 هذا الإجراء محظور لحماية المحتوى', 'error');
-                        return false;
-                    }
-                }, true);
-            }
-
-            function _landscapeGuard() {
-                const guard = document.getElementById('fs-guard');
-                if (!guard) return;
-                function check() {
-                    const isLandscape = window.innerWidth > window.innerHeight;
-                    const isMobile = window.innerWidth <= 1024;
-                    if (isLandscape && isMobile) {
-                        guard.style.display = 'block';
-                    } else if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                        guard.style.display = '';
-                    }
-                }
-                window.addEventListener('orientationchange', () => setTimeout(check, 300));
-                window.addEventListener('resize', check);
-                check();
-            }
-
-            function init() {
-                blockContextMenu();
-                blockLongPress();
-                blockHotkeys();
-                devToolsGuard();
-                _landscapeGuard();
-            }
-
-            return { init, session: SESSION };
-        })();
-
-        // ============================================================
-        //  💧 WATERMARK MODULE
-        // ============================================================
-        const Watermark = (function () {
-            let _text = '';
-            let _nodes = [];
-            let _timer = null;
-
-            function _getStudentText() {
-                // وضع studentData في البداية لضمان سحب البيانات الكاملة
-                const keys = ['studentData', 'leader_user', 'userData', 'student'];
-                for (const k of keys) {
+            let ctx = null;
+            (function loadCtx() {
+                const q = new URLSearchParams(location.search);
+                if (q.has('url') || q.has('videoId')) {
+                    const vid = ytId(q.get('videoId') || '') || ytId(unmask(q.get('url') || ''));
+                    ctx = { c: q.get('courseId') || '', t: q.get('title') || '', v: vid };
+                    try { sessionStorage.setItem('vp_ctx', JSON.stringify({ c: ctx.c, t: ctx.t, k: mask(vid) })); } catch (e) { }
+                    try { history.replaceState(null, '', location.pathname); } catch (e) { }
+                } else {
                     try {
-                        const raw = localStorage.getItem(k);
-                        if (!raw) continue;
-                        if (!raw.startsWith('{')) continue; // تخطي النصوص المباشرة للبحث عن كائن كامل
-                        const obj = JSON.parse(raw);
-                        const name = obj.name || obj.studentName || obj.fullName || '';
-                        const phone = obj.phone || obj.studentPhone || obj.mobile || '';
-                        if (name || phone) {
-                            let t = name;
-                            if (phone) { const p = phone.toString().replace(/\D/g, ''); t += ' | ' + p; }
-                            return t;
-                        }
+                        const s = JSON.parse(sessionStorage.getItem('vp_ctx') || 'null');
+                        if (s) ctx = { c: s.c, t: s.t, v: ytId(unmask(s.k)) };
                     } catch (e) { }
                 }
-                const n = _getParam('studentName') || _getParam('name');
-                const p = _getParam('studentPhone') || _getParam('phone');
-                if (n || p) {
-                    let t = n || '';
-                    if (p) { const pp = p.toString().replace(/\D/g, ''); t += (t ? '  ' : '') + pp; }
-                    return t.trim();
-                }
-                const nameEl = document.getElementById('studentNameDisplay');
-                const metaEl = document.getElementById('metaStudent');
-                let result = '';
-                if (nameEl && nameEl.textContent && nameEl.textContent !== 'جاري التحميل...') result = nameEl.textContent;
-                if (metaEl && metaEl.textContent && metaEl.textContent !== '—') result = metaEl.textContent;
-                return result;
-            }
+            })();
 
-            function _createNodes() {
-                const layer = document.getElementById('wm-layer');
-                if (!layer) return;
-                layer.innerHTML = '';
-                _nodes = [];
-                for (let i = 0; i < VIDEO_CONFIG.wmCount; i++) {
-                    const el = document.createElement('span');
-                    el.className = 'wm-item';
-                    el.textContent = _text || 'ابن القائد';
-                    layer.appendChild(el);
-                    _nodes.push(el);
-                }
-            }
+            const TITLE = (ctx && ctx.t) || 'الدرس';
+            $('lessonTitle').textContent = TITLE;
+            $('infoTitle').textContent = TITLE;
+            $('topTitle').textContent = TITLE;
+            document.title = TITLE + ' | ابن القائد';
 
-            function _placeNodes() {
-                const layer = document.getElementById('wm-layer');
-                if (!layer || !_nodes.length) return;
-                const w = layer.offsetWidth, h = layer.offsetHeight;
-                _nodes.forEach(el => {
-                    el.style.opacity = '0';
-                    setTimeout(() => {
-                        const x = 10 + Math.random() * 75;
-                        const y = 10 + Math.random() * 75;
-                        el.style.left = x + '%';
-                        el.style.top = y + '%';
-                        el.style.opacity = '1';
-                    }, 100);
-                });
-            }
-
-            function init() {
-                _text = _getStudentText();
-                _createNodes();
-                _placeNodes();
-                _timer = setInterval(_placeNodes, VIDEO_CONFIG.wmInterval);
-            }
-
-            return { init };
-        })();
-
-        // ============================================================
-        //  👤 STUDENT MODULE
-        // ============================================================
-        const Student = (function () {
-            function _load() {
-                const keys = ['studentData', 'leader_user', 'userData', 'student'];
-                for (const k of keys) {
+            /* ---- الطالب ---- */
+            const student = (function () {
+                for (const k of ['studentData', 'leader_user', 'userData', 'student']) {
                     try {
                         const raw = localStorage.getItem(k);
-                        if (!raw) continue;
-                        if (!raw.startsWith('{')) continue;
-                        const obj = JSON.parse(raw);
-                        const name = obj.name || obj.studentName || obj.fullName || '';
-                        const phone = obj.phone || obj.studentPhone || obj.mobile || '';
-                        if (name) return { name, phone };
+                        if (!raw || raw[0] !== '{') continue;
+                        const o = JSON.parse(raw);
+                        const name = o.name || o.studentName || o.fullName || '';
+                        const phone = (o.phone || o.studentPhone || o.mobile || '').toString().replace(/\D/g, '');
+                        if (name || phone) return { name: name || 'طالب', phone };
                     } catch (e) { }
                 }
-                const n = _getParam('studentName') || _getParam('name') || 'طالب';
-                const p = _getParam('studentPhone') || _getParam('phone') || '';
-                return { name: n, phone: p };
+                return { name: 'طالب', phone: '' };
+            })();
+            $('stuName').textContent = student.name;
+            $('stuAv').textContent = (student.name.trim().charAt(0)) || 'ط';
+            $('tagStuTxt').textContent = student.name;
+
+            /* ======================================================
+               أيقونات الأزرار
+            ====================================================== */
+            const bCenter = $('bCenter'), bPlay = $('bPlay'), bMute = $('bMute'), bSet = $('bSet'), bFs = $('bFs');
+            bSet.innerHTML = I.gear;
+            bFs.innerHTML = I.fs;
+            bMute.innerHTML = I.vol;
+
+            /* ======================================================
+               الغلاف (cover)
+            ====================================================== */
+            const cover = $('cover');
+            let coverMode = 'start';
+            function setCover(mode) {
+                coverMode = mode;
+                stage.classList.toggle('cov', mode !== 'off');
+                if (mode === 'off') { cover.classList.add('off'); return; }
+                cover.classList.remove('off');
+                if (mode === 'start') {
+                    cover.innerHTML = '<button class="big-play glass" id="cvPlay" aria-label="تشغيل">' + I.play + '</button><h2></h2>';
+                    cover.querySelector('h2').textContent = TITLE;
+                    $('cvPlay').onclick = e => { e.stopPropagation(); play(); };
+                } else if (mode === 'end') {
+                    cover.innerHTML = '<button class="big-play glass" id="cvPlay" aria-label="إعادة">' + I.replay + '</button><h2>انتهى الدرس</h2><p>اضغط لإعادة المشاهدة</p>';
+                    $('cvPlay').onclick = e => { e.stopPropagation(); seek(0); play(); };
+                } else if (mode === 'load') {
+                    cover.innerHTML = '<h2>جاري تجهيز الدرس…</h2>';
+                } else if (mode === 'err') {
+                    cover.innerHTML = I.warn + '<h2>تعذّر تشغيل الفيديو</h2><p id="errMsg"></p><button class="pill-btn glass" id="cvRetry">إعادة المحاولة</button>';
+                    $('errMsg').textContent = cover.dataset.msg || 'تأكد من اتصالك بالإنترنت وجرّب تاني. لو المشكلة فضلت كلّم الدعم.';
+                    $('cvRetry').onclick = e => { e.stopPropagation(); location.reload(); };
+                }
+            }
+
+            /* ======================================================
+               مشغّل YouTube (بدون أي واجهة من يوتيوب)
+            ====================================================== */
+            let yt = null, ready = false, dur = 0, st = -2, speed = 1;
+            let started = false, dragging = false, tickTimer = null, lastSave = 0;
+            let ifr = null;
+
+            const POS_KEY = 'vp_pos_' + ((ctx && ctx.c) || (ctx && ctx.v) || 'x');
+
+            function fitFrame() {
+                if (!ifr) return;
+                const w = stage.clientWidth, h = stage.clientHeight;
+                if (!w || !h) return;
+                const vh = Math.min(h, w * 9 / 16), vw = vh * 16 / 9, e = 80;
+                ifr.style.width = Math.ceil(vw) + 'px';
+                ifr.style.height = Math.ceil(vh + e * 2) + 'px';
+                ifr.style.left = Math.floor((w - vw) / 2) + 'px';
+                ifr.style.top = Math.floor((h - vh) / 2 - e) + 'px';
+            }
+            new ResizeObserver(fitFrame).observe(stage);
+
+            function loadAPI() {
+                return new Promise((res, rej) => {
+                    if (window.YT && YT.Player) return res();
+                    const prev = window.onYouTubeIframeAPIReady;
+                    window.onYouTubeIframeAPIReady = () => { try { prev && prev(); } catch (e) { } res(); };
+                    const s = document.createElement('script');
+                    s.src = 'https://www.youtube.com/iframe_api';
+                    s.onerror = () => rej(new Error('net'));
+                    document.head.appendChild(s);
+                    setTimeout(() => { if (!(window.YT && YT.Player)) rej(new Error('timeout')); }, 15000);
+                });
             }
 
             function init() {
-                const s = _load();
-                const nameEl = document.getElementById('studentNameDisplay');
-                const avatEl = document.getElementById('studentAvatar');
-                const metaEl = document.getElementById('metaStudent');
-
-                if (nameEl) nameEl.textContent = s.name;
-                if (avatEl) avatEl.textContent = s.name.charAt(0) || 'ط';
-                if (metaEl) {
-                    let t = s.name;
-                    if (s.phone) {
-                        const p = s.phone.toString().replace(/\D/g, '');
-                        t += ' — ' + (p.length >= 7 ? p.slice(0, 3) + '****' + p.slice(-3) : p);
-                    }
-                    metaEl.textContent = t;
+                if (!ctx || !ctx.v) {
+                    cover.dataset.msg = 'مفيش فيديو متاح للدرس ده. كلّم الإدارة.';
+                    setCover('err');
+                    $('cvRetry') && ($('cvRetry').style.display = 'none');
+                    return;
                 }
-            }
-
-            return { init };
-        })();
-
-        // ============================================================
-        //  🎬 PLAYER MODULE — Video.js + videojs-youtube
-        // ============================================================
-        const Player = (function () {
-            let _player = null;
-            let _speed = 1;
-            let _ready = false;
-
-            function _build(videoId) {
-                const skeleton = document.getElementById('playerSkeleton');
-                const container = document.getElementById('vjsContainer');
-                const ctrlsRow = document.getElementById('controlsRow');
-
-                // Show player container
-                if (skeleton) skeleton.style.display = 'none';
-                if (container) container.style.display = 'block';
-                if (ctrlsRow) ctrlsRow.style.display = 'flex';
-
-                // Initialise Video.js with YouTube tech
-                _player = videojs('gl-player', {
-                    techOrder: ['youtube'],
-                    sources: [{
-                        type: 'video/youtube',
-                        src: 'https://www.youtube.com/watch?v=' + videoId,
-                    }],
-                    youtube: {
-                        // Key params to strip all YouTube UI
-                        ytControls: 0,
-                        rel: 0,
-                        showinfo: 0,
-                        modestbranding: 1,
-                        iv_load_policy: 3,
-                        cc_load_policy: 0,
-                        fs: 0,               // disable YT fullscreen button
-                        disablekb: 1,        // disable YT keyboard shortcuts
-                        playsinline: 1,
-                        enablejsapi: 1,
-                        origin: location.origin,
-                    },
-                    controls: true,
-                    autoplay: false,
-                    preload: 'none',
-                    fluid: true,
-                    aspectRatio: '16:9',
-                    controlBar: {
-                        children: [
-                            'playToggle',
-                            'volumePanel',
-                            'currentTimeDisplay',
-                            'timeDivider',
-                            'durationDisplay',
-                            'progressControl',
-                            'fullscreenToggle',
-                        ],
-                        volumePanel: { inline: true, vertical: false },
-                        remainingTimeDisplay: false,
-                        pictureInPictureToggle: false,
-                        chaptersButton: false,
-                        descriptionsButton: false,
-                        subtitlesButton: false,
-                        captionsButton: false,
-                        audioTrackButton: false,
-                    },
-                });
-
-                _player.ready(function () {
-                    _ready = true;
-                    _player.playbackRate(_speed);
-
-                    // نقل طبقات الحماية داخل المشغل لضمان ظهورها في وضع ملء الشاشة
-                    const playerEl = _player.el();
-                    const wm = document.getElementById('wm-layer');
-                    const guards = document.getElementById('yt-corner-guard');
-                    const shield = document.getElementById('secShield');
-
-                    if (wm) playerEl.appendChild(wm);
-                    if (guards) playerEl.appendChild(guards);
-                    if (shield) playerEl.appendChild(shield);
-
-                    GL.toast('✅ الفيديو جاهز', 'success');
-
-                    // بعد ما الفيديو يبدأ تشغيل فعلاً — ytPlayer بيبقى جاهز
-                    _player.one('playing', function () {
-                        GL.initQuality();
+                setCover('load');
+                loadAPI().then(() => {
+                    const vars = { controls: 0, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, iv_load_policy: 3, cc_load_policy: 0, playsinline: 1, enablejsapi: 1, autoplay: 0 };
+                    if (/^https?:$/.test(location.protocol)) vars.origin = location.origin;
+                    yt = new YT.Player('ytMount', {
+                        host: 'https://www.youtube-nocookie.com',
+                        width: '100%', height: '100%', videoId: ctx.v, playerVars: vars,
+                        events: { onReady, onStateChange, onError, onPlaybackRateChange: () => { try { speed = yt.getPlaybackRate(); $('bSpd').textContent = fmtSpeed(speed); } catch (e) { } } }
                     });
-                });
-
-                _player.on('error', function () {
-                    GL.toast('❌ خطأ في تحميل الفيديو', 'error');
-                    // إظهار رسالة واضحة مع زرار للفتح على YouTube مباشرة
-                    const skeleton = document.getElementById('playerSkeleton');
-                    const container = document.getElementById('vjsContainer');
-                    if (container) container.style.display = 'none';
-                    if (skeleton) {
-                        skeleton.style.display = 'flex';
-                        skeleton.innerHTML = `
-                            <i class="fas fa-circle-exclamation" style="font-size:2.5rem;color:#ff5b5b;"></i>
-                            <span style="color:#e8edf5;font-weight:700;">تعذّر تشغيل الفيديو هنا</span>
-                            <span style="color:#8b96aa;font-size:0.82rem;">قد يكون الفيديو غير متاح للتشغيل المضمّن</span>
-    
-                            </a>`;
-                    }
-                });
+                }).catch(() => { cover.dataset.msg = 'تعذّر الاتصال بخدمة الفيديو. تأكد من الإنترنت.'; setCover('err'); });
             }
 
-            function init(videoId) {
-                if (!videoId) {
-                    // لو مفيش videoId — اعرض رسالة خطأ بدل الـ fallback
-                    const skeleton = document.getElementById('playerSkeleton');
-                    if (skeleton) {
-                        skeleton.innerHTML = `
-                            <i class="fas fa-circle-exclamation" style="font-size:2.5rem;color:#ff5b5b;"></i>
-                            <span style="color:#e8edf5;font-weight:700;">لا يوجد فيديو لهذا الدرس</span>
-                            <span style="color:#8b96aa;font-size:0.82rem;">يرجى التواصل مع الإدارة</span>`;
+            function onReady() {
+                ready = true;
+                ifr = stage.querySelector('iframe');
+                if (ifr) {
+                    ifr.removeAttribute('title');
+                    ifr.setAttribute('tabindex', '-1');
+                    ifr.setAttribute('aria-hidden', 'true');
+                    ifr.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                }
+                fitFrame();
+                try { dur = yt.getDuration() || 0; } catch (e) { }
+                try { const v = yt.getVolume(); $('vol').value = v; } catch (e) { }
+                setCover('start');
+                renderPlayIcons();
+                tick();
+            }
+
+            function onStateChange(e) {
+                st = e.data;
+                if (st === 1) {            // playing
+                    started = true;
+                    setCover('off');
+                    spin(false);
+                    stage.classList.remove('paused');
+                    try { dur = yt.getDuration() || dur; } catch (_) { }
+                    if (!resumed) { resumed = true; resumeFromSaved(); }
+                    startTick();
+                    showUI();
+                } else if (st === 2) {     // paused
+                    stage.classList.add('paused');
+                    spin(false);
+                    stopTick(); tick(); saveNow();
+                } else if (st === 3) {     // buffering
+                    if (started) spin(true);
+                } else if (st === 0) {     // ended
+                    stopTick(); tick();
+                    try { localStorage.removeItem(POS_KEY); } catch (_) { }
+                    stage.classList.remove('paused');
+                    setCover('end');
+                    closeMenu();
+                }
+                renderPlayIcons();
+            }
+
+            function onError(e) {
+                const c = e.data;
+                cover.dataset.msg = (c === 100 || c === 105)
+                    ? 'الفيديو ده مش متاح حاليًا. كلّم الإدارة.'
+                    : 'الفيديو مش بيشتغل هنا حاليًا. جرّب تاني بعد شوية.';
+                setCover('err');
+                spin(false);
+            }
+
+            let resumed = false;
+            function resumeFromSaved() {
+                try {
+                    const t = parseFloat(localStorage.getItem(POS_KEY) || '0');
+                    if (t > 8 && dur && t < dur - 12) { seek(t); toast('كملنا من آخر مكان وقفت عنده'); }
+                } catch (e) { }
+            }
+
+            function saveNow() {
+                try { if (ready && st !== 0) { const t = yt.getCurrentTime(); if (t > 3) localStorage.setItem(POS_KEY, String(Math.floor(t))); } } catch (e) { }
+            }
+
+            /* ---------- أفعال ---------- */
+            function play() { if (ready) { try { yt.playVideo(); } catch (e) { } } }
+            function pause() { if (ready) { try { yt.pauseVideo(); } catch (e) { } } }
+            function isPlaying() { return st === 1 || st === 3; }
+            function togglePlay() { isPlaying() ? pause() : play(); }
+            function seek(t) { if (!ready) return; t = Math.max(0, Math.min(dur || 1e9, t)); try { yt.seekTo(t, true); } catch (e) { } tick(t); }
+            function skip(d) {
+                if (!ready) return;
+                let c = 0; try { c = yt.getCurrentTime(); } catch (e) { }
+                seek(c + d);
+                const el = d > 0 ? $('fxR') : $('fxL');
+                el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+            }
+            function setVol(v) { if (!ready) return; try { yt.setVolume(v); v > 0 ? yt.unMute() : yt.mute(); } catch (e) { } $('vol').value = v; renderVol(); }
+            function toggleMute() { if (!ready) return; try { if (yt.isMuted()) { yt.unMute(); if (yt.getVolume() === 0) yt.setVolume(60); } else yt.mute(); } catch (e) { } renderVol(); }
+            function renderVol() { try { const m = yt.isMuted() || yt.getVolume() === 0; bMute.innerHTML = m ? I.mute : I.vol; $('vol').value = m ? 0 : yt.getVolume(); } catch (e) { } }
+
+            function renderPlayIcons() {
+                const p = isPlaying();
+                bCenter.innerHTML = p ? I.pause : I.play;
+                bPlay.innerHTML = p ? I.pause : I.play;
+            }
+
+            function spin(on) { $('spinner').classList.toggle('on', !!on); }
+
+            /* ---------- progress ---------- */
+            const fmt = s => { s = Math.max(0, Math.floor(s || 0)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
+            const fmtSpeed = r => (r === 1 ? '1' : String(r)) + '×';
+
+            function tick(forceT) {
+                if (!ready || dragging) return;
+                let c = 0, buf = 0;
+                try { c = typeof forceT === 'number' ? forceT : yt.getCurrentTime(); buf = yt.getVideoLoadedFraction(); if (!dur) dur = yt.getDuration() || 0; } catch (e) { }
+                const f = dur ? Math.min(1, c / dur) : 0;
+                paintProgress(f, buf);
+                $('time').innerHTML = fmt(c) + ' <b>/ ' + fmt(dur) + '</b>';
+                if (isPlaying() && Date.now() - lastSave > 5000) { lastSave = Date.now(); saveNow(); }
+            }
+            function paintProgress(f, buf) {
+                $('sCur').style.width = (f * 100) + '%';
+                $('sBuf').style.width = ((buf || 0) * 100) + '%';
+                $('sKnob').style.left = (f * 100) + '%';
+            }
+            function startTick() { stopTick(); tickTimer = setInterval(tick, 250); }
+            function stopTick() { clearInterval(tickTimer); tickTimer = null; }
+
+            /* ---------- scrubber (سحب بالماوس واللمس) ---------- */
+            const scrub = $('scrub');
+            function fracFrom(e) { const r = scrub.getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); }
+            function scrubMove(e) {
+                const f = fracFrom(e);
+                paintProgress(f, 0);
+                const tip = $('sTip');
+                tip.style.left = Math.max(26, Math.min(scrub.clientWidth - 26, f * scrub.clientWidth)) + 'px';
+                tip.textContent = fmt(f * dur);
+                $('time').innerHTML = fmt(f * dur) + ' <b>/ ' + fmt(dur) + '</b>';
+                return f;
+            }
+            scrub.addEventListener('pointerdown', e => {
+                if (!ready || !dur) return;
+                dragging = true; scrub.classList.add('drag');
+                scrub.setPointerCapture(e.pointerId);
+                scrubMove(e); showUI(true);
+            });
+            scrub.addEventListener('pointermove', e => { if (dragging) scrubMove(e); });
+            const endDrag = e => {
+                if (!dragging) return;
+                const f = fracFrom(e);
+                dragging = false; scrub.classList.remove('drag');
+                seek(f * dur); showUI();
+            };
+            scrub.addEventListener('pointerup', endDrag);
+            scrub.addEventListener('pointercancel', () => { dragging = false; scrub.classList.remove('drag'); });
+
+            /* ---------- إظهار / إخفاء الواجهة ---------- */
+            let hideT = null;
+            function showUI(keep) {
+                stage.classList.add('show');
+                clearTimeout(hideT);
+                if (!keep) hideT = setTimeout(() => { if (isPlaying() && !menuOpen && !dragging) stage.classList.remove('show'); }, 3200);
+            }
+            function hideUI() { if (isPlaying() && !menuOpen) stage.classList.remove('show'); }
+            stage.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') showUI(); });
+            stage.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hideT = setTimeout(hideUI, 800); });
+            $('ui').addEventListener('pointerdown', () => showUI());
+
+            /* ---------- النقر على الشاشة ---------- */
+            let lastTap = 0, tapT = null;
+            $('surface').addEventListener('pointerup', e => {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                if (coverMode !== 'off') return;
+                if (menuOpen) { closeMenu(); return; }
+                const now = Date.now();
+                const r = stage.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width;
+                if (now - lastTap < 300) {
+                    clearTimeout(tapT);
+                    if (e.pointerType === 'mouse') { lastTap = 0; toggleFS(); }
+                    else {
+                        lastTap = now;
+                        if (x < .38) skip(-10); else if (x > .62) skip(10);
                     }
                     return;
                 }
-                _build(videoId);
+                lastTap = now;
+                tapT = setTimeout(() => {
+                    if (e.pointerType === 'mouse') { togglePlay(); showUI(); }
+                    else { stage.classList.contains('show') ? (isPlaying() ? stage.classList.remove('show') : 0) : showUI(); }
+                }, 290);
+            });
+
+            /* ---------- الأزرار ---------- */
+            bCenter.onclick = e => { e.stopPropagation(); togglePlay(); showUI(); };
+            bPlay.onclick = e => { e.stopPropagation(); togglePlay(); showUI(); };
+            $('bBack').onclick = e => { e.stopPropagation(); skip(-10); showUI(); };
+            $('bFwd').onclick = e => { e.stopPropagation(); skip(10); showUI(); };
+            bMute.onclick = e => { e.stopPropagation(); toggleMute(); };
+            $('vol').addEventListener('input', e => setVol(parseInt(e.target.value, 10)));
+            bFs.onclick = e => { e.stopPropagation(); toggleFS(); };
+            bSet.onclick = e => { e.stopPropagation(); menuOpen ? closeMenu() : openMenu('main'); };
+            $('bSpd').onclick = e => { e.stopPropagation(); menuOpen && menuPage === 'speed' ? closeMenu() : openMenu('speed'); };
+            $('menu').addEventListener('pointerdown', e => e.stopPropagation());
+            $('dock').addEventListener('pointerdown', e => e.stopPropagation());
+
+            /* ---------- ملء الشاشة (مع بديل لـ iPhone) ---------- */
+            function isFS() { return document.fullscreenElement === stage || document.webkitFullscreenElement === stage || stage.classList.contains('pfs'); }
+            function updateFS() {
+                const f = isFS();
+                bFs.innerHTML = f ? I.fsx : I.fs;
+                stage.classList.toggle('isfs', f);
+                setTimeout(fitFrame, 60);
             }
-
-            function setSpeed(s) {
-                _speed = s;
-                if (_ready && _player) {
-                    try { _player.playbackRate(s); } catch (e) { }
-                }
-                document.querySelectorAll('.speed-btn').forEach(btn => {
-                    btn.classList.toggle('active', parseFloat(btn.textContent) === s);
-                });
-            }
-
-            // expose raw YT player for quality control
-            function getYtPlayer() {
-                try { return _player.tech({ IWillNotUseThisInPlugins: true }).ytPlayer; } catch (e) { return null; }
-            }
-
-            return { init, setSpeed, getYtPlayer, getInstance: () => _player };
-        })();
-
-        // ============================================================
-        //  🌐 MAIN APP (GL)
-        // ============================================================
-        const GL = {
-
-            toast(msg, type = 'info', dur = 2800) {
-                const el = document.getElementById('toast');
-                el.textContent = '';
-                const icon = document.createElement('i');
-                icon.className =
-                    type === 'success' ? 'fas fa-circle-check' :
-                        type === 'error' ? 'fas fa-circle-xmark' :
-                            'fas fa-circle-info';
-                el.appendChild(icon);
-                el.appendChild(document.createTextNode(' ' + msg));
-                el.className = 'show ' + type;
-                clearTimeout(GL._toastTimer);
-                GL._toastTimer = setTimeout(() => { el.className = ''; }, dur);
-            },
-            _toastTimer: null,
-
-            setSpeed(s) { Player.setSpeed(s); },
-
-            // ── Quality ──
-            _qualityOpen: false,
-            _currentQuality: -1,
-
-            // Quality labels map
-            _qLabels: {
-                2160: '4K',
-                1440: '1440p',
-                1080: '1080p HD',
-                720: '720p HD',
-                480: '480p',
-                360: '360p',
-                240: '240p',
-                144: '144p',
-                '-1': 'تلقائي',
-            },
-
-            initQuality() {
-                const menu = document.getElementById('quality-menu');
-                const btn = document.getElementById('qualityBtn');
-                if (!menu || !btn) return;
-
-                // جيب الـ ytPlayer من Video.js tech
-                let yt = null;
-                try { yt = Player.getYtPlayer(); } catch (_) { }
-
-                const labelMap = {
-                    'hd2160': '4K 2160p', 'highres': '4K',
-                    'hd1440': '1440p',
-                    'hd1080': '1080p',
-                    'hd720': '720p',
-                    'large': '480p',
-                    'medium': '360p',
-                    'small': '240p',
-                    'tiny': '144p',
-                };
-
-                let levels = [];
-                if (yt && typeof yt.getAvailableQualityLevels === 'function') {
-                    levels = yt.getAvailableQualityLevels().filter(l => l !== 'auto' && l !== 'tiny');
-                }
-
-                // لو مرجعتش levels — مش هنكمل
-                if (!levels.length) return;
-
-                const opts = [{ label: 'تلقائي', val: 'auto' }].concat(
-                    levels.map(l => ({ label: labelMap[l] || l, val: l }))
-                );
-
-                menu.innerHTML =
-                    '<div id="quality-menu-title">الجودة</div>' +
-                    opts.map(o =>
-                        `<div class="q-opt${o.val === 'auto' ? ' active' : ''}" data-val="${o.val}">
-                    <span>${o.label}</span><span class="q-check">✓</span>
-                </div>`
-                    ).join('');
-
-                menu.querySelectorAll('.q-opt').forEach(el => {
-                    el.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const val = el.dataset.val;
-                        try {
-                            if (yt) {
-                                yt.setPlaybackQuality(val);
-                                // نطلب من المشغل التحديث فوراً قدر الإمكان
-                                if (val !== 'auto') yt.setPlaybackQualityRange(val, val);
-                            }
-                        } catch (_) { }
-                        const labelText = el.querySelector('span').textContent;
-                        const labelEl = document.getElementById('qualityLabel');
-                        if (labelEl) labelEl.textContent = val === 'auto' ? 'جودة' : labelText;
-                        menu.querySelectorAll('.q-opt').forEach(x => x.classList.remove('active'));
-                        el.classList.add('active');
-                        GL._closeQuality();
-                        btn.classList.toggle('active-q', val !== 'auto');
-                        GL.toast('🎬 ' + labelText, 'info');
-                    });
-                });
-            },
-
-            _closeQuality() {
-                this._qualityOpen = false;
-                document.getElementById('quality-menu').classList.remove('open');
-            },
-
-            toggleQuality(e) {
-                e.stopPropagation();
-                this._qualityOpen = !this._qualityOpen;
-                const menu = document.getElementById('quality-menu');
-                const btn = document.getElementById('qualityBtn');
-                if (this._qualityOpen) {
-                    const r = btn.getBoundingClientRect();
-
-                    // تحسين التموضع لضمان الوضوح وعدم الخروج عن الشاشة
-                    let leftPos = r.left;
-                    if (window.innerWidth < 480) {
-                        leftPos = Math.max(10, Math.min(leftPos, window.innerWidth - 160));
-                    }
-                    menu.style.left = leftPos + 'px';
-                    menu.style.bottom = '';
-                    menu.style.top = (r.top - (menu.offsetHeight || 200) - 10) + 'px';
-                    menu.classList.add('open');
-                } else {
-                    menu.classList.remove('open');
-                }
-            },
-
-            toggleFullscreen() {
-                const shell = document.getElementById('playerShell');
-                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                    if (shell.requestFullscreen) shell.requestFullscreen();
-                    else if (shell.webkitRequestFullscreen) shell.webkitRequestFullscreen();
-                } else {
-                    if (document.exitFullscreen) document.exitFullscreen();
+            async function toggleFS() {
+                if (isFS()) {
+                    if (stage.classList.contains('pfs')) { stage.classList.remove('pfs'); document.body.classList.remove('noscroll'); }
+                    else if (document.exitFullscreen) { try { await document.exitFullscreen(); } catch (e) { } }
                     else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                }
-            },
-
-            _updateFsUI() {
-                const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-                const icon = document.getElementById('fsIcon');
-                const label = document.getElementById('fsLabel');
-                if (icon) icon.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
-                if (label) label.textContent = isFs ? 'تصغير' : 'ملء الشاشة';
-            },
-
-            goBack() {
-                if (document.referrer && document.referrer.includes(location.hostname)) {
-                    history.back();
+                    try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch (e) { }
                 } else {
-                    location.href = 'index.html';
-                }
-            },
-
-            init() {
-                // Title
-                const titleEl = document.getElementById('courseTitle');
-                if (titleEl && VIDEO_CONFIG.title) titleEl.textContent = VIDEO_CONFIG.title;
-
-                // Student
-                Student.init();
-
-                // Security
-                Security.init();
-
-                // Player
-                Player.init(VIDEO_CONFIG.videoId);
-
-                // Watermark
-                setTimeout(() => Watermark.init(), 1200);
-
-                // Close quality menu on outside click
-                document.addEventListener('click', () => {
-                    if (GL._qualityOpen) GL._closeQuality();
-                });
-
-                // Keyboard shortcuts
-                document.addEventListener('keydown', (e) => {
-                    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
-
-                    const player = Player.getInstance();
-                    if (!player) return;
-
-                    if (e.code === 'Space') {
-                        e.preventDefault();
-                        if (player.paused()) player.play(); else player.pause();
-                    } else if (e.code === 'ArrowRight') {
-                        e.preventDefault();
-                        player.currentTime(player.currentTime() + 10);
-                        GL.toast('⏩ +10 ثواني', 'info', 800);
-                    } else if (e.code === 'ArrowLeft') {
-                        e.preventDefault();
-                        player.currentTime(Math.max(0, player.currentTime() - 10));
-                        GL.toast('⏪ -10 ثواني', 'info', 800);
+                    try {
+                        if (stage.requestFullscreen) await stage.requestFullscreen({ navigationUI: 'hide' });
+                        else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen();
+                        else throw new Error('nofs');
+                        try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => { }); } catch (e) { }
+                    } catch (e) {
+                        stage.classList.add('pfs'); document.body.classList.add('noscroll');
                     }
-                });
-
-                // Seek gestures (Double click)
-                const wrapper = document.getElementById('vjs-wrapper');
-                if (wrapper) {
-                    wrapper.addEventListener('dblclick', (e) => {
-                        const player = Player.getInstance();
-                        if (!player) return;
-                        const rect = wrapper.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        if (x > rect.width / 2) {
-                            player.currentTime(player.currentTime() + 10);
-                            GL.toast('⏩ +10 ثواني', 'info', 800);
-                        } else {
-                            player.currentTime(Math.max(0, player.currentTime() - 10));
-                            GL.toast('⏪ -10 ثواني', 'info', 800);
-                        }
-                    });
                 }
+                updateFS(); showUI();
             }
-        };
+            document.addEventListener('fullscreenchange', updateFS);
+            document.addEventListener('webkitfullscreenchange', updateFS);
 
-        function goBack() { GL.goBack(); }
+            /* ---------- قائمة الإعدادات ---------- */
+            const menu = $('menu');
+            let menuOpen = false, menuPage = 'main';
+            const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+            const QLBL = { highres: '4K+', hd2160: '4K', hd1440: '1440p', hd1080: '1080p', hd720: '720p', large: '480p', medium: '360p', small: '240p', tiny: '144p', auto: 'تلقائي' };
+            let curQ = 'auto';
 
-        document.addEventListener('DOMContentLoaded', () => GL.init());
+            function openMenu(page) { menuPage = page; renderMenu(); menu.classList.add('open'); menuOpen = true; showUI(true); }
+            function closeMenu() { menu.classList.remove('open'); menuOpen = false; showUI(); }
+
+            function renderMenu() {
+                let h = '';
+                if (menuPage === 'main') {
+                    h += '<button class="mrow" data-go="speed"><span>سرعة التشغيل</span><span class="v">' + fmtSpeed(speed) + I.chev + '</span></button>';
+                    h += '<button class="mrow" data-go="quality"><span>الجودة</span><span class="v">' + (QLBL[curQ] || curQ) + I.chev + '</span></button>';
+                } else if (menuPage === 'speed') {
+                    h += '<div class="mhead"><button data-go="main" aria-label="رجوع">' + I.chevr + '</button>سرعة التشغيل</div>';
+                    SPEEDS.forEach(s => { h += '<button class="mrow' + (s === speed ? ' sel' : '') + '" data-speed="' + s + '"><span>' + (s === 1 ? 'عادية' : fmtSpeed(s)) + '</span><span class="ck">' + I.check + '</span></button>'; });
+                } else if (menuPage === 'quality') {
+                    h += '<div class="mhead"><button data-go="main" aria-label="رجوع">' + I.chevr + '</button>الجودة</div>';
+                    let lv = []; try { lv = (yt.getAvailableQualityLevels() || []).filter(l => l !== 'auto'); } catch (e) { }
+                    if (!lv.length) h += '<div class="mnote">الجودة بتظهر بعد ما الفيديو يشتغل.</div>';
+                    ['auto'].concat(lv).forEach(l => { h += '<button class="mrow' + (l === curQ ? ' sel' : '') + '" data-q="' + l + '"><span>' + (QLBL[l] || l) + '</span><span class="ck">' + I.check + '</span></button>'; });
+                    h += '<div class="mnote">الجودة التلقائية بتتظبط حسب سرعة الإنترنت عندك.</div>';
+                }
+                menu.innerHTML = h;
+                menu.querySelectorAll('[data-go]').forEach(b => b.onclick = e => { e.stopPropagation(); menuPage = b.dataset.go; renderMenu(); });
+                menu.querySelectorAll('[data-speed]').forEach(b => b.onclick = e => {
+                    e.stopPropagation();
+                    speed = parseFloat(b.dataset.speed);
+                    try { yt.setPlaybackRate(speed); } catch (_) { }
+                    $('bSpd').textContent = fmtSpeed(speed);
+                    toast('السرعة ' + fmtSpeed(speed)); closeMenu();
+                });
+                menu.querySelectorAll('[data-q]').forEach(b => b.onclick = e => {
+                    e.stopPropagation();
+                    const q = b.dataset.q; curQ = q;
+                    try { yt.setPlaybackQuality(q); if (q !== 'auto' && yt.setPlaybackQualityRange) yt.setPlaybackQualityRange(q, q); } catch (_) { }
+                    closeMenu();
+                    if (q !== 'auto') {
+                        setTimeout(() => {
+                            let now = ''; try { now = yt.getPlaybackQuality(); } catch (_) { }
+                            if (now && now !== q) { curQ = 'auto'; toast('الجودة بتتحدد تلقائي حسب اتصالك'); }
+                            else toast('الجودة ' + (QLBL[q] || q));
+                        }, 1600);
+                    } else toast('الجودة تلقائية');
+                });
+            }
+
+            /* ---------- toast ---------- */
+            let toastT = null;
+            function toast(msg) {
+                const t = $('toast'); t.textContent = msg; t.classList.add('on');
+                clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 1900);
+            }
+
+            /* ---------- كيبورد ---------- */
+            document.addEventListener('keydown', e => {
+                if (!ready || coverMode === 'err') return;
+                const tag = (document.activeElement && document.activeElement.tagName) || '';
+                if (tag === 'INPUT' && document.activeElement.type !== 'range') return;
+                const k = e.key.toLowerCase();
+                const acts = {
+                    ' ': () => togglePlay(), 'k': () => togglePlay(),
+                    'arrowright': () => skip(10), 'l': () => skip(10),
+                    'arrowleft': () => skip(-10), 'j': () => skip(-10),
+                    'arrowup': () => { let v = 0; try { v = yt.getVolume(); } catch (_) { } setVol(Math.min(100, v + 10)); toast('الصوت ' + Math.min(100, v + 10) + '%'); },
+                    'arrowdown': () => { let v = 0; try { v = yt.getVolume(); } catch (_) { } setVol(Math.max(0, v - 10)); toast('الصوت ' + Math.max(0, v - 10) + '%'); },
+                    'm': () => toggleMute(), 'f': () => toggleFS(),
+                    'escape': () => { if (menuOpen) closeMenu(); else if (stage.classList.contains('pfs')) toggleFS(); }
+                };
+                if (acts[k]) { e.preventDefault(); acts[k](); showUI(); }
+            });
+
+            /* ---------- علامة مائية متحركة ---------- */
+            (function watermark() {
+                const wm = $('wm');
+                const txt = (student.name + (student.phone ? '  ' + student.phone : '')).trim();
+                const nodes = [0, 1, 2].map(() => { const i = document.createElement('i'); i.textContent = txt; wm.appendChild(i); return i; });
+                const place = () => nodes.forEach((n, idx) => {
+                    n.style.left = (6 + Math.random() * 62) + '%';
+                    n.style.top = (8 + Math.random() * 78) + '%';
+                    n.style.opacity = idx === 0 ? 1 : (.55 + Math.random() * .4);
+                });
+                place(); setInterval(place, 8000);
+            })();
+
+            /* ======================================================
+               حماية (طبقة ردع — الحماية الحقيقية على السيرفر)
+            ====================================================== */
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('dragstart', e => e.preventDefault());
+            document.addEventListener('selectstart', e => e.preventDefault());
+            document.addEventListener('keydown', e => {
+                const c = e.ctrlKey || e.metaKey, s = e.shiftKey, k = e.key.toUpperCase();
+                if (e.key === 'F12' || (c && ['U', 'S', 'P'].includes(k)) || (c && s && ['I', 'J', 'C'].includes(k))) {
+                    e.preventDefault(); e.stopPropagation(); toast('الإجراء ده غير مسموح');
+                }
+            }, true);
+
+            // كشف DevTools المثبّتة على الجنب (للكمبيوتر بس عشان مفيش false positives على الموبايل)
+            const fine = window.matchMedia('(pointer:fine)');
+            setInterval(() => {
+                if (!fine.matches) return;
+                const open = (window.outerWidth - window.innerWidth > 220) || (window.outerHeight - window.innerHeight > 260);
+                if (open && !stage.classList.contains('locked')) { stage.classList.add('locked'); pause(); }
+                else if (!open && stage.classList.contains('locked')) stage.classList.remove('locked');
+            }, 1000);
+
+            window.addEventListener('beforeunload', saveNow);
+            window.addEventListener('pagehide', saveNow);
+
+            /* ---------- رجوع ---------- */
+            $('backBtn').onclick = () => {
+                try {
+                    if (document.referrer && new URL(document.referrer).host === location.host && history.length > 1) { history.back(); return; }
+                } catch (e) { }
+                location.href = 'index.html';
+            };
+
+            /* ---------- ابدأ ---------- */
+            renderPlayIcons();
+            init();
+        })();
     </script>
-
-    <!-- Quality Menu (fixed, outside all containers) -->
-    <div id="quality-menu"></div>
-
 </body>
 
 </html>
