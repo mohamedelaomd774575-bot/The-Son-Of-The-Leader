@@ -7449,8 +7449,16 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     }
                 },
 
-                downloadPDF: (pdfUrl, courseId, title) => {
+                downloadPDF: async (pdfUrl, courseId, title) => {
                     if (!pdfUrl) { StudentApp.ui.showAlert('رابط الملف غير متوفر', 'error'); return; }
+                    // 🔐 الملفات المدفوعة بتتخزن كمسار في bucket خاص — نطلب رابط مؤقت (الـ RLS بيتأكد من الاشتراك)
+                    if (!/^https?:\/\//i.test(String(pdfUrl))) {
+                        try {
+                            const { data: signed, error: signErr } = await StudentApp.client.storage.from('materials').createSignedUrl(String(pdfUrl), 21600);
+                            if (signErr || !signed?.signedUrl) throw signErr || new Error('no url');
+                            pdfUrl = signed.signedUrl;
+                        } catch (_) { StudentApp.ui.showAlert('تعذّر فتح الملف، تأكد من اشتراكك في الكورس', 'error'); return; }
+                    }
                     // 📖 الملف بيتفتح في القارئ المدمج (render.html) — الرابط متشفّر ومبيظهرش في شريط العنوان
                     try {
                         const masked = btoa(unescape(encodeURIComponent(String(pdfUrl)))).split('').reverse().join('');
