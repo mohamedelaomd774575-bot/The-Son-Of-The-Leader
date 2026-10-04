@@ -4896,6 +4896,12 @@
             '<rect width="300" height="180" fill="#0f172a"/>' +
             '<text x="150" y="98" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#2563eb" text-anchor="middle">The Leader</text></svg>');
     </script>
+<style id="views-badge-css">
+.course-views{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(10,132,255,.14);color:#0a84ff;white-space:nowrap}
+.course-views.low{background:rgba(255,159,10,.16);color:#ff9f0a}
+.course-views.zero{background:rgba(255,69,58,.14);color:#ff453a}
+.course-views i{font-size:.7rem}
+</style>
 </head>
 
 <body>
@@ -5698,6 +5704,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
             state: {
                 currentUser: null,
                 purchasedIds: [],
+                viewsByCourse: {},
                 playlistChildIds: [],
                 openPlaylistId: null,
                 _playlistReturnTeacher: null,
@@ -5894,6 +5901,21 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     done: function () { this._n = Math.max(0, this._n - 1); if (!this._n) this._el().classList.remove('active'); }
                 },
 
+                viewsBadgeHtml: (courseId, left, total) => {
+                    const cls = left <= 0 ? ' zero' : (left === 1 ? ' low' : '');
+                    const txt = left <= 0 ? 'خلصت المشاهدات' : `متبقي ${left} من ${total} مشاهدات`;
+                    return `<span class="course-views${cls}" data-views-for="${courseId}"><i class="fas fa-eye"></i> ${txt}</span>`;
+                },
+                // تحديث العدّاد لحظيًا بعد كل فتح (الكارت والـ state)
+                setViews: (courseId, left, total) => {
+                    if (left == null || total == null) return;
+                    left = Math.max(Number(left) || 0, 0); total = Number(total);
+                    StudentApp.state.viewsByCourse[courseId] = { left, total };
+                    document.querySelectorAll(`[data-views-for="${courseId}"]`).forEach(el => {
+                        el.outerHTML = StudentApp.ui.viewsBadgeHtml(courseId, left, total);
+                    });
+                },
+
                 createCourseCard: (course, isSubscribed = false, isPending = false) => {
                     if (!course || !course.id) return '';
                     const thumbnail = course.thumbnail_url || window.__PH;
@@ -5928,11 +5950,13 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const safePdfUrl = (course.pdf_url || '').toString().replace(/"/g, '&quot;');
                     const safeTitle = (courseTitle || '').toString().replace(/"/g, '&quot;');
                     const safeInstructor = (instructor || '').toString().replace(/"/g, '&quot;');
+                    const vw = (isSubscribed && courseType === 'video' && !isFree) ? StudentApp.state.viewsByCourse[course.id] : null;
+                    const viewsHtml = vw ? StudentApp.ui.viewsBadgeHtml(course.id, vw.left, vw.total) : '';
                     const instructorHtml = instructor ? `<div class="course-instructor"><i class="fas fa-chalkboard-teacher"></i> ${instructor}</div>` : '';
                     const priceHtml = isFree ? '<span class="course-price free-price">مجاني</span>'
                         : hasDiscount ? `<div class="price-wrap"><span class="course-price">${coursePrice} ج.م</span><span class="original-price">${originalPrice} ج.م</span><span class="discount-badge">${Math.round((1 - coursePrice / originalPrice) * 100)}% خصم</span></div>`
                             : `<span class="course-price">${coursePrice} ج.م</span>`;
-                    return `<div class="course-card animate" data-course-id="${course.id}" data-course-type="${courseType}" data-video-url="${safeVideoUrl}" data-pdf-url="${safePdfUrl}" data-title="${safeTitle}" data-instructor="${safeInstructor}" data-price="${coursePrice}" data-is-free="${isFree}"><div class="course-thumbnail"><img src="${thumbnail}" alt="${courseTitle}" loading="lazy" onerror="this.onerror=null;this.src=window.__PH"></div><div class="course-info"><div class="course-title">${courseTitle}</div>${instructorHtml}<div class="course-desc">${courseDesc}</div><div class="course-meta"><span>${courseType === 'video' ? ' فيديو' : (courseType === 'pdf' ? ' PDF' : ' قائمة')}</span>${badge}</div><div style="display:flex;justify-content:space-between;align-items:center;">${priceHtml}</div></div><button class="${buttonClass}" ${buttonDisabled ? 'disabled' : ''}>${buttonContent}</button></div>`;
+                    return `<div class="course-card animate" data-course-id="${course.id}" data-course-type="${courseType}" data-video-url="${safeVideoUrl}" data-pdf-url="${safePdfUrl}" data-title="${safeTitle}" data-instructor="${safeInstructor}" data-price="${coursePrice}" data-is-free="${isFree}"><div class="course-thumbnail"><img src="${thumbnail}" alt="${courseTitle}" loading="lazy" onerror="this.onerror=null;this.src=window.__PH"></div><div class="course-info"><div class="course-title">${courseTitle}</div>${instructorHtml}<div class="course-desc">${courseDesc}</div><div class="course-meta"><span>${courseType === 'video' ? ' فيديو' : (courseType === 'pdf' ? ' PDF' : ' قائمة')}</span>${badge}${viewsHtml}</div><div style="display:flex;justify-content:space-between;align-items:center;">${priceHtml}</div></div><button class="${buttonClass}" ${buttonDisabled ? 'disabled' : ''}>${buttonContent}</button></div>`;
                 },
 
                 //  تطبيع اسم المدرس: إزالة المسافات الزائدة من الطرفين، ضغط المسافات المتكررة،
@@ -6022,6 +6046,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                     if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
                                     videoUrl = content.video_url || videoUrl;
                                     view = { id: content.view_id || '', left: content.views_left };
+                                    StudentApp.ui.setViews(courseId, content.views_left, content.views_total);
                                 } catch (fetchErr) {
                                     StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الفيديو', 'error');
                                     return;
@@ -6096,12 +6121,15 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     //  نجيب فقط course_id و status من purchases بدون join على courses
                     const { data: purchases, error } = await StudentApp.client
                         .from('purchases')
-                        .select('course_id, status')
+                        .select('course_id, status, views_left, views_total')
                         .eq('student_id', StudentApp.state.currentUser.id);
                     if (error) { console.error('[data] loadInitialData error:', error); return; }
                     if (purchases) {
                         const approved = purchases.filter(p => p.status === 'approved');
                         const directIds = approved.map(p => p.course_id);
+                        // عدّاد المشاهدات (بيتعرض على كروت الفيديو بس)
+                        StudentApp.state.viewsByCourse = {};
+                        approved.forEach(p => { if (p.views_total != null) StudentApp.state.viewsByCourse[p.course_id] = { left: Math.max(Number(p.views_left) || 0, 0), total: Number(p.views_total) }; });
                         StudentApp.state.directPurchasedIds = directIds;
                         // جيب كورسات الـ playlists المشتراة من جدول courses (فيه video_url)
                         let fromPlaylists = [];
@@ -7114,6 +7142,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                 videoUrl = content.video_url || videoUrl;
                                 pdfUrl = content.pdf_url || pdfUrl;
                                 view = { id: content.view_id || '', left: content.views_left };
+                                StudentApp.ui.setViews(courseId, content.views_left, content.views_total);
                             } catch (fetchErr) {
                                 StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل المحتوى', 'error');
                                 return;
