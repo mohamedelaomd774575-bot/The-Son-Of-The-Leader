@@ -4897,10 +4897,23 @@
             '<text x="150" y="98" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#2563eb" text-anchor="middle">The Leader</text></svg>');
     </script>
 <style id="views-badge-css">
-.course-views{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(10,132,255,.14);color:#0a84ff;white-space:nowrap}
-.course-views.low{background:rgba(255,159,10,.16);color:#ff9f0a}
-.course-views.zero{background:rgba(255,69,58,.14);color:#ff453a}
-.course-views i{font-size:.7rem}
+.course-views{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:9px 12px;border-radius:var(--radius-md);background:var(--bg-card2);border:1px solid var(--border);transition:border-color .25s,background .25s}
+.course-views .cv-label{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:var(--text-secondary);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.course-views .cv-label i{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:.8rem;color:var(--primary);background:rgba(37,99,235,.12)}
+.course-views .cv-end{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.course-views .cv-meter{display:flex;gap:3px}
+.course-views .cv-meter i{width:12px;height:6px;border-radius:99px;background:rgba(136,153,187,.22);transition:background .3s,box-shadow .3s}
+.course-views .cv-meter i.on{background:linear-gradient(90deg,var(--primary),#60a5fa);box-shadow:0 0 8px rgba(37,99,235,.32)}
+.course-views .cv-count{font-weight:900;font-size:1rem;line-height:1;color:var(--text-primary);font-variant-numeric:tabular-nums;direction:ltr}
+.course-views .cv-count small{font-size:.72rem;font-weight:700;color:var(--text-muted);margin-inline-start:1px}
+.course-views.low{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.07)}
+.course-views.low .cv-label i{color:#f59e0b;background:rgba(245,158,11,.15)}
+.course-views.low .cv-meter i.on{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.35)}
+.course-views.zero{border-color:rgba(239,68,68,.42);background:rgba(239,68,68,.07)}
+.course-views.zero .cv-label{color:#ef4444}
+.course-views.zero .cv-label i{color:#ef4444;background:rgba(239,68,68,.15)}
+.course-views.zero .cv-count{color:#ef4444}
+@media (max-width:360px){.course-views{padding:8px 10px;gap:8px}.course-views .cv-meter i{width:9px}.course-views .cv-label{font-size:.72rem;gap:6px}.course-views .cv-label i{width:24px;height:24px}}
 </style>
 </head>
 
@@ -5705,6 +5718,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                 currentUser: null,
                 purchasedIds: [],
                 viewsByCourse: {},
+                _opening: new Set(),
+                _contentCalls: new Map(),
                 playlistChildIds: [],
                 openPlaylistId: null,
                 _playlistReturnTeacher: null,
@@ -5902,9 +5917,13 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                 },
 
                 viewsBadgeHtml: (courseId, left, total) => {
-                    const cls = left <= 0 ? ' zero' : (left === 1 ? ' low' : '');
-                    const txt = left <= 0 ? 'خلصت المشاهدات' : `متبقي ${left} من ${total} مشاهدات`;
-                    return `<span class="course-views${cls}" data-views-for="${courseId}"><i class="fas fa-eye"></i> ${txt}</span>`;
+                    total = Math.max(Number(total) || 0, 1); left = Math.min(Math.max(Number(left) || 0, 0), total);
+                    const segs = Math.min(total, 10);
+                    const on = total <= 10 ? left : Math.ceil(left / total * 10);
+                    const state = left <= 0 ? ' zero' : (left === 1 ? ' low' : '');
+                    const label = left <= 0 ? 'انتهت مشاهداتك' : 'المشاهدات المتبقية';
+                    const dots = Array.from({ length: segs }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('');
+                    return `<div class="course-views${state}" data-views-for="${courseId}" role="img" aria-label="${label}: ${left} من ${total}"><span class="cv-label"><i class="fas fa-eye"></i>${label}</span><span class="cv-end"><span class="cv-meter">${dots}</span><span class="cv-count">${left}<small>/${total}</small></span></span></div>`;
                 },
                 // تحديث العدّاد لحظيًا بعد كل فتح (الكارت والـ state)
                 setViews: (courseId, left, total) => {
@@ -5914,6 +5933,12 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     document.querySelectorAll(`[data-views-for="${courseId}"]`).forEach(el => {
                         el.outerHTML = StudentApp.ui.viewsBadgeHtml(courseId, left, total);
                     });
+                    if (left <= 0) {
+                        document.querySelectorAll(`.course-card[data-course-id="${courseId}"] > .course-button`).forEach(btn => {
+                            btn.classList.add('completed'); btn.disabled = true;
+                            btn.innerHTML = '<i class="fas fa-lock"></i> انتهت المشاهدات';
+                        });
+                    }
                 },
 
                 createCourseCard: (course, isSubscribed = false, isPending = false) => {
@@ -5929,7 +5954,12 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const originalPrice = course.original_price || null;
                     const hasDiscount = originalPrice && parseFloat(originalPrice) > parseFloat(coursePrice);
                     let buttonContent = '', buttonClass = 'course-button', buttonDisabled = false;
-                    if (isSubscribed) {
+                    const _vw0 = (isSubscribed && courseType === 'video' && !isFree) ? StudentApp.state.viewsByCourse[course.id] : null;
+                    if (isSubscribed && _vw0 && _vw0.left <= 0) {
+                        buttonContent = '<i class="fas fa-lock"></i> انتهت المشاهدات';
+                        buttonClass += ' completed';
+                        buttonDisabled = true;
+                    } else if (isSubscribed) {
                         if (courseType === 'video') buttonContent = '<i class="fas fa-play"></i> شاهد الدرس';
                         else if (courseType === 'pdf') buttonContent = '<i class="fas fa-book-open"></i> قراءة الملف';
                         else if (courseType === 'playlist') buttonContent = '<i class="fas fa-folder-open"></i> تصفح القائمة';
@@ -5956,7 +5986,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const priceHtml = isFree ? '<span class="course-price free-price">مجاني</span>'
                         : hasDiscount ? `<div class="price-wrap"><span class="course-price">${coursePrice} ج.م</span><span class="original-price">${originalPrice} ج.م</span><span class="discount-badge">${Math.round((1 - coursePrice / originalPrice) * 100)}% خصم</span></div>`
                             : `<span class="course-price">${coursePrice} ج.م</span>`;
-                    return `<div class="course-card animate" data-course-id="${course.id}" data-course-type="${courseType}" data-video-url="${safeVideoUrl}" data-pdf-url="${safePdfUrl}" data-title="${safeTitle}" data-instructor="${safeInstructor}" data-price="${coursePrice}" data-is-free="${isFree}"><div class="course-thumbnail"><img src="${thumbnail}" alt="${courseTitle}" loading="lazy" onerror="this.onerror=null;this.src=window.__PH"></div><div class="course-info"><div class="course-title">${courseTitle}</div>${instructorHtml}<div class="course-desc">${courseDesc}</div><div class="course-meta"><span>${courseType === 'video' ? ' فيديو' : (courseType === 'pdf' ? ' PDF' : ' قائمة')}</span>${badge}${viewsHtml}</div><div style="display:flex;justify-content:space-between;align-items:center;">${priceHtml}</div></div><button class="${buttonClass}" ${buttonDisabled ? 'disabled' : ''}>${buttonContent}</button></div>`;
+                    return `<div class="course-card animate" data-course-id="${course.id}" data-course-type="${courseType}" data-video-url="${safeVideoUrl}" data-pdf-url="${safePdfUrl}" data-title="${safeTitle}" data-instructor="${safeInstructor}" data-price="${coursePrice}" data-is-free="${isFree}"><div class="course-thumbnail"><img src="${thumbnail}" alt="${courseTitle}" loading="lazy" onerror="this.onerror=null;this.src=window.__PH"></div><div class="course-info"><div class="course-title">${courseTitle}</div>${instructorHtml}<div class="course-desc">${courseDesc}</div><div class="course-meta"><span>${courseType === 'video' ? ' فيديو' : (courseType === 'pdf' ? ' PDF' : ' قائمة')}</span>${badge}</div>${viewsHtml}<div style="display:flex;justify-content:space-between;align-items:center;">${priceHtml}</div></div><button class="${buttonClass}" ${buttonDisabled ? 'disabled' : ''}>${buttonContent}</button></div>`;
                 },
 
                 //  تطبيع اسم المدرس: إزالة المسافات الزائدة من الطرفين، ضغط المسافات المتكررة،
@@ -6018,6 +6048,13 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         const isSubscribed = StudentApp.state.purchasedIds.includes(courseId) || courseIsFree || playlistOwned;
                         const isPending = !isSubscribed && StudentApp.state.pendingIds.includes(courseId);
                         if (isSubscribed) {
+                            // 🛡️ منع الضغط المزدوج: كل ضغطة = مشاهدة، فمنع تكرار الضغطة بالغلط
+                            if (courseType === 'video' || courseType === 'pdf') {
+                                if (StudentApp.state._opening.has(courseId)) return;
+                                StudentApp.state._opening.add(courseId);
+                                button.disabled = true;
+                                setTimeout(() => { StudentApp.state._opening.delete(courseId); button.disabled = button.classList.contains('completed'); }, 3500);
+                            }
                             if (courseType === 'video') {
                                 //  استخدام video_url المحفوظ في الكارد مباشرة بدون query جديد
                                 const _unmask = (s) => {
@@ -6041,8 +6078,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                 // وبيرجّع view_id اللي المشغّل بيستخدمه في الـ heartbeat
                                 let view = null;
                                 try {
-                                    const { data: content, error: contentErr } = await StudentApp.client
-                                        .rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
+                                    const { data: content, error: contentErr } = await StudentApp.actions.fetchContent(courseId);
                                     if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
                                     videoUrl = content.video_url || videoUrl;
                                     view = { id: content.view_id || '', left: content.views_left };
@@ -6056,8 +6092,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             }
                             else if (courseType === 'pdf') {
                                 try {
-                                    const { data: content, error: contentErr } = await StudentApp.client
-                                        .rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
+                                    const { data: content, error: contentErr } = await StudentApp.actions.fetchContent(courseId);
                                     if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
                                     StudentApp.actions.downloadPDF(content.pdf_url || pdfUrl, courseId, title, { id: content.view_id || '', left: content.views_left });
                                 } catch (fetchErr) {
@@ -7105,6 +7140,10 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         StudentApp.state.selectedPaymentMethod = null;
                         document.getElementById('paymentModal').classList.add('active');
                     } else {
+                        // 🛡️ منع الضغط المزدوج (كل فتح = مشاهدة)
+                        if (StudentApp.state._opening.has(courseId)) return;
+                        StudentApp.state._opening.add(courseId);
+                        setTimeout(() => StudentApp.state._opening.delete(courseId), 3500);
                         //  استخدام video_url من الكارد مباشرة بدون query
                         const _unmask = (s) => {
                             try {
@@ -7136,8 +7175,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         } else {
                             let view = null;
                             try {
-                                const { data: content, error: contentErr } = await StudentApp.client
-                                    .rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
+                                const { data: content, error: contentErr } = await StudentApp.actions.fetchContent(courseId);
                                 if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
                                 videoUrl = content.video_url || videoUrl;
                                 pdfUrl = content.pdf_url || pdfUrl;
@@ -7480,6 +7518,25 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             submitBtn.innerHTML = originalBtnHTML;
                         }
                     }
+                },
+
+                // 🛡️ فتح الدرس = استدعاء واحد للسيرفر (= خصم مشاهدة واحدة). أي ضغطة متكررة/ضغطة مزدوجة وقت ما الطلب شغال
+                // (أو في الـ 2 ثانية اللي بعده، قبل ما الصفحة تنتقل) بتاخد نفس النتيجة ومبتخصمش تاني. الفشل مبيتخزنش.
+                fetchContent: (courseId) => {
+                    const calls = StudentApp.state._contentCalls;
+                    const hit = calls.get(courseId);
+                    if (hit && (hit.pending || Date.now() - hit.t < 2000)) return hit.p;
+                    const entry = { pending: true, t: 0, p: null };
+                    entry.p = (async () => {
+                        const res = await StudentApp.client.rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
+                        return res;
+                    })();
+                    entry.p.then(res => {
+                        entry.pending = false; entry.t = Date.now();
+                        if (res.error || !res.data?.success) calls.delete(courseId);
+                    }, () => { calls.delete(courseId); });
+                    calls.set(courseId, entry);
+                    return entry.p;
                 },
 
                 downloadPDF: (pdfUrl, courseId, title, view) => {
@@ -7866,6 +7923,9 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
         function watchVideo(courseId, title, videoUrl, view) {
             StudentApp.player.open(courseId, title, videoUrl, false, view);
         }
+        // 🔁 أي رجوع للمنصة (حتى من الـ back/cache) بينهي سياق المشاهدة الحالية؛
+        // فالرجوع للمشغّل/القارئ بالـ forward مش بيفتح نفس المشاهدة تاني ببلاش
+        window.addEventListener('pageshow', () => { try { sessionStorage.removeItem('vp_ctx'); sessionStorage.removeItem('pr_ctx'); } catch (e) { } });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') { const ov = document.getElementById('vpOverlay'); if (ov?.classList.contains('active')) StudentApp.player.close(); }
         });
