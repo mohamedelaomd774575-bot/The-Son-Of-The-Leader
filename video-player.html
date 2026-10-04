@@ -1184,6 +1184,7 @@ window.VG = (function () {
     if (r !== 'ok') { die(r); return false; }
     timer = setInterval(beat, 12000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) beat(); });
+    window.addEventListener('pageshow', e => { if (e.persisted) die('expired'); });
     window.addEventListener('online', beat);
     if (ctx.l !== '' && ctx.l != null) {
       const left = parseInt(ctx.l, 10), txt = isNaN(left) ? '' : (left <= 0 ? 'دي آخر مشاهدة ليك في الكورس ده' : 'المشاهدات المتبقية: ' + left + ' من 5');
