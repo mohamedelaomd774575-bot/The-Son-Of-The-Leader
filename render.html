@@ -1330,7 +1330,7 @@ window.VG = (function () {
                         const resp = await fetch(sg.data.signedUrl);
                         if (!resp.ok) throw new Error('denied');
                         pdfData = new Uint8Array(await resp.arrayBuffer());
-                    } catch (e) { showError('معندكش صلاحية فتح الملف ده. لو المشاهدات خلصت اشترك من جديد.', true); return; }
+                    } catch (e) { showError('معندكش صلاحية فتح الملف ده. تأكد إنك مشترك فيه، ولو المشكلة مستمرة كلّم الإدارة.', true); return; }
                 }
                 try {
                     const task = pdfjsLib.getDocument({
