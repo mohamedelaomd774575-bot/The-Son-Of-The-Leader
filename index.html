@@ -5411,7 +5411,7 @@
                 <div class="more-card">
                     <div class="more-icon app"><i class="fas fa-mobile-screen-button"></i></div>
                     <div class="more-title">حمّل المنصة كتطبيق</div>
-                    <p class="more-desc">ثبّت المنصة على جهازك وافتحها من الشاشة الرئيسية زي أي تطبيق.</p>
+                    <p class="more-desc">ثبّت المنصة على جهازك واستمتع ب تجربه افضل.</p>
                     <button type="button" class="more-btn app" id="installAppBtn" onclick="installApp()">
                         <i class="fas fa-download"></i> <span id="installAppText">تحميل التطبيق</span>
                     </button>
@@ -6013,26 +6013,28 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                 console.log('[DEBUG] videoUrl after unmask:', videoUrl || 'EMPTY');
                                 // 🔒 video_url بقى محمي على مستوى الداتابيز — بيتجاب بس وقت
                                 // الحاجة الفعلية عن طريق RPC بيتحقق من الاشتراك
-                                if (!videoUrl) {
-                                    try {
-                                        const { data: content, error: contentErr } = await StudentApp.client
-                                            .rpc('get_course_content', { p_course_id: courseId });
-                                        if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
-                                        videoUrl = content.video_url;
-                                    } catch (fetchErr) {
-                                        StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الفيديو', 'error');
-                                        return;
-                                    }
+                                // 🔒 كل فتح لدرس بيعدّي على get_course_content: بيتحقق من الاشتراك، بيحسب المشاهدة،
+                                // وبيرجّع view_id اللي المشغّل بيستخدمه في الـ heartbeat
+                                let view = null;
+                                try {
+                                    const { data: content, error: contentErr } = await StudentApp.client
+                                        .rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
+                                    if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
+                                    videoUrl = content.video_url || videoUrl;
+                                    view = { id: content.view_id || '', left: content.views_left };
+                                } catch (fetchErr) {
+                                    StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الفيديو', 'error');
+                                    return;
                                 }
                                 if (!videoUrl) { StudentApp.ui.showAlert('عذراً، لا يوجد فيديو متاح لهذا الدرس. (تأكد من إضافة رابط الفيديو في لوحة الإدارة)', 'error'); return; }
-                                watchVideo(courseId, title, videoUrl);
+                                watchVideo(courseId, title, videoUrl, view);
                             }
                             else if (courseType === 'pdf') {
                                 try {
                                     const { data: content, error: contentErr } = await StudentApp.client
-                                        .rpc('get_course_content', { p_course_id: courseId });
+                                        .rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
                                     if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
-                                    StudentApp.actions.downloadPDF(content.pdf_url || pdfUrl, courseId, title);
+                                    StudentApp.actions.downloadPDF(content.pdf_url || pdfUrl, courseId, title, { id: content.view_id || '', left: content.views_left });
                                 } catch (fetchErr) {
                                     StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الملف', 'error');
                                 }
@@ -6823,7 +6825,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     this._watermarkTimer = setInterval(move, 7000);
                 },
 
-                open: function (courseId, title, url, pdfMode) {
+                open: function (courseId, title, url, pdfMode, view) {
                     if (!url) { StudentApp.ui.showAlert('عذراً، لا يوجد محتوى متاح لهذا الدرس', 'error'); return; }
                     this._currentCourseId = courseId;
                     document.getElementById('vpTitle').textContent = title || '';
@@ -6834,7 +6836,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
 
                     if (pdfMode) {
                         // PDF بيتفتح في القارئ المدمج
-                        StudentApp.actions.downloadPDF(url, courseId, title);
+                        StudentApp.actions.downloadPDF(url, courseId, title, view);
                         return;
                     }
 
@@ -6847,7 +6849,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         // والرابط بيتشال من شريط العنوان فور فتح الصفحة
                         try {
                             const masked = btoa(unescape(encodeURIComponent('https://youtu.be/' + vid))).split('').reverse().join('');
-                            const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, t: String(Date.now()) });
+                            const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, vid: String(view?.id || ''), vl: view?.left == null ? '' : String(view.left), t: String(Date.now()) });
                             window.location.href = 'video-player.html?' + qs.toString();
                             return;
                         } catch (_) { }
@@ -7104,18 +7106,20 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             }
                             StudentApp.actions.openPlaylist(courseId, title, videoUrl);
                         } else {
+                            let view = null;
                             try {
                                 const { data: content, error: contentErr } = await StudentApp.client
-                                    .rpc('get_course_content', { p_course_id: courseId });
+                                    .rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
                                 if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
                                 videoUrl = content.video_url || videoUrl;
                                 pdfUrl = content.pdf_url || pdfUrl;
+                                view = { id: content.view_id || '', left: content.views_left };
                             } catch (fetchErr) {
                                 StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل المحتوى', 'error');
                                 return;
                             }
-                            if (type === 'pdf') StudentApp.actions.downloadPDF(pdfUrl, courseId, title);
-                            else watchVideo(courseId, title, videoUrl);
+                            if (type === 'pdf') StudentApp.actions.downloadPDF(pdfUrl, courseId, title, view);
+                            else watchVideo(courseId, title, videoUrl, view);
                         }
                     }
                 },
@@ -7449,20 +7453,12 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     }
                 },
 
-                downloadPDF: async (pdfUrl, courseId, title) => {
+                downloadPDF: (pdfUrl, courseId, title, view) => {
                     if (!pdfUrl) { StudentApp.ui.showAlert('رابط الملف غير متوفر', 'error'); return; }
-                    // 🔐 الملفات المدفوعة بتتخزن كمسار في bucket خاص — نطلب رابط مؤقت (الـ RLS بيتأكد من الاشتراك)
-                    if (!/^https?:\/\//i.test(String(pdfUrl))) {
-                        try {
-                            const { data: signed, error: signErr } = await StudentApp.client.storage.from('materials').createSignedUrl(String(pdfUrl), 21600);
-                            if (signErr || !signed?.signedUrl) throw signErr || new Error('no url');
-                            pdfUrl = signed.signedUrl;
-                        } catch (_) { StudentApp.ui.showAlert('تعذّر فتح الملف، تأكد من اشتراكك في الكورس', 'error'); return; }
-                    }
                     // 📖 الملف بيتفتح في القارئ المدمج (render.html) — الرابط متشفّر ومبيظهرش في شريط العنوان
                     try {
                         const masked = btoa(unescape(encodeURIComponent(String(pdfUrl)))).split('').reverse().join('');
-                        const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, t: String(Date.now()) });
+                        const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, vid: String(view?.id || ''), vl: view?.left == null ? '' : String(view.left), t: String(Date.now()) });
                         window.location.href = 'render.html?' + qs.toString();
                     } catch (_) {
                         window.open(pdfUrl, '_blank');
@@ -7838,8 +7834,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
         // 🎬 نفس اسم الدالة القديمة عشان أي كود تاني بينادي عليها يفضل شغال —
         // لكن دلوقتي بتفتح مودال جوه الصفحة بدل ما تعمل تنقل لصفحة تانية
         // ورابط الفيديو ظاهر في شريط العنوان
-        function watchVideo(courseId, title, videoUrl) {
-            StudentApp.player.open(courseId, title, videoUrl, false);
+        function watchVideo(courseId, title, videoUrl, view) {
+            StudentApp.player.open(courseId, title, videoUrl, false, view);
         }
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') { const ov = document.getElementById('vpOverlay'); if (ov?.classList.contains('active')) StudentApp.player.close(); }
