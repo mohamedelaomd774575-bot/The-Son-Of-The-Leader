@@ -933,7 +933,76 @@
         </div>
     </div>
 
-    <script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script id="view-guard">
+/* ViewGuard — حارس المشاهدة: بيتأكد كل 12 ثانية إن الجلسة لسه هي الجلسة النشطة (طرد فوري لو دخل حد بنفس الحساب من جهاز تاني) */
+window.VG = (function () {
+  const SB_URL = 'https://yxhajhwdbsxblbcpjtci.supabase.co', SB_KEY = 'sb_publishable_ipr1S60Tq_u3pJQOqgvgNw_o1FMkGeX';
+  const MSG = {
+    session: 'تم تسجيل الدخول بحسابك من جهاز آخر، فاتقفل الدرس هنا.',
+    banned: 'تم حظر هذا الحساب.',
+    auth: 'انتهت جلستك. سجّل الدخول من جديد.',
+    expired: 'انتهت مدة المشاهدة. افتح الدرس من جديد (هتتحسب مشاهدة جديدة).',
+    novid: 'افتح الدرس من صفحة الكورس عشان تتحسب المشاهدة.',
+    unknown: 'افتح الدرس من صفحة الكورس عشان تتحسب المشاهدة.',
+    net: 'الاتصال انقطع. افتح الدرس من جديد.'
+  };
+  let client = null, timer = null, vid = '', kick = null, dead = false, fails = 0;
+  function getClient() {
+    if (client) return client;
+    try { client = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) { client = null; }
+    return client;
+  }
+  function overlay(reason) {
+    if (document.getElementById('vgOverlay')) return;
+    const d = document.createElement('div'); d.id = 'vgOverlay';
+    d.setAttribute('style', 'position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.94);color:#fff;font-family:system-ui,"IBM Plex Sans Arabic",Tahoma,sans-serif;padding:24px;text-align:center;direction:rtl');
+    d.innerHTML = '<div style="max-width:420px"><div style="font-size:42px;margin-bottom:12px">🔒</div><div style="font-size:18px;font-weight:700;line-height:1.8;margin-bottom:18px"></div><button style="background:#0a84ff;color:#fff;border:0;border-radius:999px;padding:11px 26px;font-size:15px;font-weight:700;cursor:pointer">الرجوع للمنصة</button></div>';
+    d.querySelector('div>div:nth-child(2)').textContent = MSG[reason] || MSG.unknown;
+    d.querySelector('button').onclick = go;
+    document.body.appendChild(d);
+    setTimeout(go, 6000);
+  }
+  function go() { try { location.replace('index.html'); } catch (e) { location.href = 'index.html'; } }
+  function stop() { clearInterval(timer); timer = null; }
+  function die(reason) { if (dead) return; dead = true; stop(); try { kick && kick(reason); } catch (e) { } overlay(reason); }
+  async function check() {
+    const c = getClient();
+    if (!c) return 'ok';
+    try {
+      const { data, error } = await c.rpc('view_heartbeat', { p_view_id: vid });
+      if (error) { fails++; return fails >= 5 ? 'net' : 'ok'; }
+      fails = 0;
+      return data && data.ok === false ? (data.reason || 'unknown') : 'ok';
+    } catch (e) { fails++; return fails >= 5 ? 'net' : 'ok'; }
+  }
+  async function beat() { if (dead) return; const r = await check(); if (r !== 'ok') die(r); }
+  async function gate(ctx, o) {
+    o = o || {}; kick = o.kick || null;
+    if (!ctx || !ctx.w) { die('novid'); return false; }
+    vid = ctx.w;
+    const r = await check();
+    if (r !== 'ok') { die(r); return false; }
+    timer = setInterval(beat, 12000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) beat(); });
+    window.addEventListener('online', beat);
+    if (ctx.l !== '' && ctx.l != null) {
+      const left = parseInt(ctx.l, 10), txt = isNaN(left) ? '' : (left <= 0 ? 'دي آخر مشاهدة ليك في الكورس ده' : 'المشاهدات المتبقية: ' + left + ' من 5');
+      if (txt) {
+        if (o.anchorId && document.getElementById(o.anchorId)) {
+          const el = document.createElement('div'); el.textContent = txt;
+          el.setAttribute('style', 'display:inline-block;margin:8px 0 0;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(10,132,255,.18);color:inherit');
+          document.getElementById(o.anchorId).insertAdjacentElement('afterend', el);
+        }
+        if (o.notify) o.notify(txt);
+      }
+    }
+    return true;
+  }
+  return { gate, getClient, overlay };
+})();
+</script>
+<script>
         (function () {
             'use strict';
 
@@ -1004,11 +1073,11 @@
             (function () {
                 const q = new URLSearchParams(location.search);
                 if (q.has('url')) {
-                    ctx = { c: q.get('courseId') || '', t: q.get('title') || '', u: unmask(q.get('url')) };
-                    try { sessionStorage.setItem('pr_ctx', JSON.stringify({ c: ctx.c, t: ctx.t, k: mask(ctx.u) })); } catch (e) { }
+                    ctx = { c: q.get('courseId') || '', t: q.get('title') || '', u: unmask(q.get('url')), w: q.get('vid') || '', l: q.get('vl') || '' };
+                    try { sessionStorage.setItem('pr_ctx', JSON.stringify({ c: ctx.c, t: ctx.t, k: mask(ctx.u), w: ctx.w, l: ctx.l })); } catch (e) { }
                     try { history.replaceState(null, '', location.pathname); } catch (e) { }
                 } else {
-                    try { const s = JSON.parse(sessionStorage.getItem('pr_ctx') || 'null'); if (s) ctx = { c: s.c, t: s.t, u: unmask(s.k) }; } catch (e) { }
+                    try { const s = JSON.parse(sessionStorage.getItem('pr_ctx') || 'null'); if (s) ctx = { c: s.c, t: s.t, u: unmask(s.k), w: s.w || '', l: s.l || '' }; } catch (e) { }
                 }
             })();
             const TITLE = (ctx && ctx.t) || 'ملف';
@@ -1252,9 +1321,20 @@
                 }
 
                 showLoading('جاري فتح الملف…');
+                let pdfData = null;
+                if (!/^https?:/i.test(url)) {
+                    try {
+                        const sb = VG.getClient();
+                        const sg = await sb.storage.from('materials').createSignedUrl(url, 120);
+                        if (sg.error || !sg.data || !sg.data.signedUrl) throw new Error('denied');
+                        const resp = await fetch(sg.data.signedUrl);
+                        if (!resp.ok) throw new Error('denied');
+                        pdfData = new Uint8Array(await resp.arrayBuffer());
+                    } catch (e) { showError('معندكش صلاحية فتح الملف ده. لو المشاهدات خلصت اشترك من جديد.', true); return; }
+                }
                 try {
                     const task = pdfjsLib.getDocument({
-                        url, withCredentials: false,
+                        ...(pdfData ? { data: pdfData } : { url, withCredentials: false }),
                         cMapUrl: PDFJS_BASE + 'cmaps/', cMapPacked: true,
                         standardFontDataUrl: PDFJS_BASE + 'standard_fonts/',
                         isEvalSupported: false
@@ -1636,7 +1716,10 @@
             }, 1000);
             window.addEventListener('pagehide', () => { try { localStorage.setItem(POS_KEY, String(curPage)); } catch (e) { } });
 
-            open();
+            VG.gate(ctx, {
+                notify: toast,
+                kick: () => { try { doc && doc.destroy && doc.destroy(); } catch (e) { } try { pagesEl.innerHTML = ''; } catch (e) { } }
+            }).then(ok => { if (ok) open(); });
         })();
     </script>
 </body>
