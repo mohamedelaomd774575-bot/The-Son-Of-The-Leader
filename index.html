@@ -1118,6 +1118,31 @@
             animation-delay: 0.58s;
         }
 
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-secondary);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .role-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .role-btn.active {
+            background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(37,99,235,0.08));
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(37,99,235,0.15);
+        }
+
         #forgotPasswordBox .switch-form {
             animation-delay: 0.3s;
         }
@@ -2380,6 +2405,22 @@
         .course-button.completed:hover {
             transform: none;
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+        }
+
+        .course-button.exhausted {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #1a1a1a;
+            font-weight: 700;
+            animation: pulse-exhausted 2s infinite;
+        }
+        .course-button.exhausted:hover {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
+        }
+        @keyframes pulse-exhausted {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
         }
 
         .tab-content h3 {
@@ -4896,25 +4937,6 @@
             '<rect width="300" height="180" fill="#0f172a"/>' +
             '<text x="150" y="98" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#2563eb" text-anchor="middle">The Leader</text></svg>');
     </script>
-<style id="views-badge-css">
-.course-views{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:9px 12px;border-radius:var(--radius-md);background:var(--bg-card2);border:1px solid var(--border);transition:border-color .25s,background .25s}
-.course-views .cv-label{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:var(--text-secondary);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.course-views .cv-label i{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:.8rem;color:var(--primary);background:rgba(37,99,235,.12)}
-.course-views .cv-end{display:flex;align-items:center;gap:8px;flex:0 0 auto}
-.course-views .cv-meter{display:flex;gap:3px}
-.course-views .cv-meter i{width:12px;height:6px;border-radius:99px;background:rgba(136,153,187,.22);transition:background .3s,box-shadow .3s}
-.course-views .cv-meter i.on{background:linear-gradient(90deg,var(--primary),#60a5fa);box-shadow:0 0 8px rgba(37,99,235,.32)}
-.course-views .cv-count{font-weight:900;font-size:1rem;line-height:1;color:var(--text-primary);font-variant-numeric:tabular-nums;direction:ltr}
-.course-views .cv-count small{font-size:.72rem;font-weight:700;color:var(--text-muted);margin-inline-start:1px}
-.course-views.low{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.07)}
-.course-views.low .cv-label i{color:#f59e0b;background:rgba(245,158,11,.15)}
-.course-views.low .cv-meter i.on{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.35)}
-.course-views.zero{border-color:rgba(239,68,68,.42);background:rgba(239,68,68,.07)}
-.course-views.zero .cv-label{color:#ef4444}
-.course-views.zero .cv-label i{color:#ef4444;background:rgba(239,68,68,.15)}
-.course-views.zero .cv-count{color:#ef4444}
-@media (max-width:360px){.course-views{padding:8px 10px;gap:8px}.course-views .cv-meter i{width:9px}.course-views .cv-label{font-size:.72rem;gap:6px}.course-views .cv-label i{width:24px;height:24px}}
-</style>
 </head>
 
 <body>
@@ -5214,16 +5236,39 @@
             </div>
             <h2 style="color: var(--primary); margin-bottom: 20px;">انضم إلى جيش القادة</h2>
             <form id="registerForm">
+                <!-- اختيار نوع الحساب -->
+                <div class="role-selector" style="display:flex;gap:10px;margin-bottom:18px;">
+                    <button type="button" class="role-btn active" id="roleBtnStudent" onclick="switchRegRole('student')">
+                        <i class="fas fa-user-graduate"></i> طالب
+                    </button>
+                    <button type="button" class="role-btn" id="roleBtnTeacher" onclick="switchRegRole('teacher')">
+                        <i class="fas fa-chalkboard-teacher"></i> مدرس
+                    </button>
+                </div>
+                <input type="hidden" id="regRole" value="student">
                 <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail"
                         placeholder="البريد الإلكتروني" required></div>
                 <div class="input-group"><i class="fas fa-id-card"></i><input type="text" id="regName"
                         placeholder="الاسم الرباعي الكامل" required></div>
                 <div class="input-group"><i class="fas fa-mobile-alt"></i><input type="tel" id="regPhone"
                         pattern="[0-9]{11}" placeholder="رقم الهاتف (11 رقم)" required></div>
-                <div class="input-group"><i class="fas fa-user-tie"></i><input type="tel" id="regFatherPhone"
-                        pattern="[0-9]{11}" placeholder="هاتف الأب" required></div>
-                <div class="input-group"><i class="fas fa-user-friends"></i><input type="tel" id="regMotherPhone"
-                        pattern="[0-9]{11}" placeholder="هاتف الأم" required></div>
+                <!-- حقول الطالب فقط -->
+                <div id="studentFields">
+                    <div class="input-group"><i class="fas fa-user-tie"></i><input type="tel" id="regFatherPhone"
+                            pattern="[0-9]{11}" placeholder="هاتف الأب" required></div>
+                    <div class="input-group"><i class="fas fa-user-friends"></i><input type="tel" id="regMotherPhone"
+                            pattern="[0-9]{11}" placeholder="هاتف الأم" required></div>
+                </div>
+                <!-- حقول المدرس فقط -->
+                <div id="teacherFields" style="display:none;">
+                    <div class="input-group"><i class="fas fa-wallet"></i><input type="tel" id="regVodafone"
+                            pattern="[0-9]{11}" placeholder="رقم محفظة فودافون كاش"></div>
+                    <div class="input-group"><i class="fas fa-university"></i><input type="text" id="regInstapay"
+                            placeholder="حساب انستا باي (لازم واحد منهم على الأقل)"></div>
+                    <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px;margin-bottom:14px;font-size:0.82rem;color:#fbbf24;">
+                        <i class="fas fa-info-circle"></i> تسجيل المدرسين يتطلب موافقة إدارة المنصة. سيتم مراجعة طلبك وإبلاغك بالنتيجة.
+                    </div>
+                </div>
                 <div class="input-group password-input">
                     <i class="fas fa-lock"></i>
                     <input type="password" id="regPass" minlength="6" placeholder="كلمة مرور قوية (6+ أحرف)" required>
@@ -5717,14 +5762,12 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
             state: {
                 currentUser: null,
                 purchasedIds: [],
-                viewsByCourse: {},
-                _opening: new Set(),
-                _contentCalls: new Map(),
                 playlistChildIds: [],
                 openPlaylistId: null,
                 _playlistReturnTeacher: null,
                 directPurchasedIds: [],
                 pendingIds: [],
+                exhaustedIds: [],
                 isRecoveryMode: false,
                 currentCourse: null,
                 selectedPaymentMethod: null,
@@ -5786,6 +5829,16 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         if (student?.role === 'banned') await this.client.auth.signOut();
                         this.ui.showAlert('عفواً.. هذا الحساب محظور من دخول المنصة', 'error');
                         this.ui.showAuth();
+                        return;
+                    }
+                    if (student.role === 'pending_teacher') {
+                        await this.client.auth.signOut();
+                        this.ui.showAlert('طلب تسجيلك كمدرس لا يزال قيد المراجعة من قبل إدارة المنصة.', 'warning');
+                        this.ui.showAuth();
+                        return;
+                    }
+                    if (student.role === 'teacher') {
+                        window.location.href = 'Teache.html';
                         return;
                     }
                     this.state.currentUser = student;
@@ -5916,32 +5969,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     done: function () { this._n = Math.max(0, this._n - 1); if (!this._n) this._el().classList.remove('active'); }
                 },
 
-                viewsBadgeHtml: (courseId, left, total) => {
-                    total = Math.max(Number(total) || 0, 1); left = Math.min(Math.max(Number(left) || 0, 0), total);
-                    const segs = Math.min(total, 10);
-                    const on = total <= 10 ? left : Math.ceil(left / total * 10);
-                    const state = left <= 0 ? ' zero' : (left === 1 ? ' low' : '');
-                    const label = left <= 0 ? 'انتهت مشاهداتك' : 'المشاهدات المتبقية';
-                    const dots = Array.from({ length: segs }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('');
-                    return `<div class="course-views${state}" data-views-for="${courseId}" role="img" aria-label="${label}: ${left} من ${total}"><span class="cv-label"><i class="fas fa-eye"></i>${label}</span><span class="cv-end"><span class="cv-meter">${dots}</span><span class="cv-count">${left}<small>/${total}</small></span></span></div>`;
-                },
-                // تحديث العدّاد لحظيًا بعد كل فتح (الكارت والـ state)
-                setViews: (courseId, left, total) => {
-                    if (left == null || total == null) return;
-                    left = Math.max(Number(left) || 0, 0); total = Number(total);
-                    StudentApp.state.viewsByCourse[courseId] = { left, total };
-                    document.querySelectorAll(`[data-views-for="${courseId}"]`).forEach(el => {
-                        el.outerHTML = StudentApp.ui.viewsBadgeHtml(courseId, left, total);
-                    });
-                    if (left <= 0) {
-                        document.querySelectorAll(`.course-card[data-course-id="${courseId}"] > .course-button`).forEach(btn => {
-                            btn.classList.add('completed'); btn.disabled = true;
-                            btn.innerHTML = '<i class="fas fa-lock"></i> انتهت المشاهدات';
-                        });
-                    }
-                },
-
-                createCourseCard: (course, isSubscribed = false, isPending = false) => {
+                createCourseCard: (course, isSubscribed = false, isPending = false, isExhausted = false) => {
                     if (!course || !course.id) return '';
                     const thumbnail = course.thumbnail_url || window.__PH;
                     const badge = course.price ? '<span class="course-badge paid">مدفوع</span>' : '<span class="course-badge">مجاني</span>';
@@ -5954,11 +5982,9 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const originalPrice = course.original_price || null;
                     const hasDiscount = originalPrice && parseFloat(originalPrice) > parseFloat(coursePrice);
                     let buttonContent = '', buttonClass = 'course-button', buttonDisabled = false;
-                    const _vw0 = (isSubscribed && courseType === 'video' && !isFree) ? StudentApp.state.viewsByCourse[course.id] : null;
-                    if (isSubscribed && _vw0 && _vw0.left <= 0) {
-                        buttonContent = '<i class="fas fa-lock"></i> انتهت المشاهدات';
-                        buttonClass += ' completed';
-                        buttonDisabled = true;
+                    if (isExhausted) {
+                        buttonContent = '<i class="fas fa-redo"></i> مشاهداتك خلصت — اشترك من جديد';
+                        buttonClass += ' exhausted';
                     } else if (isSubscribed) {
                         if (courseType === 'video') buttonContent = '<i class="fas fa-play"></i> شاهد الدرس';
                         else if (courseType === 'pdf') buttonContent = '<i class="fas fa-book-open"></i> قراءة الملف';
@@ -5980,13 +6006,11 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const safePdfUrl = (course.pdf_url || '').toString().replace(/"/g, '&quot;');
                     const safeTitle = (courseTitle || '').toString().replace(/"/g, '&quot;');
                     const safeInstructor = (instructor || '').toString().replace(/"/g, '&quot;');
-                    const vw = (isSubscribed && courseType === 'video' && !isFree) ? StudentApp.state.viewsByCourse[course.id] : null;
-                    const viewsHtml = vw ? StudentApp.ui.viewsBadgeHtml(course.id, vw.left, vw.total) : '';
                     const instructorHtml = instructor ? `<div class="course-instructor"><i class="fas fa-chalkboard-teacher"></i> ${instructor}</div>` : '';
                     const priceHtml = isFree ? '<span class="course-price free-price">مجاني</span>'
                         : hasDiscount ? `<div class="price-wrap"><span class="course-price">${coursePrice} ج.م</span><span class="original-price">${originalPrice} ج.م</span><span class="discount-badge">${Math.round((1 - coursePrice / originalPrice) * 100)}% خصم</span></div>`
                             : `<span class="course-price">${coursePrice} ج.م</span>`;
-                    return `<div class="course-card animate" data-course-id="${course.id}" data-course-type="${courseType}" data-video-url="${safeVideoUrl}" data-pdf-url="${safePdfUrl}" data-title="${safeTitle}" data-instructor="${safeInstructor}" data-price="${coursePrice}" data-is-free="${isFree}"><div class="course-thumbnail"><img src="${thumbnail}" alt="${courseTitle}" loading="lazy" onerror="this.onerror=null;this.src=window.__PH"></div><div class="course-info"><div class="course-title">${courseTitle}</div>${instructorHtml}<div class="course-desc">${courseDesc}</div><div class="course-meta"><span>${courseType === 'video' ? ' فيديو' : (courseType === 'pdf' ? ' PDF' : ' قائمة')}</span>${badge}</div>${viewsHtml}<div style="display:flex;justify-content:space-between;align-items:center;">${priceHtml}</div></div><button class="${buttonClass}" ${buttonDisabled ? 'disabled' : ''}>${buttonContent}</button></div>`;
+                    return `<div class="course-card animate" data-course-id="${course.id}" data-course-type="${courseType}" data-video-url="${safeVideoUrl}" data-pdf-url="${safePdfUrl}" data-title="${safeTitle}" data-instructor="${safeInstructor}" data-price="${coursePrice}" data-is-free="${isFree}"><div class="course-thumbnail"><img src="${thumbnail}" alt="${courseTitle}" loading="lazy" onerror="this.onerror=null;this.src=window.__PH"></div><div class="course-info"><div class="course-title">${courseTitle}</div>${instructorHtml}<div class="course-desc">${courseDesc}</div><div class="course-meta"><span>${courseType === 'video' ? ' فيديو' : (courseType === 'pdf' ? ' PDF' : ' قائمة')}</span>${badge}</div><div style="display:flex;justify-content:space-between;align-items:center;">${priceHtml}</div></div><button class="${buttonClass}" ${buttonDisabled ? 'disabled' : ''}>${buttonContent}</button></div>`;
                 },
 
                 //  تطبيع اسم المدرس: إزالة المسافات الزائدة من الطرفين، ضغط المسافات المتكررة،
@@ -6043,24 +6067,23 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         const insidePlaylist = containerId === 'playlistItemsContainer';
                         const courseIsFree = isFree === 'true' || parseFloat(price) === 0;
                         const openPlaylistId = StudentApp.state.openPlaylistId;
+                        // لو المشاهدات خلصت → افتح مودال الدفع مباشرة
+                        const isExhausted = StudentApp.state.exhaustedIds.includes(courseId);
+                        if (isExhausted) {
+                            StudentApp.ui.showAlert('مشاهداتك لهذا الكورس خلصت — اشترك من جديد', 'warning');
+                            StudentApp.actions.handleCourseAction(courseId, title, parseFloat(price), courseType, false);
+                            return;
+                        }
                         // لو جوه playlist والـ playlist مشترك فيها → كل الكورسات تتفتح مباشرة
                         const playlistOwned = insidePlaylist && openPlaylistId && StudentApp.state.purchasedIds.includes(openPlaylistId);
                         const isSubscribed = StudentApp.state.purchasedIds.includes(courseId) || courseIsFree || playlistOwned;
                         const isPending = !isSubscribed && StudentApp.state.pendingIds.includes(courseId);
                         if (isSubscribed) {
-                            // 🛡️ منع الضغط المزدوج: كل ضغطة = مشاهدة، فمنع تكرار الضغطة بالغلط
-                            if (courseType === 'video' || courseType === 'pdf') {
-                                if (StudentApp.state._opening.has(courseId)) return;
-                                StudentApp.state._opening.add(courseId);
-                                button.disabled = true;
-                                setTimeout(() => { StudentApp.state._opening.delete(courseId); button.disabled = button.classList.contains('completed'); }, 3500);
-                            }
                             if (courseType === 'video') {
                                 //  استخدام video_url المحفوظ في الكارد مباشرة بدون query جديد
                                 const _unmask = (s) => {
                                     try {
                                         if (!s) return '';
-                                        // فك الـ URL encoding الأول
                                         let decoded = s;
                                         try { decoded = decodeURIComponent(s); } catch (_) { }
                                         if (decoded.startsWith('http')) return decoded;
@@ -6069,32 +6092,41 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                     } catch (e) { return ''; }
                                 };
                                 const maskedUrl = card.dataset.videoUrl || '';
-                                console.log('[DEBUG] maskedUrl:', maskedUrl ? maskedUrl.substring(0, 40) + '...' : 'EMPTY');
                                 let videoUrl = _unmask(maskedUrl);
-                                console.log('[DEBUG] videoUrl after unmask:', videoUrl || 'EMPTY');
-                                // 🔒 video_url بقى محمي على مستوى الداتابيز — بيتجاب بس وقت
-                                // الحاجة الفعلية عن طريق RPC بيتحقق من الاشتراك
-                                // 🔒 كل فتح لدرس بيعدّي على get_course_content: بيتحقق من الاشتراك، بيحسب المشاهدة،
-                                // وبيرجّع view_id اللي المشغّل بيستخدمه في الـ heartbeat
-                                let view = null;
-                                try {
-                                    const { data: content, error: contentErr } = await StudentApp.actions.fetchContent(courseId);
-                                    if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
-                                    videoUrl = content.video_url || videoUrl;
-                                    view = { id: content.view_id || '', left: content.views_left };
-                                    StudentApp.ui.setViews(courseId, content.views_left, content.views_total);
-                                } catch (fetchErr) {
-                                    StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الفيديو', 'error');
-                                    return;
+                                // 🔒 video_url محمي — نجيبه بـ RPC
+                                if (!videoUrl) {
+                                    try {
+                                        const { data: content, error: contentErr } = await StudentApp.client
+                                            .rpc('get_course_content', { p_course_id: courseId });
+                                        if (contentErr || !content?.success) {
+                                            // لو المشاهدات خلصت → حدّث الكارد وافتح مودال الدفع
+                                            if (content?.code === 'views_exhausted') {
+                                                StudentApp.state.exhaustedIds.push(courseId);
+                                                const idx = StudentApp.state.purchasedIds.indexOf(courseId);
+                                                if (idx > -1) StudentApp.state.purchasedIds.splice(idx, 1);
+                                                button.className = 'course-button exhausted';
+                                                button.innerHTML = '<i class="fas fa-redo"></i> مشاهداتك خلصت — اشترك من جديد';
+                                                StudentApp.ui.showAlert('مشاهداتك لهذا الكورس خلصت — اشترك من جديد', 'warning');
+                                                StudentApp.actions.handleCourseAction(courseId, title, parseFloat(price), courseType, false);
+                                                return;
+                                            }
+                                            throw new Error(content?.error || contentErr?.message);
+                                        }
+                                        videoUrl = content.video_url;
+                                    } catch (fetchErr) {
+                                        StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الفيديو', 'error');
+                                        return;
+                                    }
                                 }
-                                if (!videoUrl) { StudentApp.ui.showAlert('عذراً، لا يوجد فيديو متاح لهذا الدرس. (تأكد من إضافة رابط الفيديو في لوحة الإدارة)', 'error'); return; }
-                                watchVideo(courseId, title, videoUrl, view);
+                                if (!videoUrl) { StudentApp.ui.showAlert('عذراً، لا يوجد فيديو متاح لهذا الدرس.', 'error'); return; }
+                                watchVideo(courseId, title, videoUrl);
                             }
                             else if (courseType === 'pdf') {
                                 try {
-                                    const { data: content, error: contentErr } = await StudentApp.actions.fetchContent(courseId);
+                                    const { data: content, error: contentErr } = await StudentApp.client
+                                        .rpc('get_course_content', { p_course_id: courseId });
                                     if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
-                                    StudentApp.actions.downloadPDF(content.pdf_url || pdfUrl, courseId, title, { id: content.view_id || '', left: content.views_left });
+                                    StudentApp.actions.downloadPDF(content.pdf_url || pdfUrl, courseId, title);
                                 } catch (fetchErr) {
                                     StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل الملف', 'error');
                                 }
@@ -6153,19 +6185,18 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
             data: {
                 loadInitialData: async function () {
                     if (!StudentApp.state.currentUser?.id) return;
-                    //  نجيب فقط course_id و status من purchases بدون join على courses
+                    //  نجيب فقط course_id و status و المشاهدات من purchases
                     const { data: purchases, error } = await StudentApp.client
                         .from('purchases')
-                        .select('course_id, status, views_left, views_total')
+                        .select('course_id, status, views_total, views_used')
                         .eq('student_id', StudentApp.state.currentUser.id);
                     if (error) { console.error('[data] loadInitialData error:', error); return; }
                     if (purchases) {
-                        const approved = purchases.filter(p => p.status === 'approved');
+                        const approved = purchases.filter(p => p.status === 'approved' && p.views_used < p.views_total);
+                        const exhausted = purchases.filter(p => p.status === 'approved' && p.views_used >= p.views_total);
                         const directIds = approved.map(p => p.course_id);
-                        // عدّاد المشاهدات (بيتعرض على كروت الفيديو بس)
-                        StudentApp.state.viewsByCourse = {};
-                        approved.forEach(p => { if (p.views_total != null) StudentApp.state.viewsByCourse[p.course_id] = { left: Math.max(Number(p.views_left) || 0, 0), total: Number(p.views_total) }; });
                         StudentApp.state.directPurchasedIds = directIds;
+                        StudentApp.state.exhaustedIds = exhausted.map(p => p.course_id);
                         // جيب كورسات الـ playlists المشتراة من جدول courses (فيه video_url)
                         let fromPlaylists = [];
                         if (directIds.length > 0) {
@@ -6230,21 +6261,15 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
 
                 loadPurchases: async function () {
                     const container = document.getElementById('purchasesList');
-                    if (!StudentApp.state.purchasedIds.length) {
-                        __lgSet(container, '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>لا توجد اشتراكات نشطة</p></div>');
-                        return;
-                    }
-                    //  نجيب الكورسات من courses_public بدل join على courses مباشرة
+                    //  نجيب الكورسات من purchases بكل حالاتها (نشطة + خلصت مشاهداتها)
                     const { data: purchases, error } = await StudentApp.client
-                        .from('purchases').select('course_id, status').eq('student_id', StudentApp.state.currentUser.id).eq('status', 'approved');
+                        .from('purchases').select('course_id, status, views_total, views_used').eq('student_id', StudentApp.state.currentUser.id).eq('status', 'approved');
                     if (error || !purchases || purchases.length === 0) {
                         __lgSet(container, '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>لا توجد اشتراكات نشطة</p></div>');
                         return;
                     }
                     const courseIds = purchases.map(p => p.course_id);
-                    // 🔒 video_url/pdf_url بقوا محميين — select('*') هيرجع صلاحيات
-                    // مرفوضة، فبنحدد الأعمدة المسموحة بس (الفيديو نفسه بيتجاب
-                    // وقت الفتح الفعلي عن طريق get_course_content)
+                    // 🔒 video_url/pdf_url محميين — بنحدد الأعمدة المسموحة بس
                     const { data: courses, error: cErr } = await StudentApp.client
                         .from('courses').select('id, title, description, type, grade, instructor, thumbnail_url, is_free, price, original_price, is_published, sort_order, created_at, updated_at').in('id', courseIds);
                     if (cErr || !courses || !courses.length) {
@@ -6256,7 +6281,14 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const filteredPurchases = currentGrade
                         ? courses.filter(c => !c.grade || c.grade === currentGrade)
                         : courses;
-                    __lgSet(container, filteredPurchases.map(c => StudentApp.ui.createCourseCard(c, true, false)).join(''));
+                    // إنشاء map للمشاهدات
+                    const viewsMap = {};
+                    purchases.forEach(p => { viewsMap[p.course_id] = p; });
+                    __lgSet(container, filteredPurchases.map(c => {
+                        const pData = viewsMap[c.id];
+                        const isExhausted = pData && pData.views_used >= pData.views_total;
+                        return StudentApp.ui.createCourseCard(c, !isExhausted, false, isExhausted);
+                    }).join(''));
                 },
 
                 renderContent: async function (containerId, type, initP) {
@@ -6284,7 +6316,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     __lgSet(container, data.map(item => {
                         const isSubscribed = StudentApp.state.purchasedIds.includes(item.id);
                         const isPending = StudentApp.state.pendingIds.includes(item.id);
-                        return StudentApp.ui.createCourseCard(item, isSubscribed, isPending);
+                        const isExhausted = StudentApp.state.exhaustedIds.includes(item.id);
+                        return StudentApp.ui.createCourseCard(item, isSubscribed, isPending, isExhausted);
                     }).join(''));
                 },
             },
@@ -6888,7 +6921,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     this._watermarkTimer = setInterval(move, 7000);
                 },
 
-                open: function (courseId, title, url, pdfMode, view) {
+                open: function (courseId, title, url, pdfMode) {
                     if (!url) { StudentApp.ui.showAlert('عذراً، لا يوجد محتوى متاح لهذا الدرس', 'error'); return; }
                     this._currentCourseId = courseId;
                     document.getElementById('vpTitle').textContent = title || '';
@@ -6899,7 +6932,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
 
                     if (pdfMode) {
                         // PDF بيتفتح في القارئ المدمج
-                        StudentApp.actions.downloadPDF(url, courseId, title, view);
+                        StudentApp.actions.downloadPDF(url, courseId, title);
                         return;
                     }
 
@@ -6912,7 +6945,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         // والرابط بيتشال من شريط العنوان فور فتح الصفحة
                         try {
                             const masked = btoa(unescape(encodeURIComponent('https://youtu.be/' + vid))).split('').reverse().join('');
-                            const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, vid: String(view?.id || ''), vl: view?.left == null ? '' : String(view.left), t: String(Date.now()) });
+                            const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, t: String(Date.now()) });
                             window.location.href = 'video-player.html?' + qs.toString();
                             return;
                         } catch (_) { }
@@ -6983,15 +7016,38 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         const name = document.getElementById('regName').value.trim();
                         const phone = document.getElementById('regPhone').value.trim();
                         const password = document.getElementById('regPass').value.trim();
+                        const selectedRole = document.getElementById('regRole').value;
                         if (password.length < 6 || !/^[0-9]{11}$/.test(phone)) throw new Error('يرجى التأكد من صحة البيانات (كلمة المرور 6+ أحرف، الهاتف 11 رقم)');
-                        const { data: authData, error: authError } = await StudentApp.client.auth.signUp({ email, password });
+                        const isTeacher = selectedRole === 'teacher';
+                        // كل البيانات بتتبعت كـ metadata والـ trigger في الداتابيز هو اللي بيعمل الملف الشخصي
+                        // (الدور بيتحدد من الداتابيز: مدرس = pending_teacher لحد موافقة الإدارة)
+                        const meta = { name, phone, account_type: isTeacher ? 'teacher' : 'student' };
+                        if (isTeacher) {
+                            const vc = document.getElementById('regVodafone').value.trim();
+                            const ip = document.getElementById('regInstapay').value.trim();
+                            if (!vc && !ip) throw new Error('لازم تكتب رقم محفظة فودافون كاش أو حساب انستا باي (واحد على الأقل)');
+                            if (vc && !/^[0-9]{11}$/.test(vc)) throw new Error('رقم فودافون كاش لازم يكون 11 رقم');
+                            meta.vodafone_cash_number = vc;
+                            meta.instapay_number = ip;
+                        } else {
+                            const fp = document.getElementById('regFatherPhone').value.trim();
+                            const mp = document.getElementById('regMotherPhone').value.trim();
+                            if (!/^[0-9]{11}$/.test(fp) || !/^[0-9]{11}$/.test(mp)) throw new Error('هاتف الأب والأم لازم يكونوا 11 رقم');
+                            meta.father_phone = fp;
+                            meta.mother_phone = mp;
+                        }
+                        const { data: authData, error: authError } = await StudentApp.client.auth.signUp({ email, password, options: { data: meta } });
                         if (authError) throw authError;
-                        authLoaderText.textContent = 'جاري حفظ بيانات الملف الشخصي...';
-                        const { data: studentData, error: studentError } = await StudentApp.client
-                            .from('students')
-                            .insert([{ user_id: authData.user.id, name, email, phone, father_phone: document.getElementById('regFatherPhone').value.trim(), mother_phone: document.getElementById('regMotherPhone').value.trim(), role: 'student' }])
-                            .select().single();
-                        if (studentError) throw studentError;
+                        if (isTeacher) {
+                            // المدرس محتاج موافقة الإدارة — نسجل خروج ونوريله رسالة
+                            await StudentApp.client.auth.signOut();
+                            authLoader.classList.remove('active');
+                            document.getElementById('registerForm').reset();
+                            switchRegRole('student');
+                            toggleAuthForms();
+                            StudentApp.ui.showAlert('✅ تم إرسال طلبك كمدرس للإدارة، وهو الآن قيد المراجعة. هتقدر تدخل بعد الموافقة.', 'success');
+                            return;
+                        }
                         authLoaderText.textContent = 'جاري تسجيل دخولك...';
                         const { data: loginData, error: loginError } = await StudentApp.client.auth.signInWithPassword({ email, password });
                         if (loginError) throw loginError;
@@ -6999,6 +7055,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             const { data: sess } = await StudentApp.client.rpc('register_login_session');
                             if (sess?.success) { StudentApp.state.mySessionId = sess.session_id; StudentApp.state._justLoggedIn = true; }
                         } catch (_) { }
+                        const { data: studentData, error: studentError } = await StudentApp.client.from('students').select('*').eq('user_id', authData.user.id).single();
+                        if (studentError) throw studentError;
                         StudentApp.state.currentUser = studentData;
                         StudentApp.ui.showAlert(' تم التسجيل والدخول بنجاح!', 'success');
                         setTimeout(() => StudentApp.ui.showGradeSelector(), 500);
@@ -7024,6 +7082,15 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         if (student?.role === 'banned') {
                             await StudentApp.client.auth.signOut();
                             throw new Error('عفواً.. هذا الحساب محظور من دخول المنصة');
+                        }
+                        if (student?.role === 'pending_teacher') {
+                            await StudentApp.client.auth.signOut();
+                            throw new Error('طلب تسجيلك كمدرس لا يزال قيد المراجعة من قبل إدارة المنصة. سيتم إبلاغك عند الموافقة.');
+                        }
+                        if (student?.role === 'teacher') {
+                            // المدرس يتحول للوحة التحكم بتاعته
+                            window.location.href = 'Teache.html';
+                            return;
                         }
                         // 🆕 تسجيل جلسة دخول جديدة — بيبطل أي جلسة/توكينز محتوى قديمة
                         // شغالة على جهاز تاني بنفس الحساب، وهيبعت إشارة طرد فورية
@@ -7140,10 +7207,6 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         StudentApp.state.selectedPaymentMethod = null;
                         document.getElementById('paymentModal').classList.add('active');
                     } else {
-                        // 🛡️ منع الضغط المزدوج (كل فتح = مشاهدة)
-                        if (StudentApp.state._opening.has(courseId)) return;
-                        StudentApp.state._opening.add(courseId);
-                        setTimeout(() => StudentApp.state._opening.delete(courseId), 3500);
                         //  استخدام video_url من الكارد مباشرة بدون query
                         const _unmask = (s) => {
                             try {
@@ -7173,20 +7236,28 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             }
                             StudentApp.actions.openPlaylist(courseId, title, videoUrl);
                         } else {
-                            let view = null;
                             try {
-                                const { data: content, error: contentErr } = await StudentApp.actions.fetchContent(courseId);
-                                if (contentErr || !content?.success) throw new Error(content?.error || contentErr?.message);
+                                const { data: content, error: contentErr } = await StudentApp.client
+                                    .rpc('get_course_content', { p_course_id: courseId });
+                                if (contentErr || !content?.success) {
+                                    if (content?.code === 'views_exhausted') {
+                                        StudentApp.state.exhaustedIds.push(courseId);
+                                        const idx = StudentApp.state.purchasedIds.indexOf(courseId);
+                                        if (idx > -1) StudentApp.state.purchasedIds.splice(idx, 1);
+                                        StudentApp.ui.showAlert('مشاهداتك لهذا الكورس خلصت — اشترك من جديد', 'warning');
+                                        StudentApp.actions.handleCourseAction(courseId, title, parseFloat(card?.dataset?.price || 0), type, false);
+                                        return;
+                                    }
+                                    throw new Error(content?.error || contentErr?.message);
+                                }
                                 videoUrl = content.video_url || videoUrl;
                                 pdfUrl = content.pdf_url || pdfUrl;
-                                view = { id: content.view_id || '', left: content.views_left };
-                                StudentApp.ui.setViews(courseId, content.views_left, content.views_total);
                             } catch (fetchErr) {
                                 StudentApp.ui.showAlert(fetchErr.message || 'عذراً، تعذر تحميل المحتوى', 'error');
                                 return;
                             }
-                            if (type === 'pdf') StudentApp.actions.downloadPDF(pdfUrl, courseId, title, view);
-                            else watchVideo(courseId, title, videoUrl, view);
+                            if (type === 'pdf') StudentApp.actions.downloadPDF(pdfUrl, courseId, title);
+                            else watchVideo(courseId, title, videoUrl);
                         }
                     }
                 },
@@ -7520,31 +7591,12 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     }
                 },
 
-                // 🛡️ فتح الدرس = استدعاء واحد للسيرفر (= خصم مشاهدة واحدة). أي ضغطة متكررة/ضغطة مزدوجة وقت ما الطلب شغال
-                // (أو في الـ 2 ثانية اللي بعده، قبل ما الصفحة تنتقل) بتاخد نفس النتيجة ومبتخصمش تاني. الفشل مبيتخزنش.
-                fetchContent: (courseId) => {
-                    const calls = StudentApp.state._contentCalls;
-                    const hit = calls.get(courseId);
-                    if (hit && (hit.pending || Date.now() - hit.t < 2000)) return hit.p;
-                    const entry = { pending: true, t: 0, p: null };
-                    entry.p = (async () => {
-                        const res = await StudentApp.client.rpc('get_course_content', { p_course_id: courseId, p_session: StudentApp.state.mySessionId || null });
-                        return res;
-                    })();
-                    entry.p.then(res => {
-                        entry.pending = false; entry.t = Date.now();
-                        if (res.error || !res.data?.success) calls.delete(courseId);
-                    }, () => { calls.delete(courseId); });
-                    calls.set(courseId, entry);
-                    return entry.p;
-                },
-
-                downloadPDF: (pdfUrl, courseId, title, view) => {
+                downloadPDF: (pdfUrl, courseId, title) => {
                     if (!pdfUrl) { StudentApp.ui.showAlert('رابط الملف غير متوفر', 'error'); return; }
                     // 📖 الملف بيتفتح في القارئ المدمج (render.html) — الرابط متشفّر ومبيظهرش في شريط العنوان
                     try {
                         const masked = btoa(unescape(encodeURIComponent(String(pdfUrl)))).split('').reverse().join('');
-                        const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, vid: String(view?.id || ''), vl: view?.left == null ? '' : String(view.left), t: String(Date.now()) });
+                        const qs = new URLSearchParams({ courseId: String(courseId || ''), title: title || '', url: masked, t: String(Date.now()) });
                         window.location.href = 'render.html?' + qs.toString();
                     } catch (_) {
                         window.open(pdfUrl, '_blank');
@@ -7599,7 +7651,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             const playlistSubscribed = StudentApp.state.purchasedIds.includes(playlistId);
                             const cSubscribed = cIsFree || playlistSubscribed || StudentApp.state.purchasedIds.includes(c.id);
                             const cPending = !cSubscribed && StudentApp.state.pendingIds.includes(c.id);
-                            return StudentApp.ui.createCourseCard(c, cSubscribed, cPending);
+                            const cExhausted = !cIsFree && !playlistSubscribed && StudentApp.state.exhaustedIds.includes(c.id);
+                            return StudentApp.ui.createCourseCard(c, cSubscribed, cPending, cExhausted);
                         }).join('');
                         // ربط أحداث الكارد بعد الرسم
                         //  FIX: نمسح _leaderBound عشان يعيد ربط الأحداث بعد إعادة رسم الـ container
@@ -7645,7 +7698,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         container.innerHTML = data.map(item => {
                             const isSubscribed = StudentApp.state.purchasedIds.includes(item.id);
                             const isPending = StudentApp.state.pendingIds.includes(item.id);
-                            return StudentApp.ui.createCourseCard(item, isSubscribed, isPending);
+                            const isExhausted = StudentApp.state.exhaustedIds.includes(item.id);
+                            return StudentApp.ui.createCourseCard(item, isSubscribed, isPending, isExhausted);
                         }).join('');
                         const tc = document.getElementById('teacherItemsContainer');
                         if (tc) tc._leaderBound = false;
@@ -7692,6 +7746,23 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
         function toggleAuthForms() {
             document.getElementById('loginBox').classList.toggle('hidden');
             document.getElementById('registerBox').classList.toggle('hidden');
+        }
+
+        function switchRegRole(role) {
+            document.getElementById('regRole').value = role;
+            document.getElementById('roleBtnStudent').classList.toggle('active', role === 'student');
+            document.getElementById('roleBtnTeacher').classList.toggle('active', role === 'teacher');
+            const sf = document.getElementById('studentFields');
+            const tf = document.getElementById('teacherFields');
+            if (role === 'teacher') {
+                sf.style.display = 'none';
+                tf.style.display = 'block';
+                sf.querySelectorAll('input').forEach(i => i.removeAttribute('required'));
+            } else {
+                sf.style.display = 'block';
+                tf.style.display = 'none';
+                sf.querySelectorAll('input').forEach(i => i.setAttribute('required', ''));
+            }
         }
 
         function toggleForgotForm() {
@@ -7920,12 +7991,9 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
         // 🎬 نفس اسم الدالة القديمة عشان أي كود تاني بينادي عليها يفضل شغال —
         // لكن دلوقتي بتفتح مودال جوه الصفحة بدل ما تعمل تنقل لصفحة تانية
         // ورابط الفيديو ظاهر في شريط العنوان
-        function watchVideo(courseId, title, videoUrl, view) {
-            StudentApp.player.open(courseId, title, videoUrl, false, view);
+        function watchVideo(courseId, title, videoUrl) {
+            StudentApp.player.open(courseId, title, videoUrl, false);
         }
-        // 🔁 أي رجوع للمنصة (حتى من الـ back/cache) بينهي سياق المشاهدة الحالية؛
-        // فالرجوع للمشغّل/القارئ بالـ forward مش بيفتح نفس المشاهدة تاني ببلاش
-        window.addEventListener('pageshow', () => { try { sessionStorage.removeItem('vp_ctx'); sessionStorage.removeItem('pr_ctx'); } catch (e) { } });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') { const ov = document.getElementById('vpOverlay'); if (ov?.classList.contains('active')) StudentApp.player.close(); }
         });
