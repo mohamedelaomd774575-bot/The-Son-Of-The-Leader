@@ -1,160 +1,1043 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة المستر</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-    :root{--bg:#020617;--card:#0d1525;--border:rgba(255,255,255,.08);--gold:#fbbf24;--blue:#3b82f6;--text:#e2e8f0;--muted:#94a3b8;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{background:linear-gradient(135deg,#020617,#0f172a);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;padding:20px;}
-    .wrap{max-width:1100px;margin:0 auto;}
-    .login-box{max-width:380px;margin:80px auto;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px;}
-    .login-box h1{color:var(--gold);font-size:1.3rem;margin-bottom:20px;text-align:center;}
-    input{width:100%;padding:12px;margin-bottom:12px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Cairo',sans-serif;}
-    button{width:100%;padding:12px;background:linear-gradient(135deg,#f5a623,#ffd17a);color:#1a1a1a;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;}
-    .err{color:#f87171;font-size:.85rem;margin-top:8px;text-align:center;}
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
-    header h1{color:var(--gold);font-size:1.4rem;}
-    header .sub{color:var(--muted);font-size:.85rem;}
-    .logout-btn{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;width:auto;}
-    .search-box{margin-bottom:20px;}
-    .course-card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:18px;overflow:hidden;}
-    .course-head{padding:14px 18px;background:rgba(59,130,246,.08);display:flex;justify-content:space-between;align-items:center;}
-    .course-head h2{font-size:1.05rem;color:#fff;}
-    .course-head span{color:var(--muted);font-size:.8rem;}
-    table{width:100%;border-collapse:collapse;}
-    th,td{padding:10px 14px;text-align:right;font-size:.85rem;border-bottom:1px solid var(--border);}
-    th{color:var(--muted);font-weight:700;}
-    td{color:var(--text);}
-    .empty{padding:40px;text-align:center;color:var(--muted);}
-    .loading{text-align:center;padding:60px;color:var(--muted);}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المعلم | منصة ابن القائد التعليمية</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-dark: #080c14;
+            --bg-card: #0d1525;
+            --text-light: #f0f4ff;
+            --text-muted: #8899bb;
+            --glass-border: rgba(37, 99, 235, 0.12);
+            --glass-bg: rgba(13, 21, 37, 0.7);
+            --glass-bg-hover: rgba(13, 21, 37, 0.9);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Utilities */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        select.input-control option {
+            background: var(--bg-card);
+            color: var(--text-light);
+        }
+
+        .input-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .user-info h1 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .user-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+        }
+
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Data Tables / Lists */
+        .data-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .data-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .data-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .item-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .item-meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .badge-primary { background: rgba(37, 99, 235, 0.1); color: var(--primary); }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .search-bar .input-control {
+            flex: 1;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Login Screen */
+        #loginView {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .login-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        /* Skeletons */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Hidden Utility */
+        .hidden {
+            display: none !important;
+        }
+        
+        .loader-spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .full-page-loader {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: var(--bg-dark);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
-    <div class="login-box" id="loginBox">
-        <h1>🎓 لوحة تحكم المستر</h1>
-        <input type="email" id="tEmail" placeholder="البريد الإلكتروني">
-        <input type="password" id="tPass" placeholder="كلمة المرور">
-        <button onclick="teacherLogin()">دخول</button>
-        <div class="err" id="loginErr"></div>
+
+    <div id="fullLoader" class="full-page-loader">
+        <div class="loader-spinner" style="width: 50px; height: 50px; border-width: 5px;"></div>
     </div>
 
-    <div id="dashboard" style="display:none;">
-        <header>
-            <div>
-                <h1 id="teacherTitle">لوحة المستر</h1>
-                <div class="sub" id="teacherSub"></div>
+    <!-- Login View -->
+    <div id="loginView" class="hidden">
+        <div class="glass-card login-card">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <h2 style="margin-bottom: 20px;">تسجيل الدخول كمعلم</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="email" id="loginEmail" class="input-control" placeholder="البريد الإلكتروني" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" class="input-control" placeholder="كلمة المرور" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginBtn">
+                    <span>دخول</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboardView" class="hidden">
+        <div class="container">
+            <!-- Header -->
+            <header>
+                <div class="user-info">
+                    <h1 id="teacherName">لوحة التحكم</h1>
+                    <p id="instructorName">جاري التحميل...</p>
+                </div>
+                <div class="header-actions">
+                    <a href="index.html" class="btn btn-outline"><i class="fas fa-home"></i> الرئيسية</a>
+                    <button class="btn btn-outline" id="logoutBtn" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.3);"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                </div>
+            </header>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="glass-card stat-card">
+                    <i class="fas fa-book-open"></i>
+                    <div class="stat-value" id="statCourses">0</div>
+                    <div class="stat-label">كورساتي</div>
+                </div>
+                <div class="glass-card stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-value" id="statStudents">0</div>
+                    <div class="stat-label">إجمالي الطلاب</div>
+                </div>
+                <div class="glass-card stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-value" id="statPending">0</div>
+                    <div class="stat-label">طلبات معلقة</div>
+                </div>
             </div>
-            <button class="logout-btn" onclick="teacherLogout()">خروج</button>
-        </header>
-        <input class="search-box" id="searchBox" oninput="renderCourses()" placeholder="🔍 ابحث باسم الطالب أو رقم الموبايل...">
-        <div id="coursesContainer"><div class="loading">جاري التحميل...</div></div>
+
+            <!-- Tabs -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('courses', this)">كورساتي</button>
+                <button class="tab-btn" onclick="switchTab('requests', this)">طلبات الشراء</button>
+                <button class="tab-btn" onclick="switchTab('codes', this)">أكواد الدفع</button>
+                <button class="tab-btn" onclick="switchTab('students', this)">طلابي</button>
+            </div>
+
+            <!-- Tab Content: Courses -->
+            <div id="tab-courses" class="tab-content active">
+                <div class="search-bar">
+                    <input type="text" id="searchCourses" class="input-control" placeholder="ابحث في الكورسات..." onkeyup="filterList('coursesList', this.value)">
+                    <button class="btn btn-primary" onclick="openCourseModal()"><i class="fas fa-plus"></i> إضافة كورس</button>
+                </div>
+                <div class="data-list" id="coursesList">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Requests -->
+            <div id="tab-requests" class="tab-content">
+                <div class="search-bar">
+                    <input type="text" id="searchRequests" class="input-control" placeholder="ابحث باسم الطالب أو الكورس..." onkeyup="filterList('requestsList', this.value)">
+                </div>
+                <div class="data-list" id="requestsList">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Codes -->
+            <div id="tab-codes" class="tab-content">
+                <div class="search-bar">
+                    <input type="text" id="searchCodes" class="input-control" placeholder="ابحث في الأكواد..." onkeyup="filterList('codesList', this.value)">
+                    <button class="btn btn-primary" onclick="openCodeModal()"><i class="fas fa-plus"></i> إضافة كود</button>
+                </div>
+                <div class="data-list" id="codesList">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Students -->
+            <div id="tab-students" class="tab-content">
+                <div class="search-bar">
+                    <input type="text" id="searchStudents" class="input-control" placeholder="ابحث باسم الطالب، رقم الهاتف..." onkeyup="filterList('studentsList', this.value)">
+                </div>
+                <div class="data-list" id="studentsList">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    const supabaseUrl = "https://yxhajhwdbsxblbcpjtci.supabase.co";
-    const supabaseKey = "sb_publishable_yGLQXnUVYejPs83WF3wiPA_a3VvpsZx";
-    const client = supabase.createClient(supabaseUrl, supabaseKey);
+    <!-- Modal: Add/Edit Course -->
+    <div class="modal-overlay" id="courseModal">
+        <div class="glass-card modal-content">
+            <div class="modal-header">
+                <h3 id="courseModalTitle">إضافة كورس جديد</h3>
+                <button class="close-btn" onclick="closeModal('courseModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="courseForm">
+                <input type="hidden" id="courseId">
+                <div class="input-group">
+                    <label>عنوان الكورس</label>
+                    <input type="text" id="c_title" class="input-control" required>
+                </div>
+                <div class="input-group">
+                    <label>الوصف</label>
+                    <textarea id="c_desc" class="input-control" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="input-group" style="flex:1;">
+                        <label>النوع</label>
+                        <select id="c_type" class="input-control">
+                            <option value="video">فيديو</option>
+                            <option value="pdf">مذكرة PDF</option>
+                            <option value="playlist">قائمة تشغيل</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="flex:1;">
+                        <label>المرحلة</label>
+                        <select id="c_grade" class="input-control">
+                            <option value="grade_1">1 بكالوريا</option>
+                            <option value="grade_2">2 بكالوريا</option>
+                            <option value="grade_3">3 بكالوريا</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>رابط الفيديو / قائمة التشغيل</label>
+                    <input type="url" id="c_video" class="input-control">
+                </div>
+                <div class="input-group">
+                    <label>رابط الـ PDF</label>
+                    <input type="url" id="c_pdf" class="input-control">
+                </div>
+                <div class="input-group">
+                    <label>رابط الصورة (Thumbnail)</label>
+                    <input type="url" id="c_thumb" class="input-control">
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
+                    <div class="input-group" style="margin-bottom:0;">
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="c_isfree" onchange="togglePriceFields()"> مجاني
+                        </label>
+                    </div>
+                    <div class="input-group" style="flex:1; margin-bottom:0;" id="priceField">
+                        <label>السعر الحالى</label>
+                        <input type="number" id="c_price" class="input-control" value="0">
+                    </div>
+                    <div class="input-group" style="flex:1; margin-bottom:0;" id="origPriceField">
+                        <label>السعر الأصلي (اختياري)</label>
+                        <input type="number" id="c_orig_price" class="input-control" value="0">
+                    </div>
+                </div>
 
-    let allCourses = [];
-    let allStudents = [];
+                <div class="input-group" id="publishField" style="display:none;">
+                    <label style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" id="c_published"> منشور للطلاب
+                    </label>
+                </div>
 
-    async function teacherLogin() {
-        const email = document.getElementById('tEmail').value.trim();
-        const pass = document.getElementById('tPass').value;
-        const errBox = document.getElementById('loginErr');
-        errBox.textContent = '';
-        if (!email || !pass) { errBox.textContent = 'من فضلك أدخل البريد وكلمة المرور'; return; }
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="saveCourseBtn">حفظ الكورس</button>
+            </form>
+        </div>
+    </div>
 
-        const { data, error } = await client.auth.signInWithPassword({ email, password: pass });
-        if (error) { errBox.textContent = 'بيانات الدخول غير صحيحة'; return; }
+    <!-- Modal: Add Code -->
+    <div class="modal-overlay" id="codeModal">
+        <div class="glass-card modal-content">
+            <div class="modal-header">
+                <h3>إضافة كود دفع جديد</h3>
+                <button class="close-btn" onclick="closeModal('codeModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="codeForm">
+                <div class="input-group">
+                    <label>الكورس</label>
+                    <select id="code_course" class="input-control" required>
+                        <!-- Loaded dynamically -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>الكود</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="code_text" class="input-control" required minlength="6" maxlength="32" pattern="[A-Za-z0-9]{6,32}" style="text-transform: uppercase;">
+                        <button type="button" class="btn btn-outline" onclick="generateRandomCode()">عشوائي</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>أقصى عدد للاستخدام (من 1 إلى 1000)</label>
+                    <input type="number" id="code_max" class="input-control" value="1" min="1" max="1000" required>
+                </div>
+                <div class="input-group">
+                    <label>تاريخ الانتهاء (اختياري)</label>
+                    <input type="datetime-local" id="code_expiry" class="input-control">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="saveCodeBtn">إنشاء كود</button>
+            </form>
+        </div>
+    </div>
 
-        const { data: profile } = await client.from('students').select('*').eq('user_id', data.user.id).maybeSingle();
-        if (!profile || profile.role !== 'teacher') {
-            errBox.textContent = 'هذا الحساب ليس حساب مستر';
-            await client.auth.signOut();
-            return;
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script>
+        const sb = window.supabase.createClient('https://yxhajhwdbsxblbcpjtci.supabase.co', 'sb_publishable_ipr1S60Tq_u3pJQOqgvgNw_o1FMkGeX');
+
+        let currentUser = null;
+        let allCourses = [];
+        let dashboardLoaded = false;
+        const PLACEHOLDER = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'><rect width='60' height='60' rx='8' fill='%230d1525'/></svg>";
+
+        const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const safeUrl = (u) => (typeof u === 'string' && /^https:\/\//i.test(u)) ? esc(u) : '';
+        const GRADES = { grade_1: '1 بكالوريا', grade_2: '2 بكالوريا', grade_3: '3 بكالوريا' };
+        const TYPES = { video: 'فيديو', pdf: 'مذكرة', playlist: 'قائمة تشغيل' };
+
+        // يرجّع رسالة الخطأ لو العملية فشلت (سواء خطأ شبكة أو {success:false})
+        function rpcError(res) {
+            if (res.error) return res.error.message;
+            if (res.data && res.data.success === false) return res.data.error || 'فشلت العملية';
+            return null;
         }
 
-        document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        document.getElementById('teacherTitle').textContent = 'أهلاً أستاذ ' + (profile.name || '');
-        document.getElementById('teacherSub').textContent = 'كورسات: ' + (profile.instructor_name || '—');
-        loadData();
-    }
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('logoutBtn').addEventListener('click', () => sb.auth.signOut());
+            document.getElementById('courseForm').addEventListener('submit', handleSaveCourse);
+            document.getElementById('codeForm').addEventListener('submit', handleSaveCode);
 
-    async function teacherLogout() {
-        await client.auth.signOut();
-        document.getElementById('dashboard').style.display = 'none';
-        document.getElementById('loginBox').style.display = 'block';
-        document.getElementById('tEmail').value = ''; document.getElementById('tPass').value = '';
-    }
-
-    async function loadData() {
-        const [{ data: courses, error: e1 }, { data: students, error: e2 }] = await Promise.all([
-            client.rpc('teacher_get_my_courses'),
-            client.rpc('teacher_get_my_students')
-        ]);
-        if (e1 || e2) {
-            document.getElementById('coursesContainer').innerHTML = '<div class="empty">حصل خطأ في تحميل البيانات، حاول تاني</div>';
-            return;
-        }
-        allCourses = courses || [];
-        allStudents = students || [];
-        renderCourses();
-    }
-
-    function renderCourses() {
-        const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
-        const container = document.getElementById('coursesContainer');
-
-        if (allCourses.length === 0) {
-            container.innerHTML = '<div class="empty">لا توجد كورسات مسجلة باسمك حاليًا</div>';
-            return;
-        }
-
-        let html = '';
-        allCourses.forEach(course => {
-            let students = allStudents.filter(s => s.course_id === course.id);
-            if (q) students = students.filter(s =>
-                (s.student_name || '').toLowerCase().includes(q) ||
-                (s.phone || '').includes(q) || (s.father_phone || '').includes(q)
-            );
-            html += `<div class="course-card">
-                <div class="course-head"><h2>${course.title || ''}</h2><span>${students.length} طالب</span></div>
-                ${students.length ? `<table><thead><tr>
-                    <th>الاسم</th><th>موبايل الطالب</th><th>موبايل ولي الأمر (أب)</th><th>موبايل ولي الأمر (أم)</th><th>الصف</th><th>المجموعة</th>
-                </tr></thead><tbody>
-                ${students.map(s => `<tr>
-                    <td>${s.student_name || ''}</td><td>${s.phone || '—'}</td>
-                    <td>${s.father_phone || '—'}</td><td>${s.mother_phone || '—'}</td>
-                    <td>${s.grade || '—'}</td><td>${s.group_number || '—'}</td>
-                </tr>`).join('')}
-                </tbody></table>` : '<div class="empty">لا يوجد طلاب مشتركين في هذا الكورس بعد</div>'}
-            </div>`;
+            sb.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT') { dashboardLoaded = false; showLogin(); }
+                else if (event === 'SIGNED_IN' && session && !dashboardLoaded) { setTimeout(() => verifyTeacher(session.user), 0); }
+            });
+            sb.auth.getSession().then(({ data: { session } }) => {
+                if (session) verifyTeacher(session.user); else showLogin();
+            });
         });
-        container.innerHTML = html;
-    }
 
-    // استرجاع الجلسة لو المستر فاتح الصفحة وهو مسجل دخول بالفعل
-    (async () => {
-        const { data: { session } } = await client.auth.getSession();
-        if (session) {
-            const { data: profile } = await client.from('students').select('*').eq('user_id', session.user.id).maybeSingle();
-            if (profile && profile.role === 'teacher') {
-                document.getElementById('loginBox').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                document.getElementById('teacherTitle').textContent = 'أهلاً أستاذ ' + (profile.name || '');
-                document.getElementById('teacherSub').textContent = 'كورسات: ' + (profile.instructor_name || '—');
-                loadData();
+        function showLogin() {
+            document.getElementById('fullLoader').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('loginView').classList.remove('hidden');
+            const b = document.getElementById('loginBtn'); b.disabled = false; b.innerHTML = '<span>دخول</span>';
+        }
+        function showDashboard() {
+            document.getElementById('fullLoader').classList.add('hidden');
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<div class="loader-spinner" style="width:16px; height:16px;"></div>';
+            btn.disabled = true;
+            const { error } = await sb.auth.signInWithPassword({
+                email: document.getElementById('loginEmail').value.trim(),
+                password: document.getElementById('loginPassword').value
+            });
+            if (error) { showToast('بيانات الدخول غير صحيحة', 'error'); btn.innerHTML = '<span>دخول</span>'; btn.disabled = false; }
+        }
+
+        // التحقق من الدور من جدول students (المصدر الوحيد للحقيقة) — مش بنعتمد على الواجهة
+        async function verifyTeacher(user) {
+            if (dashboardLoaded) return;
+            currentUser = user;
+            const { data: profile, error } = await sb.from('students').select('name, instructor_name, role').eq('user_id', user.id).maybeSingle();
+            if (error || !profile) { showToast('تعذر قراءة بيانات الحساب', 'error'); await sb.auth.signOut(); return; }
+            if (profile.role === 'pending_teacher') { showToast('طلب انضمامك كمدرس لسه قيد مراجعة الإدارة', 'warning'); await sb.auth.signOut(); return; }
+            if (profile.role !== 'teacher') { showToast('هذه اللوحة للمدرسين المعتمدين فقط', 'error'); await sb.auth.signOut(); return; }
+            dashboardLoaded = true;
+            document.getElementById('teacherName').textContent = profile.name || 'المعلم';
+            document.getElementById('instructorName').textContent = profile.instructor_name || 'معلم';
+            showDashboard();
+            await Promise.all([fetchCourses(), fetchRequests(), fetchCodes(), fetchStudents()]);
+        }
+
+        // ---------- Courses ----------
+        async function fetchCourses() {
+            setListLoading('coursesList');
+            const res = await sb.rpc('teacher_get_my_courses');
+            if (res.error) { showToast('خطأ في جلب الكورسات', 'error'); return; }
+            allCourses = res.data || [];
+            renderCourses(allCourses);
+            document.getElementById('statCourses').textContent = allCourses.length;
+            updateCodeCourseSelect();
+        }
+
+        function renderCourses(courses) {
+            const list = document.getElementById('coursesList');
+            if (!courses.length) { list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">لا يوجد كورسات حالياً</div>'; return; }
+            list.innerHTML = courses.map(c => `
+                <div class="data-item searchable-item" data-text="${esc(c.title)} ${esc(GRADES[c.grade] || '')}">
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <img src="${safeUrl(c.thumbnail_url) || PLACEHOLDER}" alt="" style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
+                        <div class="item-info">
+                            <div class="item-title">${esc(c.title)}</div>
+                            <div class="item-meta">
+                                <span class="badge badge-primary">${esc(TYPES[c.type] || c.type)}</span>
+                                <span>${esc(GRADES[c.grade] || c.grade)}</span>
+                                <span>${c.is_free ? '<span class="badge badge-success">مجاني</span>' : esc(c.price) + ' ج.م'}</span>
+                                <span>${c.is_published ? '<span class="badge badge-success">منشور</span>' : '<span class="badge badge-warning">مسودة</span>'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-outline" onclick="editCourse('${esc(c.id)}')"><i class="fas fa-edit"></i> تعديل</button>
+                    </div>
+                </div>`).join('');
+        }
+
+        // ---------- Purchase requests (عرض فقط — الموافقة من الإدارة) ----------
+        async function fetchRequests() {
+            setListLoading('requestsList');
+            const res = await sb.rpc('teacher_get_purchase_requests');
+            if (res.error) { showToast('خطأ في جلب الطلبات', 'error'); return; }
+            const reqs = res.data || [];
+            renderRequests(reqs);
+            document.getElementById('statPending').textContent = reqs.filter(r => r.status === 'pending').length;
+        }
+
+        function renderRequests(reqs) {
+            const list = document.getElementById('requestsList');
+            if (!reqs.length) { list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">لا يوجد طلبات حالياً</div>'; return; }
+            const statusMap = { pending: ['قيد الانتظار', 'badge-warning'], approved: ['مقبول', 'badge-success'], rejected: ['مرفوض', 'badge-danger'] };
+            const methodMap = { vodafone_cash: 'فودافون كاش', instapay: 'انستا باي', code: 'كود', balance: 'رصيد' };
+            list.innerHTML = reqs.map(r => {
+                const st = statusMap[r.status] || [r.status, 'badge-primary'];
+                const img = safeUrl(r.payment_image);
+                return `
+                <div class="data-item searchable-item" data-text="${esc(r.student_name)} ${esc(r.student_phone)} ${esc(r.course_title)}">
+                    <div class="item-info">
+                        <div class="item-title">${esc(r.student_name)} - ${esc(r.course_title)}</div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-phone"></i> ${esc(r.student_phone) || '-'}</span>
+                            <span>المبلغ: ${esc(r.amount_paid ?? 0)} ج.م</span>
+                            <span>${esc(methodMap[r.payment_method] || r.payment_method || '')}</span>
+                            <span>المشاهدات: ${esc(r.views_used)}/${esc(r.views_total)}</span>
+                            <span class="badge ${st[1]}">${st[0]}</span>
+                            <span>${new Date(r.created_at).toLocaleDateString('ar-EG')}</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">${img ? `<a href="${img}" target="_blank" rel="noopener noreferrer" class="btn btn-outline"><i class="fas fa-image"></i> الإيصال</a>` : ''}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // ---------- Codes ----------
+        async function fetchCodes() {
+            setListLoading('codesList');
+            const res = await sb.rpc('teacher_get_payment_codes');
+            if (res.error) { showToast('خطأ في جلب الأكواد', 'error'); return; }
+            renderCodes(res.data || []);
+        }
+
+        function renderCodes(codes) {
+            const list = document.getElementById('codesList');
+            if (!codes.length) { list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">لا يوجد أكواد حالياً</div>'; return; }
+            list.innerHTML = codes.map(c => `
+                <div class="data-item searchable-item" data-text="${esc(c.code)} ${esc(c.course_title)}">
+                    <div class="item-info">
+                        <div class="item-title">${esc(c.code)}</div>
+                        <div class="item-meta">
+                            <span>الكورس: ${esc(c.course_title)}</span>
+                            <span>الاستخدام: ${esc(c.uses_count)} / ${esc(c.max_uses)}</span>
+                            <span>${c.is_active ? '<span class="badge badge-success">نشط</span>' : '<span class="badge badge-danger">غير نشط</span>'}</span>
+                            ${c.expires_at ? `<span>ينتهي: ${new Date(c.expires_at).toLocaleDateString('ar-EG')}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="item-actions"><button class="btn btn-danger" onclick="deleteCode('${esc(c.code_id)}')"><i class="fas fa-trash"></i></button></div>
+                </div>`).join('');
+        }
+
+        // ---------- Students ----------
+        async function fetchStudents() {
+            setListLoading('studentsList');
+            const res = await sb.rpc('teacher_get_my_students');
+            if (res.error) { showToast('خطأ في جلب الطلاب', 'error'); return; }
+            const stds = res.data || [];
+            renderStudents(stds);
+            document.getElementById('statStudents').textContent = new Set(stds.map(s => s.student_id)).size;
+        }
+
+        function renderStudents(stds) {
+            const list = document.getElementById('studentsList');
+            if (!stds.length) { list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">لا يوجد طلاب حالياً</div>'; return; }
+            list.innerHTML = stds.map(s => `
+                <div class="data-item searchable-item" data-text="${esc(s.student_name)} ${esc(s.phone)} ${esc(s.course_title)}">
+                    <div class="item-info">
+                        <div class="item-title">${esc(s.student_name)}</div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-book"></i> ${esc(s.course_title)}</span>
+                            <span><i class="fas fa-phone"></i> ${esc(s.phone) || 'غير محدد'}</span>
+                            <span>ولي الأمر: ${esc(s.father_phone)} ${esc(s.mother_phone)}</span>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        // ---------- Forms ----------
+        async function handleSaveCourse(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveCourseBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loader-spinner" style="width:16px; height:16px;"></div>';
+            const v = (id) => document.getElementById(id).value.trim();
+            const orNull = (x) => x === '' ? null : x;
+            const id = v('courseId');
+            const isFree = document.getElementById('c_isfree').checked;
+            const price = parseFloat(v('c_price')) || 0;
+            if (price < 0) { showToast('السعر غير صحيح', 'error'); btn.disabled = false; btn.innerHTML = 'حفظ الكورس'; return; }
+            try {
+                let res;
+                if (id) {
+                    res = await sb.rpc('teacher_update_course', {
+                        p_course_id: id, p_title: v('c_title'), p_description: v('c_desc'),
+                        p_video_url: orNull(v('c_video')), p_pdf_url: orNull(v('c_pdf')), p_thumbnail_url: orNull(v('c_thumb')),
+                        p_is_free: isFree, p_price: price, p_is_published: document.getElementById('c_published').checked
+                    });
+                } else {
+                    res = await sb.rpc('teacher_add_course', {
+                        p_title: v('c_title'), p_description: v('c_desc'), p_type: v('c_type'), p_grade: v('c_grade'),
+                        p_video_url: orNull(v('c_video')), p_pdf_url: orNull(v('c_pdf')), p_thumbnail_url: orNull(v('c_thumb')),
+                        p_is_free: isFree, p_price: price, p_original_price: parseFloat(v('c_orig_price')) || null
+                    });
+                }
+                const err = rpcError(res);
+                if (err) throw new Error(err);
+                showToast(id ? 'تم تحديث الكورس' : 'تم إضافة الكورس بنجاح', 'success');
+                closeModal('courseModal');
+                fetchCourses();
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'حفظ الكورس';
             }
         }
-    })();
-</script>
+
+        async function handleSaveCode(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveCodeBtn');
+            btn.disabled = true;
+            try {
+                const expiry = document.getElementById('code_expiry').value;
+                const res = await sb.rpc('teacher_create_payment_code', {
+                    p_code: document.getElementById('code_text').value.trim().toUpperCase(),
+                    p_course_id: document.getElementById('code_course').value,
+                    p_max_uses: parseInt(document.getElementById('code_max').value, 10),
+                    p_expires_at: expiry ? new Date(expiry).toISOString() : null
+                });
+                const err = rpcError(res);
+                if (err) throw new Error(err);
+                showToast('تم إنشاء الكود', 'success');
+                closeModal('codeModal');
+                fetchCodes();
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteCode(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا الكود؟')) return;
+            const res = await sb.rpc('teacher_delete_payment_code', { p_code_id: id });
+            const err = rpcError(res);
+            if (err) { showToast(err, 'error'); return; }
+            showToast(res.data?.deactivated_only ? 'الكود اتستخدم قبل كده فاتعطّل بدل الحذف' : 'تم الحذف', 'success');
+            fetchCodes();
+        }
+
+        // ---------- UI helpers ----------
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+        function filterList(listId, text) {
+            text = text.toLowerCase();
+            document.getElementById(listId).querySelectorAll('.searchable-item').forEach(item => {
+                item.style.display = (item.getAttribute('data-text') || '').toLowerCase().includes(text) ? 'flex' : 'none';
+            });
+        }
+        function setListLoading(listId) {
+            document.getElementById(listId).innerHTML = Array(3).fill('<div class="data-item"><div class="skeleton" style="width:60px;height:60px;border-radius:8px;"></div><div class="item-info"><div class="skeleton" style="height:20px;width:60%;margin-bottom:10px;"></div><div class="skeleton" style="height:15px;width:40%;"></div></div></div>').join('');
+        }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function openCourseModal() {
+            document.getElementById('courseForm').reset();
+            document.getElementById('courseId').value = '';
+            document.getElementById('c_type').disabled = false;
+            document.getElementById('c_grade').disabled = false;
+            document.getElementById('publishField').style.display = 'none';
+            document.getElementById('courseModalTitle').textContent = 'إضافة كورس جديد';
+            togglePriceFields();
+            openModal('courseModal');
+        }
+        function editCourse(courseId) {
+            const c = allCourses.find(x => x.id === courseId);
+            if (!c) return;
+            document.getElementById('courseId').value = c.id;
+            document.getElementById('c_title').value = c.title || '';
+            document.getElementById('c_desc').value = c.description || '';
+            document.getElementById('c_type').value = c.type;
+            document.getElementById('c_type').disabled = true;
+            document.getElementById('c_grade').value = c.grade;
+            document.getElementById('c_grade').disabled = true;
+            document.getElementById('c_video').value = c.video_url || '';
+            document.getElementById('c_pdf').value = c.pdf_url || '';
+            document.getElementById('c_thumb').value = c.thumbnail_url || '';
+            document.getElementById('c_isfree').checked = c.is_free;
+            document.getElementById('c_price').value = c.price || 0;
+            document.getElementById('c_orig_price').value = c.original_price || 0;
+            document.getElementById('publishField').style.display = 'block';
+            document.getElementById('c_published').checked = c.is_published;
+            document.getElementById('courseModalTitle').textContent = 'تعديل الكورس';
+            togglePriceFields();
+            openModal('courseModal');
+        }
+        function togglePriceFields() {
+            const isFree = document.getElementById('c_isfree').checked;
+            document.getElementById('priceField').style.display = isFree ? 'none' : 'block';
+            document.getElementById('origPriceField').style.display = isFree ? 'none' : 'block';
+        }
+        function openCodeModal() {
+            document.getElementById('codeForm').reset();
+            generateRandomCode();
+            openModal('codeModal');
+        }
+        function generateRandomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const arr = new Uint32Array(10); crypto.getRandomValues(arr);
+            document.getElementById('code_text').value = Array.from(arr, n => chars[n % chars.length]).join('');
+        }
+        function updateCodeCourseSelect() {
+            document.getElementById('code_course').innerHTML = allCourses.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('');
+        }
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const color = type === 'success' ? 'var(--success)' : type === 'warning' ? 'var(--warning)' : 'var(--danger)';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}" style="color:${color}"></i> <span></span>`;
+            toast.querySelector('span').textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.animation = 'slideIn 0.3s ease-in reverse forwards'; setTimeout(() => toast.remove(), 300); }, 3500);
+        }
+    </script>
 </body>
 </html>
