@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="robots" content="noindex, nofollow">
+    <title>الدرس | ابن القائد</title>
+    <link rel="icon" type="image/png" href="icons/son.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/video-player.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <header class="bar">
+            <button class="circle" id="backBtn" aria-label="رجوع">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9.3 5.3a1 1 0 0 0 0 1.4l5.3 5.3-5.3 5.3a1 1 0 1 0 1.4 1.4l6-6a1 1 0 0 0 0-1.4l-6-6a1 1 0 0 0-1.4 0z" />
+                </svg>
+            </button>
+            <div class="bar-title">
+                <h1 id="lessonTitle">جاري التحميل…</h1>
+                <span>ابن القائد</span>
+            </div>
+            <div class="chip" id="studentChip">
+                <span class="nm" id="stuName"></span>
+                <span class="av" id="stuAv">ط</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="stage" id="stage" tabindex="0" aria-label="مشغل الفيديو">
+
+                <div class="yt-clip" id="ytClip">
+                    <div id="ytMount"></div>
+                </div>
+
+                <div class="wm" id="wm"></div>
+
+                <div class="spinner" id="spinner"></div>
+                <div class="surface" id="surface"></div>
+                <div class="fx l" id="fxL">‎−10</div>
+                <div class="fx r" id="fxR">+10</div>
+
+                <!-- الواجهة -->
+                <div class="ui" id="ui">
+                    <div class="toptitle" id="topTitle"></div>
+
+                    <div class="center">
+                        <button class="cbtn sk glass" id="bBack" aria-label="رجوع 10 ثواني">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 5V2.2a.5.5 0 0 0-.8-.4L7 5.3a.5.5 0 0 0 0 .8l4.2 3.5a.5.5 0 0 0 .8-.4V6.5A6.5 6.5 0 1 1 5.5 13a1 1 0 1 0-2 0A8.5 8.5 0 1 0 12 5z" />
+                                <text x="12" y="16.4" font-size="6.6" font-weight="700" text-anchor="middle" font-family="sans-serif">10</text>
+                            </svg>
+                        </button>
+                        <button class="cbtn pl glass" id="bCenter" aria-label="تشغيل / إيقاف"></button>
+                        <button class="cbtn sk glass" id="bFwd" aria-label="تقديم 10 ثواني">
+                            <svg viewBox="0 0 24 24" style="transform:scaleX(-1)">
+                                <path d="M12 5V2.2a.5.5 0 0 0-.8-.4L7 5.3a.5.5 0 0 0 0 .8l4.2 3.5a.5.5 0 0 0 .8-.4V6.5A6.5 6.5 0 1 1 5.5 13a1 1 0 1 0-2 0A8.5 8.5 0 1 0 12 5z" />
+                            </svg>
+                            <span style="position:absolute;font-size:.62em;font-weight:700;margin-top:1px">10</span>
+                        </button>
+                    </div>
+
+                    <div class="dock glass" id="dock">
+                        <div class="scrub" id="scrub">
+                            <div class="track">
+                                <div class="buf" id="sBuf"></div>
+                                <div class="cur" id="sCur"></div>
+                                <div class="knob" id="sKnob"></div>
+                            </div>
+                            <div class="tip" id="sTip">0:00</div>
+                        </div>
+                        <div class="row">
+                            <div class="grp">
+                                <button class="ib" id="bPlay" aria-label="تشغيل / إيقاف"></button>
+                                <div class="grp vgrp">
+                                    <button class="ib" id="bMute" aria-label="كتم"></button>
+                                    <input class="vol" id="vol" type="range" min="0" max="100" value="100" aria-label="الصوت">
+                                </div>
+                                <div class="time" id="time">0:00 <b>/ 0:00</b></div>
+                            </div>
+                            <div class="grp">
+                                <button class="spd" id="bSpd" aria-label="السرعة">1×</button>
+                                <button class="ib" id="bSet" aria-label="الإعدادات"></button>
+                                <button class="ib" id="bFs" aria-label="ملء الشاشة"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu glass" id="menu"></div>
+                <div class="toast glass" id="toast"></div>
+
+                <!-- غلاف: بداية / نهاية / خطأ -->
+                <div class="cover" id="cover"></div>
+
+                <div class="lock">
+                    <div>أغلق أدوات المطوّر عشان تكمل الدرس</div>
+                </div>
+            </section>
+
+            <section class="info">
+                <div class="card">
+                    <h2 id="infoTitle"></h2>
+                    <div class="tags">
+                        <span class="tag" id="tagStu">
+                            <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4 0-8 2-8 5v1.5a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5V19c0-3-4-5-8-5z" /></svg>
+                            <span id="tagStuTxt"></span>
+                        </span>
+                        <span class="tag">
+                            <svg viewBox="0 0 24 24"><path d="M12 2 4 5.5v5.6c0 5 3.4 9.3 8 10.9 4.6-1.6 8-5.9 8-10.9V5.5L12 2zm-1.2 13.6-3-3 1.4-1.4 1.6 1.6 4-4 1.4 1.4-5.4 5.4z" /></svg>
+                            محتوى محمي ببيانات حسابك
+                        </span>
+                    </div>
+                </div>
+                <div class="card keys">
+                    <kbd>Space</kbd> تشغيل / إيقاف &nbsp;·&nbsp; <kbd>←</kbd><kbd>→</kbd> ±10 ثواني &nbsp;·&nbsp;
+                    <kbd>↑</kbd><kbd>↓</kbd> الصوت &nbsp;·&nbsp; <kbd>M</kbd> كتم &nbsp;·&nbsp; <kbd>F</kbd> ملء الشاشة
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/view-guard.js"></script>
+    <script src="js/video-player.js"></script>
+</body>
+
+</html>

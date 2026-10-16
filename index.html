@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://drive.google.com https://player.vimeo.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE SON OF THE LEADER | منصه ابن القائد</title>
+
+    <!-- ====== SEO: Favicons (محركات البحث تعرض الأيقونة بجانب الرابط) ====== -->
+    <link rel="icon" type="image/png" href="icons/logo-gold.png">
+    <link rel="icon" type="image/x-icon" href="icons/son.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/logo-gold.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/logo-gold.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="icons/logo-gold.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/logo-gold.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/son.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/son.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/son.png">
+    <meta name="msapplication-TileImage" content="icons/son.png">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="./manifest.webmanifest">
+
+    <!-- ====== SEO: Google Search Console Verification ====== -->
+    <!--  استبدل "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" بكود التحقق الخاص بك من GSC -->
+    <meta name="google-site-verification" content="nItVipsUKj8UX1vFa5cGndU6jlY_Dfq8nu-K5j6fecg" />
+    <!-- ====== SEO: hreflang — تحديد اللغة والجمهور المستهدف ====== -->
+    <link rel="alternate" hreflang="ar-EG" href="https://the-son-of-the-leader-edu.vercel.app/">
+    <link rel="alternate" hreflang="ar" href="https://the-son-of-the-leader-edu.vercel.app/">
+    <link rel="alternate" hreflang="x-default" href="https://the-son-of-the-leader-edu.vercel.app/">
+
+    <!-- ====== SEO: Meta Tags الأساسية ====== -->
+    <meta name="description"
+        content="منصة ابن القائد التعليمية | أفضل منصة مصرية لمراجعات البكالوريا وشهادة إتمام التعليم الأساسي. اشترك الآن وادرس مع أمهر المدرسين في مصر عبر الإنترنت. كورسات، ملازم، وامتحانات تفاعلية لجميع المواد الدراسية.">
+    <meta name="author" content="منصة ابن القائد التعليمية">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    <meta name="language" content="Arabic">
+    <meta name="geo.region" content="EG">
+    <meta name="geo.country" content="Egypt">
+    <meta name="category" content="education, e-learning, online courses">
+    <link rel="canonical" href="https://the-son-of-the-leader-edu.vercel.app/">
+
+    <!-- ====== SEO: Open Graph (Facebook, WhatsApp, LinkedIn) ====== -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="منصة ابن القائد التعليمية">
+    <meta property="og:title" content="منصة ابن القائد | أفضل منصة تعليمية مصرية للبكالوريا العامة">
+    <meta property="og:description"
+        content="ادرس مع أفضل مدرسين مصر — كورسات فيديو، ملازم PDF، ومراجعات شاملة للبكالوريا العامة. سجّل الآن مجاناً وابدأ رحلتك نحو التفوق.">
+    <meta property="og:image" content="https://the-son-of-the-leader-edu.vercel.app/icons/son.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="منصة ابن القائد التعليمية">
+    <meta property="og:locale" content="ar_EG">
+    <meta property="og:url" content="https://the-son-of-the-leader-edu.vercel.app/">
+
+    <!-- ====== SEO: Twitter Card ====== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="منصة ابن القائد | تعليم اون لاين مصر">
+    <meta name="twitter:description"
+        content="أفضل منصة تعليمية مصرية — مراجعات البكالوريا، كورسات فيديو، وملازم PDF مع أمهر مدرسي مصر. سجّل مجاناً الآن!">
+    <meta name="twitter:image" content="https://the-son-of-the-leader-edu.vercel.app/icons/son.png">
+    <meta name="twitter:image:alt" content="منصة ابن القائد التعليمية">
+    <meta name="twitter:site" content="@sonoftheleader">
+
+    <!-- ====== SEO: Structured Data (JSON-LD) ====== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "منصة ابن القائد التعليمية",
+      "alternateName": ["Son of the Leader Platform", "ابن القائد", "The Son of The Leader"],
+      "url": "https://the-son-of-the-leader-edu.vercel.app",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://the-son-of-the-leader-edu.vercel.app/icons/son.png",
+        "width": 512,
+        "height": 512
+      },
+      "image": "https://the-son-of-the-leader-edu.vercel.app/icons/son.png",
+      "description": "منصة ابن القائد هي أفضل منصة تعليمية مصرية متخصصة في مراجعات البكالوريا وشهادة إتمام التعليم الأساسي. نقدم كورسات فيديو عالية الجودة وملازم PDF وامتحانات تدريبية لجميع المواد الدراسية في المنهج المصري.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "EG",
+        "addressLocality": "Cairo",
+        "addressRegion": "Egypt"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Egypt"
+      },
+      "knowsLanguage": ["ar", "ar-EG"],
+      "sameAs": [],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "كورسات بكالوريا",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Course",
+              "name": "مراجعة شاملة للبكالوريا العامة",
+              "description": "كورسات مراجعة شاملة لجميع مواد البكالوريا بالمنهج المصري",
+              "provider": {
+                "@type": "EducationalOrganization",
+                "name": "منصة ابن القائد"
+              },
+              "inLanguage": "ar",
+              "educationalLevel": "Secondary School",
+              "teaches": "مواد البكالوريا المصرية",
+              "availableLanguage": "Arabic"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Course",
+              "name": "ملازم ومراجعات PDF",
+              "description": "ملازم مراجعة احترافية بصيغة PDF لجميع مواد المنهج المصري",
+              "provider": {
+                "@type": "EducationalOrganization",
+                "name": "منصة ابن القائد"
+              },
+              "inLanguage": "ar"
+            }
+          }
+        ]
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "منصة ابن القائد التعليمية",
+      "url": "https://the-son-of-the-leader-edu.vercel.app",
+      "description": "أفضل منصة تعليمية مصرية للبكالوريا العامة — كورسات فيديو، ملازم PDF، ومراجعات شاملة",
+      "inLanguage": "ar-EG",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://the-son-of-the-leader-edu.vercel.app/?s={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "ما هي منصة ابن القائد التعليمية؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "منصة ابن القائد هي منصة تعليمية مصرية متخصصة في تقديم كورسات ومراجعات شاملة لطلاب البكالوريا وشهادة إتمام التعليم الأساسي في مصر. تضم المنصة مجموعة من أفضل مدرسي مصر وتقدم محتوى تعليمياً عالي الجودة بأسعار مناسبة."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "كيف أشترك في منصة ابن القائد؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "يمكنك التسجيل في منصة ابن القائد بسهولة عبر إنشاء حساب جديد باستخدام بريدك الإلكتروني أو رقم هاتفك. بعد التسجيل يمكنك الاطلاع على الكورسات المتاحة واختيار ما يناسبك."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "هل منصة ابن القائد مجانية؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "منصة ابن القائد تقدم محتوى مجاني ومحتوى مدفوع. يمكنك التسجيل مجاناً والاطلاع على الكورسات المتاحة والاشتراك في الكورسات المدفوعة بأسعار مناسبة جداً."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "ما هي المواد الدراسية المتاحة على منصة ابن القائد؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "تغطي منصة ابن القائد جميع مواد البكالوريا المصرية بما فيها: الرياضيات، الفيزياء، الكيمياء، الأحياء، اللغة العربية، اللغة الإنجليزية، التاريخ، الجغرافيا، والمزيد من المواد الدراسية."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- ====== SEO: Breadcrumbs Schema — يُحسّن شكل الرابط في نتائج البحث ====== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "الرئيسية",
+          "item": "https://the-son-of-the-leader-edu.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "الكورسات",
+          "item": "https://the-son-of-the-leader-edu.vercel.app/#courses"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "الملازم",
+          "item": "https://the-son-of-the-leader-edu.vercel.app/#notes"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "قوائم التشغيل",
+          "item": "https://the-son-of-the-leader-edu.vercel.app/#playlists"
+        }
+      ]
+    }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="responsive-design.css">
+    <link rel="stylesheet" href="css/overrides.css">
+    <!-- 🔒 security-and-live.js اتشالت نهائيًا: كانت بتمنع النسخ/الطباعة/تحديد
+         النص في الموقع كله (مش بس صفحة الفيديو)، وبتاخد نسخة Realtime
+         مكررة بتاعت StudentApp.realtime بس معطلة فعليًا لأنها بتدوّر على
+         window.supabaseClient اللي مش موجود أصلًا. الحماية الحقيقية للفيديو
+         بقت جوه المشغّل المدمج تحت (watchVideo) + get_course_content من
+         السيرفر، مش تلاعب في أحداث المتصفح. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+
+</head>
+
+<body>
+
+    <!-- ====== SEO: Hidden Content Block (مخفي بصرياً، مرئي لمحركات البحث) ====== -->
+    <div class="sr-only">
+        <h1>منصة ابن القائد التعليمية | أفضل منصة تعليم اون لاين في مصر</h1>
+        <h2>مراجعات البكالوريا — كورسات فيديو وملازم PDF</h2>
+        <p>
+            منصة ابن القائد (The Son of the Leader) هي المنصة التعليمية الرائدة في مصر للطلاب الراغبين في التفوق في
+            البكالوريا وشهادة إتمام التعليم الأساسي. نقدم أعلى مستوى من المحتوى التعليمي الرقمي بما يشمل كورسات
+            فيديو مسجلة بجودة عالية، ملازم مراجعة PDF احترافية، وامتحانات تدريبية تفاعلية لجميع مواد المنهج المصري.
+        </p>
+        <h3>لماذا منصة ابن القائد؟</h3>
+        <ul>
+            <li>أفضل مدرسين في مصر يشرحون بأسلوب سهل ومبسط</li>
+            <li>مراجعات شاملة لجميع مواد البكالوريا والإعدادية</li>
+            <li>كورسات فيديو تعليمية يمكن مشاهدتها في أي وقت ومن أي مكان</li>
+            <li>ملازم PDF للمراجعة والتحضير للامتحانات</li>
+            <li>قوائم تشغيل تعليمية منظمة لسهولة الدراسة</li>
+            <li>أسعار مناسبة تتيح التعليم الجيد للجميع</li>
+            <li>واجهة سهلة الاستخدام تعمل على جميع الأجهزة</li>
+            <li>دعم فني على مدار الساعة عبر الواتساب</li>
+        </ul>
+        <h3>المواد الدراسية المتاحة</h3>
+        <p>
+            الرياضيات — الفيزياء — الكيمياء — الأحياء — اللغة العربية — اللغة الإنجليزية — التاريخ — الجغرافيا —
+            الجيولوجيا — الفلسفة والمنطق — علم النفس والاجتماع — الاقتصاد والإحصاء — المحاسبة — الديناميكا —
+            اللغة الفرنسية — اللغة الألمانية — التربية الدينية الإسلامية — التربية الدينية المسيحية.
+        </p>
+        <h3>كورسات البكالوريا أون لاين</h3>
+        <p>
+            سجّل الآن في منصة ابن القائد واستفد من أفضل كورسات البكالوريا أون لاين في مصر. منصتنا توفر شرحاً
+            وافياً لكل فصول المنهج الدراسي بطريقة تفاعلية وممتعة تساعدك على الفهم العميق والتذكر الجيد. لا تضيع
+            وقتك في البحث عن مراجعات متفرقة — كل ما تحتاجه موجود في مكان واحد.
+        </p>
+        <h3>أفضل منصة تعليمية مصرية للاشتراك اون لاين</h3>
+        <p>
+            سواء كنت طالب بكالوريا، أو إعدادية، أو تسعى للتفوق في الشهادات الدراسية المختلفة، فإن منصة ابن القائد
+            تقدم لك الحل الأمثل. اشترك الآن وابدأ رحلتك نحو التفوق والنجاح. التسجيل سريع ومجاني.
+            تعلّم في أي وقت — كن ابن القائد.
+        </p>
+        <h3>تسجيل الدخول — إنشاء حساب جديد</h3>
+        <p>
+            يمكنك إنشاء حساب جديد على منصة ابن القائد بخطوات بسيطة. بعد التسجيل تستطيع الوصول الفوري لجميع الكورسات
+            المجانية والاشتراك في الكورسات المدفوعة بأسهل طرق الدفع المتاحة في مصر.
+        </p>
+        <address>
+            <strong>منصة ابن القائد التعليمية</strong><br>
+            جمهورية مصر العربية<br>
+            البريد الإلكتروني للدعم: support@the-son-of-the-leader-edu.vercel.app<br>
+            التواصل: واتساب
+        </address>
+    </div>
+    <!-- ====== نهاية SEO Block ====== -->
+
+    <div class="bg-blobs">
+        <div class="blob"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="auth-loader" id="authLoader">
+        <div class="auth-loader-content">
+            <div class="auth-spinner"></div>
+            <div class="auth-loader-text" id="authLoaderText">جاري المعالجة...</div>
+        </div>
+    </div>
+
+    <!-- ═══ Pay HUD: مربع الدفع الزجاجي (iOS 26 style) ═══ -->
+    <div class="pay-hud" id="payHud" aria-live="polite" role="status" onclick="if(this.dataset.state!=='loading')PayHUD.hide()">
+        <div class="pay-hud-card">
+            <div class="pay-hud-icon">
+                <div class="pay-hud-spin"></div>
+                <svg class="pay-hud-check" viewBox="0 0 52 52" aria-hidden="true">
+                    <circle class="ph-ring" cx="26" cy="26" r="23"/>
+                    <path class="ph-tick" d="M15 27.5l8 8 15-17"/>
+                </svg>
+                <svg class="pay-hud-cross" viewBox="0 0 52 52" aria-hidden="true">
+                    <circle class="ph-ring" cx="26" cy="26" r="23"/>
+                    <path class="ph-x" d="M18 18l16 16M34 18L18 34"/>
+                </svg>
+                <svg class="pay-hud-info" viewBox="0 0 52 52" aria-hidden="true">
+                    <circle class="ph-ring" cx="26" cy="26" r="23"/>
+                    <path class="ph-mark ph-i-dot" d="M26 17.5v.01"/>
+                    <path class="ph-mark ph-i-bar" d="M26 24.5v11"/>
+                </svg>
+                <svg class="pay-hud-warn" viewBox="0 0 52 52" aria-hidden="true">
+                    <circle class="ph-ring" cx="26" cy="26" r="23"/>
+                    <path class="ph-mark ph-i-bar" d="M26 14.5v14"/>
+                    <path class="ph-mark ph-i-dot" d="M26 36v.01"/>
+                </svg>
+                <svg class="pay-hud-clock" viewBox="0 0 52 52" aria-hidden="true">
+                    <circle class="ph-ring" cx="26" cy="26" r="23"/>
+                    <path class="ph-hand" d="M26 14v12.5l8 5"/>
+                </svg>
+            </div>
+            <div class="pay-hud-text" id="payHudText"></div>
+        </div>
+    </div>
+
+    <div class="confirm-dialog" id="confirmDialog">
+        <div class="confirm-content">
+            <i class="fas fa-sign-out-alt" style="color: var(--primary);"></i>
+            <h3>تسجيل الخروج</h3>
+            <p>هل أنت متأكد من رغبتك في مغادرة المنصة؟</p>
+            <div class="confirm-buttons">
+                <button class="btn-confirm" onclick="finalLogout()">خروج</button>
+                <button class="btn-cancel" onclick="closeConfirm()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!--  FIX #1 — حذف onsubmit من هنا تماماً، الـ listener بيتضاف من JS -->
+    <!-- 🎬 مشغّل الفيديو/PDF المدمج — يفتح جوه الصفحة نفسها، الرابط الحقيقي
+         مايظهرش أبدًا في شريط العنوان أو الـ history -->
+    <div class="vp-overlay" id="vpOverlay">
+        <div class="vp-box">
+            <div class="vp-header">
+                <span class="vp-title" id="vpTitle"></span>
+                <button class="vp-close glass-x" onclick="StudentApp.player.close()" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+            </div>
+            <div class="vp-frame-wrap" id="vpFrameWrap">
+                <div class="vp-watermark" id="vpWatermark"></div>
+            </div>
+            <div class="vp-controls" id="vpControls"></div>
+            <div class="vp-notes">
+                <textarea id="vpNotes" placeholder="ملاحظاتك على الدرس... (بتتحفظ تلقائيًا)"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-content">
+            <div class="pm-header">
+                <div class="pm-header-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="pm-header-text">
+                    <h3>إتمام عملية الدفع</h3>
+                    <p>اختر طريقة الدفع المناسبة لك</p>
+                </div>
+                <button class="pm-close-btn glass-x" onclick="closePaymentModal()" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+            </div>
+            <div class="pm-scroll">
+            <div class="pm-step" id="pmStep1">
+                <div class="pm-step-label"><span>01</span> اختر طريقة الدفع</div>
+                <div class="payment-methods">
+                    <button class="payment-method" onclick="selectPaymentMethod('vodafone_cash', event)">
+                        <div class="pm-method-icon pm-vodafone"><img src="icons/vodafone_cash.png" alt="Vodafone Cash">
+                        </div>
+                        <div class="pm-method-name">Vodafone Cash</div>
+                        <div class="pm-method-desc">فودافون كاش</div>
+                        <div class="pm-method-check"><i class="fas fa-check"></i></div>
+                    </button>
+                    <button class="payment-method" onclick="selectPaymentMethod('instapay', event)">
+                        <div class="pm-method-icon pm-instapay"><img src="icons/instapay.png" alt="InstaPay"></div>
+                        <div class="pm-method-name">InstaPay</div>
+                        <div class="pm-method-desc">انستا باي</div>
+                        <div class="pm-method-check"><i class="fas fa-check"></i></div>
+                    </button>
+                    <button class="payment-method" onclick="selectPaymentMethod('code', event)">
+                        <div class="pm-method-icon pm-code"><img src="icons/code-corporation-logo-vector-2022.png"
+                                alt="كود الدفع"></div>
+                        <div class="pm-method-name">كود الدفع</div>
+                        <div class="pm-method-desc">أدخل كودك وفعّل فوراً</div>
+                        <div class="pm-method-check"><i class="fas fa-check"></i></div>
+                    </button>
+                    <button class="payment-method pm-balance-btn" onclick="selectPaymentMethod('balance', event)"
+                        id="pmBalanceBtn">
+                        <div class="pm-method-icon pm-balance"><img src="icons/images.png" alt="الدفع من الرصيد"></div>
+                        <div class="pm-method-name">الدفع من الرصيد</div>
+                        <div class="pm-method-desc" id="pmBalanceDesc">رصيدك الحالي: <span id="pmBalanceAmount">0</span>
+                            ج.م</div>
+                        <div class="pm-method-check"><i class="fas fa-check"></i></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- دفع بالرصيد — يظهر لما يختار balance -->
+            <div class="pm-balance-confirm-wrap" id="pmBalanceConfirmWrap" style="display:none">
+                <div class="pm-step-label" style="margin-bottom:14px"><span><i class="fas fa-wallet"></i></span> تأكيد
+                    الدفع من الرصيد</div>
+                <div class="pm-balance-summary">
+                    <div class="pm-bal-row">
+                        <span><i class="fas fa-play-circle" style="color:#a78bfa;margin-left:6px"></i> الكورس</span>
+                        <span id="pmBalCourseName" style="font-weight:700;color:#e2e8f0">—</span>
+                    </div>
+                    <div class="pm-bal-row">
+                        <span><i class="fas fa-tag" style="color:#f5c518;margin-left:6px"></i> السعر</span>
+                        <span id="pmBalPrice" style="font-weight:800;color:#f5c518">—</span>
+                    </div>
+                    <div class="pm-bal-row">
+                        <span><i class="fas fa-wallet" style="color:#10b981;margin-left:6px"></i> رصيدك الحالي</span>
+                        <span id="pmBalCurrent" style="font-weight:700;color:#10b981">—</span>
+                    </div>
+                    <div class="pm-bal-divider"></div>
+                    <div class="pm-bal-row">
+                        <span><i class="fas fa-coins" style="color:#60a5fa;margin-left:6px"></i> الرصيد بعد
+                            الشراء</span>
+                        <span id="pmBalAfter" style="font-weight:800;color:#60a5fa">—</span>
+                    </div>
+                </div>
+                <div id="pmBalInsufficientMsg"
+                    style="display:none;background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:10px;padding:12px 16px;margin-top:12px;color:#ff4757;font-weight:700;font-size:0.88rem;text-align:center">
+                    <i class="fas fa-exclamation-triangle" style="margin-left:6px"></i>
+                    رصيدك غير كافٍ لشراء هذا الكورس
+                </div>
+                <button type="button" class="pm-submit-btn" id="pmBalancePayBtn"
+                    onclick="StudentApp.actions.payWithBalance()" style="margin-top:16px">
+                    <i class="fas fa-bolt"></i>
+                    <span>تأكيد الدفع وتفعيل الكورس فوراً</span>
+                    <div class="pm-submit-arrow"><i class="fas fa-arrow-left"></i></div>
+                </button>
+                <div class="pm-trust" style="margin-top:12px">
+                    <span><i class="fas fa-bolt"></i> تفعيل فوري بدون انتظار</span>
+                    <span><i class="fas fa-shield-alt"></i> آمن 100%</span>
+                </div>
+            </div>
+
+            <!-- كود الدفع — يظهر لما يختار code -->
+            <div class="pm-code-input-wrap" id="pmCodeInputWrap">
+                <div class="pm-step-label" style="margin-bottom:10px"><span><i class="fas fa-ticket-alt"></i></span>
+                    أدخل كود الدفع</div>
+                <input type="text" id="pmCodeField" class="pm-code-field" placeholder="أدخل الكود هنا..."
+                    oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')">
+                <button type="button" class="pm-code-activate-btn" id="pmCodeActivateBtn"
+                    onclick="StudentApp.actions.activateCode()">
+                    <i class="fas fa-bolt"></i> تفعيل
+                </button>
+            </div>
+
+            <!--  FIX #1 — بدون onsubmit هنا -->
+            <form id="paymentForm" style="display: none;">
+                <div class="pm-step-label"><span>02</span> تفاصيل الطلب</div>
+                <div class="pm-order-summary">
+                    <div class="pm-summary-row">
+                        <span class="pm-summary-label"><i class="fas fa-user-graduate"></i> الطالب</span>
+                        <input type="text" id="studentNameInput" readonly class="pm-readonly-input">
+                    </div>
+                    <div class="pm-summary-divider"></div>
+                    <div class="pm-summary-row">
+                        <span class="pm-summary-label"><i class="fas fa-play-circle"></i> الكورس</span>
+                        <input type="text" id="courseNameInput" readonly class="pm-readonly-input">
+                    </div>
+                    <div class="pm-summary-divider"></div>
+                    <div class="pm-summary-row pm-price-row">
+                        <span class="pm-summary-label"><i class="fas fa-tag"></i> المبلغ</span>
+                        <input type="text" id="amountInput" readonly class="pm-readonly-input pm-price-value">
+                    </div>
+                </div>
+                <div class="pm-step-label" style="margin-top: 20px;"><span>03</span> بيانات التحويل</div>
+                <div class="form-group">
+                    <label><i class="fas fa-mobile-alt"></i> رقم المحوّل (رقم المرسل)</label>
+                    <input type="tel" id="phoneNumber" pattern="01[0-9]{9}" maxlength="11" placeholder="01XXXXXXXXX"
+                        required oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,11)">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-receipt"></i> صورة إيصال التحويل</label>
+                    <div class="pm-file-upload" onclick="document.getElementById('transferImage').click()">
+                        <input type="file" id="transferImage" accept="image/*" required style="display:none;"
+                            onchange="updateFileLabel(this)">
+                        <div class="pm-file-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <div class="pm-file-text">
+                            <span class="pm-file-main" id="fileLabel">اضغط لرفع صورة الإيصال</span>
+                            <span class="pm-file-sub">JPG أو PNG — الحد الأقصى 3 ميجا</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="pm-submit-btn" id="submitPaymentBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>إرسال طلب الشراء</span>
+                    <div class="pm-submit-arrow"><i class="fas fa-arrow-left"></i></div>
+                </button>
+                <div class="pm-trust">
+                    <span><i class="fas fa-lock"></i> دفع آمن ومشفر</span>
+                    <span><i class="fas fa-clock"></i> تفعيل خلال 24 ساعة</span>
+                    <span><i class="fas fa-headset"></i> دعم فوري</span>
+                </div>
+            </form>
+            </div><!-- /pm-scroll -->
+        </div>
+    </div>
+
+    <div class="auth-page" id="authPage">
+        <!-- صور الخلفية: 1 = أعلى اليمين، 2 = أسفل اليسار، 3 = أعلى اليسار، 4 = أسفل اليمين -->
+        <div class="auth-background-gallery" aria-hidden="true">
+            <img src="icons/3.jpg" alt="" loading="lazy" decoding="async">
+            <img src="icons/4.jpg" alt="" loading="lazy" decoding="async">
+            <img src="icons/5.jpg" alt="" loading="lazy" decoding="async">
+            <img src="icons/6.jpg" alt="" loading="lazy" decoding="async">
+        </div>
+        <button class="theme-toggle-btn auth-theme-toggle" id="authThemeToggleBtn" role="switch" aria-checked="false" onclick="toggleTheme()"
+            title="تغيير الوضع" aria-label="تغيير الوضع">
+            <span class="theme-icon" id="authThemeToggleIcon"><svg class="tt-ic tt-moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a.6.6 0 0 0-.8-.7A9.6 9.6 0 1 0 20.9 15.4a.6.6 0 0 0-.7-.8z"/></svg><svg class="tt-ic tt-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.35 5.35l1.55 1.55M17.1 17.1l1.55 1.55M5.35 18.65l1.55-1.55M17.1 6.9l1.55-1.55"/></g></svg></span>
+        </button>
+        <div class="main-card" id="loginBox">
+            <div class="logo-box"><img src="icons/logo-gold.png" alt="منصة ابن القائد"></div>
+            <h1 class="platform-name">The Son Of The Leader</h1>
+            <div class="platform-ar-name">منصة ابن القائد التعليمية</div>
+            <p class="auth-sub">منصتك التعليمية رقم 1</p>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-mobile-alt"></i>
+                    <input type="text" inputmode="tel" id="loginEmail" placeholder="رقم الهاتف" autocomplete="username" enterkeyhint="next" required>
+                </div>
+                <div class="input-group password-input">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPass" minlength="6" placeholder="كلمة المرور" autocomplete="current-password" enterkeyhint="go" required>
+                    <button type="button" class="password-toggle" aria-label="إظهار أو إخفاء كلمة المرور" onclick="togglePassword('loginPass')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit" class="btn-action"><i class="fas fa-sign-in-alt"></i> دخول</button>
+            </form>
+            <div class="auth-links">
+                <button type="button" class="auth-link" onclick="toggleForgotForm()">نسيت كلمة المرور؟</button>
+                <p class="switch-form">ليس لديك حساب؟ <button type="button" class="auth-link" onclick="toggleAuthForms()">إنشاء حساب جديد</button></p>
+            </div>
+        </div>
+
+        <div class="main-card hidden" id="registerBox">
+            <div class="logo-box"><img src="icons/logo-gold.png" alt="منصة ابن القائد"></div>
+            <h2 class="auth-title">انضم إلى جيش القادة</h2>
+            <form id="registerForm">
+                <div class="role-selector">
+                    <button type="button" class="role-btn active" id="roleBtnStudent" onclick="switchRegRole('student')">
+                        <i class="fas fa-user-graduate"></i> طالب
+                    </button>
+                    <button type="button" class="role-btn" id="roleBtnTeacher" onclick="switchRegRole('teacher')">
+                        <i class="fas fa-chalkboard-teacher"></i> مدرس
+                    </button>
+                </div>
+                <input type="hidden" id="regRole" value="student">
+                <div class="input-group"><i class="fas fa-id-card"></i><input type="text" id="regName"
+                        placeholder="الاسم الرباعي الكامل" autocomplete="name" enterkeyhint="next" required></div>
+                <div class="input-group"><i class="fas fa-mobile-alt"></i><input type="tel" id="regPhone" oninput="PhoneAuth.reset('reg')"
+                        pattern="[0-9]{11}" placeholder="رقم الهاتف (11 رقم)" autocomplete="tel" enterkeyhint="next" required></div>
+                <div class="input-group"><i class="fas fa-map-marker-alt"></i><select id="regGovernorate" required><option value="" disabled selected>اختر المحافظة</option><option value="القاهرة">القاهرة</option><option value="الجيزة">الجيزة</option><option value="الإسكندرية">الإسكندرية</option><option value="القليوبية">القليوبية</option><option value="الشرقية">الشرقية</option><option value="الدقهلية">الدقهلية</option><option value="البحيرة">البحيرة</option><option value="المنوفية">المنوفية</option><option value="الغربية">الغربية</option><option value="كفر الشيخ">كفر الشيخ</option><option value="دمياط">دمياط</option><option value="بورسعيد">بورسعيد</option><option value="الإسماعيلية">الإسماعيلية</option><option value="السويس">السويس</option><option value="شمال سيناء">شمال سيناء</option><option value="جنوب سيناء">جنوب سيناء</option><option value="الفيوم">الفيوم</option><option value="بني سويف">بني سويف</option><option value="المنيا">المنيا</option><option value="أسيوط">أسيوط</option><option value="سوهاج">سوهاج</option><option value="قنا">قنا</option><option value="الأقصر">الأقصر</option><option value="أسوان">أسوان</option><option value="البحر الأحمر">البحر الأحمر</option><option value="الوادي الجديد">الوادي الجديد</option><option value="مطروح">مطروح</option></select></div>
+                <div id="studentFields">
+                    <div class="input-group"><i class="fas fa-user-tie"></i><input type="tel" id="regFatherPhone"
+                            pattern="[0-9]{11}" placeholder="هاتف الأب" autocomplete="off" enterkeyhint="next" required></div>
+                    <div class="input-group"><i class="fas fa-user-friends"></i><input type="tel" id="regMotherPhone"
+                            pattern="[0-9]{11}" placeholder="هاتف الأم" autocomplete="off" enterkeyhint="next" required></div>
+                </div>
+                <div id="teacherFields" style="display:none;">
+                    <div class="input-group"><i class="fas fa-wallet"></i><input type="tel" id="regVodafone"
+                            pattern="[0-9]{11}" placeholder="رقم محفظة فودافون كاش (اختياري)"></div>
+                    <div class="input-group"><i class="fas fa-university"></i><input type="text" id="regInstapay"
+                            placeholder="حساب انستا باي (اختياري)"></div>
+                    <div class="auth-note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>تسجيل المدرسين يتطلب موافقة إدارة المنصة. سيتم مراجعة طلبك وإبلاغك بالنتيجة.</span>
+                    </div>
+                </div>
+                <div class="input-group password-input">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="regPass" minlength="6" placeholder="كلمة مرور قوية (6+ أحرف)" autocomplete="new-password" enterkeyhint="go" required>
+                    <button type="button" class="password-toggle" aria-label="إظهار أو إخفاء كلمة المرور" onclick="togglePassword('regPass')"><i
+                            class="fas fa-eye"></i></button>
+                </div>
+                <input type="hidden" id="regCode">
+                <button type="submit" class="btn-action" id="regSubmitBtn"><i class="fas fa-user-check"></i> تسجيل</button>
+            </form>
+            <div class="auth-links"><p class="switch-form">لديك حساب بالفعل؟ <button type="button" class="auth-link" onclick="toggleAuthForms()">تسجيل الدخول</button></p></div>
+        </div>
+
+        <div class="main-card hidden" id="forgotPasswordBox">
+            <div class="logo-box"><img src="icons/logo-gold.png" alt="منصة ابن القائد"></div>
+            <h2 class="auth-title">استعادة كلمة المرور</h2>
+            <p class="auth-sub">أدخل رقم هاتفك المسجّل وهنرسل لك كود تحقق على تليجرام</p>
+            <form id="forgotPasswordForm">
+                <div class="input-group"><i class="fas fa-mobile-alt"></i><input type="tel" id="resetPhone" oninput="PhoneAuth.reset('rst')" placeholder="رقم الهاتف المسجّل (11 رقم)" autocomplete="tel" enterkeyhint="go" required></div>
+                <input type="hidden" id="rstCode">
+                <button type="submit" class="btn-action" id="rstSubmitBtn"><i class="fas fa-paper-plane"></i> إرسال كود التحقق</button>
+            </form>
+            <div class="auth-links"><button type="button" class="auth-link" onclick="toggleForgotForm()">العودة لتسجيل الدخول</button></div>
+        </div>
+
+        <div class="main-card hidden" id="updatePasswordBox">
+            <div class="logo-box"><img src="icons/logo-gold.png" alt="منصة ابن القائد"></div>
+            <h2 class="auth-title">كلمة المرور الجديدة</h2>
+            <form id="updatePasswordForm">
+                <div class="input-group password-input">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="newPassword" minlength="6" placeholder="كلمة المرور الجديدة" autocomplete="new-password" enterkeyhint="go" required>
+                    <button type="button" class="password-toggle" aria-label="إظهار أو إخفاء كلمة المرور" onclick="togglePassword('newPassword')"><i
+                            class="fas fa-eye"></i></button>
+                </div>
+                <button type="submit" class="btn-action"><i class="fas fa-save"></i> حفظ كلمة المرور</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="auth-page hidden" id="gradeBox">
+        <div class="main-card">
+            <div class="logo-box"><img src="icons/logo-gold.png" alt="منصة ابن القائد"></div>
+            <h2 class="auth-title">حدد صفك الدراسي</h2>
+            <div class="choice-list">
+                <button type="button" class="btn-action" onclick="selectGrade('grade_1')"><i class="fas fa-book"></i> 1 بكالوريا</button>
+                <button type="button" class="btn-action" onclick="selectGrade('grade_2')"><i class="fas fa-book"></i> 2 بكالوريا</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== AVATAR PICKER SCREEN ====== -->
+    <div class="auth-page hidden" id="avatarPickerBox">
+        <div class="main-card avatar-picker-card">
+            <div class="logo-box"><img src="icons/logo-gold.png" alt="منصة ابن القائد"></div>
+            <h2 class="auth-title">أضف صورة لحسابك</h2>
+            <p class="avatar-picker-hint">صورتك تظهر لك في لوحة التحكم — <strong>اختياري تماماً</strong></p>
+            <div class="avatar-picker-circle" id="avatarPickerCircle"
+                onclick="document.getElementById('avatarPickerInput').click()">
+                <i class="fas fa-user" id="avatarPickerIcon"></i>
+                <div class="pick-overlay">
+                    <i class="fas fa-camera"></i>
+                    <span>اختر صورة</span>
+                </div>
+            </div>
+            <input type="file" id="avatarPickerInput" accept="image/jpeg,image/png,image/webp" style="display:none;"
+                onchange="handlePickerAvatar(this)">
+            <p id="avatarPickerStatus"
+                style="font-size:0.82rem;color:var(--success);margin-bottom:14px;min-height:20px;"></p>
+            <button class="btn-action" id="avatarPickerSaveBtn" onclick="finishAvatarPicker()" style="display:none;">
+                <i class="fas fa-check"></i> حفظ وابدأ
+            </button>
+            <button class="btn-skip" onclick="skipAvatarPicker()">
+                <i class="fas fa-forward"></i> تخطي — لاحقاً
+            </button>
+        </div>
+    </div>
+
+    <div class="profile-container" id="profileContainer">
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+            <button class="theme-toggle-btn" id="themeToggleBtn" role="switch" aria-checked="false" onclick="toggleTheme()" title="تغيير الوضع"
+                aria-label="تغيير الوضع">
+                <span class="theme-icon" id="themeToggleIcon"><svg class="tt-ic tt-moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a.6.6 0 0 0-.8-.7A9.6 9.6 0 1 0 20.9 15.4a.6.6 0 0 0-.7-.8z"/></svg><svg class="tt-ic tt-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.35 5.35l1.55 1.55M17.1 17.1l1.55 1.55M5.35 18.65l1.55-1.55M17.1 6.9l1.55-1.55"/></g></svg></span>
+            </button>
+            <button class="profile-btn" onclick="toggleProfileDropdown()" title="الملف الشخصي" aria-label="الملف الشخصي">
+                <i class="fas fa-user-circle"></i>
+            </button>
+        </div>
+        <div class="profile-dropdown pd-sheet" id="profileDropdown">
+            <div class="pd-head pd-in" style="--i:0">
+                <div class="user-avatar" id="userAvatarBox" onclick="document.getElementById('avatarFileInput').click()"
+                    title="اضغط لتغيير الصورة">
+                    <i class="fas fa-user" id="avatarIcon"></i>
+                    <div class="avatar-overlay">
+                        <i class="fas fa-camera"></i>
+                        <span>تغيير الصورة</span>
+                    </div>
+                </div>
+                <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/webp" style="display:none;"
+                    onchange="handleAvatarUpload(this)">
+                <div class="pd-hello">أهلاً بك</div>
+                <div class="pd-name" id="profileUserName">مستخدم</div>
+                <div class="pd-grade" id="profileUserGrade">لم يتم تحديد صف</div>
+            </div>
+
+            <div class="pd-group pd-in" style="--i:1">
+                <div class="pd-row pd-balance" id="profileBalanceBox">
+                    <span class="pd-ico" style="--c:#30d158">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="13" rx="3.25"/><path d="M3.5 9.5V6.75A2.25 2.25 0 0 1 5.75 4.5H16.5"/><path d="M21 12.25h-3.25a1.75 1.75 0 0 0 0 3.5H21"/></svg>
+                    </span>
+                    <span class="pd-label">الرصيد</span>
+                    <span class="pd-value"><b id="profileBalanceVal">0.00</b><small>ج.م</small></span>
+                </div>
+            </div>
+
+            <div class="pd-group pd-in" style="--i:2">
+                <button class="pd-row pd-btn" onclick="showStudentQR()" title="عرض QR Code الخاص بي">
+                    <span class="pd-ico" style="--c:#0a84ff">
+                        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><path d="M14 14h2.5v2.5H14zM19 14v.01M14 19.5v.01M17 19h3.5M20.5 17v3.5"/></svg>
+                    </span>
+                    <span class="pd-label">بطاقتي الرقمية</span>
+                    <svg class="pd-chev" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></svg>
+                </button>
+                <button class="pd-row pd-btn" onclick="StudentApp.actions.changeGrade()">
+                    <span class="pd-ico" style="--c:#ff9f0a">
+                        <svg viewBox="0 0 24 24"><path d="M2.75 9.25 12 4.5l9.25 4.75L12 14z"/><path d="M6.5 11.5v4.25c0 1.3 2.5 2.75 5.5 2.75s5.5-1.45 5.5-2.75V11.5"/><path d="M21.25 9.5v5"/></svg>
+                    </span>
+                    <span class="pd-label">تغيير الصف</span>
+                    <svg class="pd-chev" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></svg>
+                </button>
+            </div>
+
+            <div class="pd-group pd-in" style="--i:3">
+                <button class="pd-row pd-btn pd-danger" onclick="StudentApp.actions.askLogout()">
+                    <span class="pd-label">تسجيل الخروج</span>
+                </button>
+            </div>
+        </div>
+        <div class="search-bar-container">
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="globalSearch" placeholder="ابحث عن أي كورس أو مذكرة..." class="search-input"
+                    onkeyup="performGlobalSearch(this.value)" autocomplete="off">
+                <button class="search-clear-btn" onclick="clearGlobalSearch()" id="clearSearchBtn" aria-label="مسح البحث"
+                    style="display: none;"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="searchResults" class="search-results" style="display: none;"></div>
+        </div>
+        <div class="header-brand-logo">
+            <span class="header-brand-ar">منصة ابن القائد</span>
+            <span class="header-brand-en">THE SON OF THE LEADER</span>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="tab-loader" id="tabLoader">
+            <div class="tab-loader-content">
+                <div class="tab-spinner"></div>
+                <div class="tab-loader-text">جاري التحميل...</div>
+            </div>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('courses')"><i class="fas fa-video"></i> الكورسات</button>
+            <button class="tab-btn" onclick="switchTab('notes')"><i class="fas fa-file-pdf"></i> المذكرات</button>
+            <button class="tab-btn" onclick="switchTab('purchases')"><i class="fas fa-shopping-cart"></i>
+                اشتراكاتي</button>
+            <button class="tab-btn" onclick="switchTab('playlists')"><i class="fas fa-list"></i> قوائم التشغيل</button>
+            <button class="tab-btn" onclick="switchTab('teachers')"><i class="fas fa-chalkboard-teacher"></i>
+                مدرسينك</button>
+            <button class="tab-btn" onclick="switchTab('more')"><i class="fas fa-headset"></i> الدعم والمزيد</button>
+        </div>
+        <div id="coursesTab" class="tab-content">
+            <h3 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-video"></i> كورسات متخصصة لصفك</h3>
+            <div id="coursesList" class="courses-grid"></div>
+        </div>
+        <div id="notesTab" class="tab-content hidden">
+            <h3 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-file-pdf"></i> المذكرات والملفات
+            </h3>
+            <div id="notesList" class="courses-grid"></div>
+        </div>
+        <div id="playlistsTab" class="tab-content hidden">
+            <h3 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-list"></i> قوائم التشغيل المتاحة
+            </h3>
+            <div id="playlistsList" class="courses-grid"></div>
+        </div>
+        <div id="purchasesTab" class="tab-content hidden">
+            <h3 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-shopping-cart"></i> الكورسات
+                المشترك بها</h3>
+            <div id="purchasesList" class="courses-grid"></div>
+        </div>
+        <div id="teachersTab" class="tab-content hidden">
+            <h3 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-chalkboard-teacher"></i>
+                مدرسينك</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: -14px; margin-bottom: 20px;">
+
+            <div id="teachersList" class="teachers-grid"></div>
+        </div>
+        <div id="moreTab" class="tab-content hidden">
+            <h3 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-headset"></i> الدعم والمزيد</h3>
+            <div class="more-grid">
+                <div class="more-card">
+                    <div class="more-icon wa"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="more-title">الدعم الفني</div>
+                    <p class="more-desc">عندك استفسار؟ كلمنا وهنرد عليك بسرعة.</p>
+                    <a class="more-btn wa" href="https://wa.me/+201227226060" target="_blank" rel="noopener">
+                        <i class="fa-brands fa-whatsapp"></i> واتساب
+                    </a>
+                </div>
+                <div class="more-card">
+                    <div class="more-icon app"><i class="fas fa-download"></i></div>
+                    <div class="more-title">حمّل المنصة كتطبيق</div>
+                    <p class="more-desc">ثبّت المنصة على جهازك لتجربة أسرع وأسهل.</p>
+                    <button type="button" class="more-btn app" id="installAppBtn" onclick="openAppSheet()" aria-haspopup="dialog">
+                        <i class="fas fa-download"></i> <span id="installAppText">تحميل</span>
+                    </button>
+                    <p class="more-hint" id="installHint" style="display:none"></p>
+                </div>
+                <div class="more-card more-dev">
+                    <div class="more-icon dev"><i class="fas fa-code"></i></div>
+                    <div class="more-title">مطوّر المنصة</div>
+                    <p class="more-desc">محمد خالد هو مطور منصه The Son Of The Leader يمكنك التواصل معه او الاطلاع على خبرته التقنيه</p>
+                    <a class="more-btn dev" href="https://mohamedelaomd774575-bot.github.io/Portfolio/" target="_blank" rel="noopener">
+                    تواصل مع المطور
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="playlistFullView" class="hidden ">
+            <div class="pl-bar">
+                <button class="pl-back" onclick="StudentApp.ui.closePlaylistView()" aria-label="عودة">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg>
+                    <span>عودة</span>
+                </button>
+                <div class="pl-titles">
+                    <h2 id="playlistViewTitle" class="pl-title">عنوان القائمة</h2>
+                    <p class="pl-sub" id="playlistViewSub">محتويات القائمة التعليمية</p>
+                </div>
+                <div id="playlistFilters" class="tp-filters" role="tablist" hidden></div>
+            </div>
+            <div id="playlistItemsContainer" class="courses-grid"></div>
+        </div>
+        <div id="teacherProfileView" class="hidden ">
+            <div class="pl-bar">
+                <button class="pl-back" onclick="StudentApp.ui.closeTeacherView()" aria-label="عودة">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg>
+                    <span>عودة</span>
+                </button>
+                <div class="tp-hero">
+                    <div id="teacherViewAvatar" class="teacher-avatar" data-tone="0"></div>
+                    <div class="pl-titles">
+                        <h2 id="teacherViewTitle" class="pl-title">اسم المدرس</h2>
+                        <p class="pl-sub" id="teacherViewSubtitle">كل محتوى المدرس على المنصة</p>
+                    </div>
+                </div>
+                <div id="teacherFilters" class="tp-filters" role="tablist" hidden></div>
+            </div>
+            <div id="teacherItemsContainer" class="courses-grid"></div>
+        </div>
+    </div>
+
+    <!-- ====== QR MODAL ====== -->
+    <div class="qr-modal-overlay" id="qrModalOverlay" onclick="handleQROverlayClick(event)">
+        <div class="qr-modal-card qr-sheet" role="dialog" aria-label="بطاقتي الرقمية">
+            <button class="qr-close-x" onclick="hideStudentQR()" aria-label="إغلاق">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>
+            </button>
+            <div class="qr-cap"><span>بطاقتي الرقمية</span></div>
+            <div class="qr-white-box">
+                <canvas id="qrCanvas" width="320" height="320"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة كود التحقق (تليجرام) — Liquid Glass بأسلوب iOS 26 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+    <div id="otpModal" role="dialog" aria-modal="true" aria-labelledby="otpTitle" data-phase="link">
+        <div class="lg-back"></div>
+        <div class="lg-card">
+            <div class="lg-grab" aria-hidden="true"></div>
+            <button type="button" class="lg-x glass-x" onclick="PhoneAuth.hide()" aria-label="إغلاق"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+
+            <div class="lg-hero"><div class="lg-orb"><i class="fa-brands fa-telegram"></i></div></div>
+
+            <h3 id="otpTitle">اربط تليجرام (مرة واحدة)</h3>
+            <p class="lg-sub" id="otpSub">عشان نبعتلك كود التحقق على:</p>
+            <div class="lg-chip"><bdi id="otpPhone"></bdi></div>
+
+            <!-- المرحلة 1: ربط أول مرة -->
+            <div class="lg-phase" data-for="link">
+                <a id="otpTg" class="lg-btn lg-btn-tg" href="#" target="_blank" rel="noopener"><i class="lgi lgi-send"></i><span>فتح البوت على تليجرام</span></a>
+                <ol class="lg-steps">
+                    <li><b>1</b><span>اضغط <strong>Start</strong> في البوت</span></li>
+                    <li><b>2</b><span>اضغط زر «مشاركة رقمي للتحقق»</span></li>
+                    <li class="auto"><b><i class="lgi lgi-bolt"></i></b><span>من المرة الجاية الكود بيوصلك <strong>تلقائياً</strong> من غير أي ضغط</span></li>
+                </ol>
+            </div>
+
+            <!-- المرحلة 2: إدخال الكود -->
+            <div class="lg-phase" data-for="code">
+                <div class="lg-otp" id="otpCells" dir="ltr">
+                    <i class="lg-cell"></i><i class="lg-cell"></i><i class="lg-cell"></i><i class="lg-cell"></i><i class="lg-cell"></i><i class="lg-cell"></i>
+                    <input id="otpCode" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" aria-label="كود التحقق المكوّن من 6 أرقام"
+                        oninput="PhoneAuth.onInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();PhoneAuth.confirm();}">
+                </div>
+                <div class="lg-timer"><span>الكود صالح لمدة</span><b id="otpSecs">1:00</b></div>
+                <div id="otpPassRow" class="lg-field" hidden>
+                    <i class="lgi lgi-lock"></i>
+                    <input id="rstNewPass" type="password" minlength="6" autocomplete="new-password" placeholder="كلمة المرور الجديدة (6+ أحرف)"
+                        oninput="PhoneAuth._cells()" onkeydown="if(event.key==='Enter'){event.preventDefault();PhoneAuth.confirm();}">
+                    <button type="button" class="lg-eye" aria-label="إظهار كلمة المرور" onclick="PhoneAuth.togglePass(this)"><i class="lgi lgi-eye"></i></button>
+                </div>
+                <button type="button" id="otpConfirm" class="lg-btn lg-btn-go" onclick="PhoneAuth.confirm()" disabled><span>تأكيد</span></button>
+            </div>
+
+            <div id="otpStatus" class="lg-status wait" role="status" aria-live="polite"><span class="lg-dots"><i></i><i></i><i></i></span><span id="otpStatusTxt">في انتظار تأكيد رقمك على تليجرام…</span></div>
+
+            <div class="lg-foot">
+                <button type="button" id="otpResend" class="lg-link" onclick="PhoneAuth.resend()">لم يصلك الكود؟ اطلب كود جديد</button>
+                <a id="otpBot" class="lg-link" href="#" target="_blank" rel="noopener"><i class="lgi lgi-send"></i> فتح تليجرام</a>
+            </div>
+        </div>
+    </div>
+
+<div id="appSheet" class="as-root" hidden>
+    <div class="as-backdrop" onclick="closeAppSheet()"></div>
+    <div class="as-panel" role="dialog" aria-modal="true" aria-labelledby="asTitle">
+        <div class="as-grab"></div>
+        <h3 id="asTitle">حمّل التطبيق</h3>
+        <p class="as-sub">اختار نوع جهازك</p>
+        <a class="as-row" id="asAndroid" href="./app.apk" download>
+            <span class="as-ic android"><i class="fa-brands fa-android"></i></span>
+            <span class="as-txt"><b>أندرويد</b><small>تحميل ملف APK</small></span>
+            <i class="fas fa-download as-act"></i>
+        </a>
+        <a class="as-row" id="asDesktop" href="./app.exe" download>
+            <span class="as-ic desktop"><i class="fa-brands fa-windows"></i></span>
+            <span class="as-txt"><b>الكمبيوتر (Windows)</b><small>تحميل ملف EXE</small></span>
+            <i class="fas fa-download as-act"></i>
+        </a>
+        <div class="as-row off" aria-disabled="true">
+            <span class="as-ic apple"><i class="fa-brands fa-apple"></i></span>
+            <span class="as-txt"><b>آيفون (iOS)</b><small>نسخة App Store</small></span>
+            <span class="as-soon">قريباً</span>
+        </div>
+        <button type="button" class="as-link" onclick="closeAppSheet();installApp()">أو ثبّت المنصة من المتصفح بدون ملف</button>
+        <button type="button" class="as-close" onclick="closeAppSheet()">إغلاق</button>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
