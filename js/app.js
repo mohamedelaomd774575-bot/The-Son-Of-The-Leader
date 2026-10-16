@@ -1,3 +1,56 @@
+/* ===== data-cache ===== */
+/* كاش في المتصفح: بيحمّل من Supabase مرة واحدة ويخزّن، وما يطلبش تاني إلا لو student_sync قال إن في تغيير.
+   توكن 'c' = نسخة الكورسات (courses_v)، توكن 'p' = حالة اشتراكات الطالب. */
+window.DataCache=(function(){
+  var PFX='lc_',TOKK='lc_tok',TTL=24*3600*1000,mem={},inflight={},T={c:null,p:null};
+  try{var t=JSON.parse(localStorage.getItem(TOKK)||'null');if(t){T.c=t.c==null?null:t.c;T.p=t.p==null?null:t.p;}}catch(e){}
+  function saveTok(){try{localStorage.setItem(TOKK,JSON.stringify(T));}catch(e){}}
+  function read(k){
+    if(mem[k])return mem[k];
+    try{var r=localStorage.getItem(PFX+k);if(r){var e=JSON.parse(r);mem[k]=e;return e;}}catch(x){}
+    return null;
+  }
+  function valid(e){return e&&e.c===T.c&&(e.s==='c'||e.p===T.p)&&(Date.now()-e.t)<TTL;}
+  function retag(f,v){
+    Object.keys(mem).forEach(function(k){if(mem[k][f]===null)mem[k][f]=v;});
+    try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);
+      if(k&&k.indexOf(PFX)===0&&k!==TOKK){var e=JSON.parse(localStorage.getItem(k));
+        if(e&&e[f]===null){e[f]=v;localStorage.setItem(k,JSON.stringify(e));}}}}catch(x){}
+  }
+  function purge(){try{var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf(PFX)===0&&k!==TOKK)ks.push(k);}ks.forEach(function(k){localStorage.removeItem(k);});}catch(x){}}
+  var C={
+    get:function(scope,key){var e=read(key);return valid(e)?e.d:undefined;},
+    set:function(scope,key,d){
+      var e={t:Date.now(),s:scope,c:T.c,d:d};if(scope==='p')e.p=T.p;
+      mem[key]=e;
+      try{localStorage.setItem(PFX+key,JSON.stringify(e));}catch(x){purge();try{localStorage.setItem(PFX+key,JSON.stringify(e));}catch(y){}}
+    },
+    /* بيرجع true لو التوكن اتغيّر عن قيمة قديمة معروفة (يعني الكاش القديم بقى باطل) */
+    setToken:function(f,v){
+      if(v===undefined||v===null)return false;v=String(v);
+      var old=T[f];if(old===v)return false;
+      T[f]=v;saveTok();
+      if(old===null){retag(f,v);return false;}
+      return true;
+    },
+    /* بعد أي إجراء محلي بيغيّر الاشتراكات (شراء/كود/طلب) */
+    bump:function(f){T[f]='b'+Date.now()+Math.random().toString(36).slice(2,6);saveTok();},
+    /* q: يرجّع {data,error} من الكاش لو صالح، وإلا ينفّذ الطلب ويخزّن النتيجة لو مفيش خطأ */
+    q:function(scope,key,fn){
+      var hit=C.get(scope,key);
+      if(hit!==undefined)return Promise.resolve({data:hit,error:null});
+      if(inflight[key])return inflight[key];
+      var pr=Promise.resolve(fn()).then(function(r){
+        if(r&&!r.error&&r.data)C.set(scope,key,r.data);
+        return r;
+      }).finally(function(){delete inflight[key];});
+      inflight[key]=pr;return pr;
+    },
+    clear:function(){mem={};inflight={};T={c:null,p:null};purge();try{localStorage.removeItem(TOKK);}catch(x){}}
+  };
+  return C;
+})();
+
 /* ===== placeholder-img ===== */
         // صورة بديلة محلية (بدل via.placeholder.com اللي بيفشل ويتكرر)
         window.__PH = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
@@ -9,7 +62,7 @@
 /* ===== esc-helper ===== */
 window.escH=function(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
 /* يمسح مفاتيح التطبيق بس عند الخروج (مش كل localStorage للدومين) */
-window.clearAppStorage=function(){try{var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k==='studentData'||/^(leader_|avatar_url_|notes_)/.test(k))ks.push(k)}ks.forEach(function(k){localStorage.removeItem(k)})}catch(e){}};
+window.clearAppStorage=function(){try{var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k==='studentData'||/^(leader_|avatar_url_|notes_|lc_)/.test(k))ks.push(k)}ks.forEach(function(k){localStorage.removeItem(k)})}catch(e){}try{window.DataCache&&DataCache.clear();}catch(e){}};
 
 /* ===== script ===== */
         window.PayHUD = (function () {
@@ -100,7 +153,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const grade = (StudentApp?.state?.currentUser?.grade || '').trim();
                     let query = StudentApp.client.from('courses_public').select('id, title, description, instructor, type, grade');
                     if (grade) query = query.eq('grade', grade);
-                    const { data, error } = await query.order('sort_order', { ascending: true });
+                    const { data, error } = await DataCache.q('c', 'si:' + grade, () => query.order('sort_order', { ascending: true }));
                     if (error || !data) return;
                     this._index = data.map(c => {
                         let type = 'كورس', icon = 'fas fa-play-circle', tab = 'courses';
@@ -728,6 +781,15 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
             data: {
                 loadInitialData: async function () {
                     if (!StudentApp.state.currentUser?.id) return;
+                    const _ck = 'pi:' + StudentApp.state.currentUser.id;
+                    const _hit = DataCache.get('p', _ck);
+                    if (_hit) {
+                        StudentApp.state.directPurchasedIds = _hit.d.slice();
+                        StudentApp.state.purchasedIds = _hit.p.slice();
+                        StudentApp.state.playlistChildIds = _hit.c.slice();
+                        StudentApp.state.pendingIds = _hit.n.slice();
+                        return;
+                    }
                     //  نجيب فقط course_id و status من purchases
                     const { data: purchases, error } = await StudentApp.client
                         .from('purchases')
@@ -757,6 +819,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         StudentApp.state.purchasedIds = Array.from(new Set([...directIds, ...fromPlaylists]));
                         StudentApp.state.playlistChildIds = Array.from(new Set([...fromPlaylists]));
                         StudentApp.state.pendingIds = purchases.filter(p => p.status === 'pending').map(p => p.course_id);
+                        const _S = StudentApp.state;
+                        DataCache.set('p', _ck, { d: _S.directPurchasedIds.slice(), p: _S.purchasedIds.slice(), c: _S.playlistChildIds.slice(), n: _S.pendingIds.slice() });
                     }
                 },
 
@@ -773,7 +837,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         .select('instructor, type')
                         .not('instructor', 'is', null);
                     if (grade) query = query.eq('grade', grade);
-                    const { data, error } = await query;
+                    const { data, error } = await DataCache.q('c', 't:' + grade, () => query);
                     if (error) console.error('[loadTeachers] error:', error);
                     if (error || !data) {
                         __lgSet(container, '<div class="empty-state"><i class="fas fa-chalkboard-teacher"></i><p>لا يوجد مدرسين متاحين حالياً</p></div>');
@@ -802,18 +866,29 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
 
                 loadPurchases: async function () {
                     const container = document.getElementById('purchasesList');
-                    //  نجيب الكورسات المشترك فيها (approved)
-                    const { data: purchases, error } = await StudentApp.client
-                        .from('purchases')  .select('course_id, status').eq('student_id', StudentApp.state.currentUser.id).eq('status', 'approved');
-                    if (error || !purchases || purchases.length === 0) {
-                        __lgSet(container, '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>لا توجد اشتراكات نشطة</p></div>');
-                        return;
+                    const _pk = 'pc:' + StudentApp.state.currentUser.id;
+                    let courses = DataCache.get('p', _pk);
+                    if (courses === undefined) {
+                        //  نجيب الكورسات المشترك فيها (approved)
+                        const { data: purchases, error } = await StudentApp.client
+                            .from('purchases')  .select('course_id, status').eq('student_id', StudentApp.state.currentUser.id).eq('status', 'approved');
+                        if (error || !purchases || purchases.length === 0) {
+                            if (!error) DataCache.set('p', _pk, []);
+                            __lgSet(container, '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>لا توجد اشتراكات نشطة</p></div>');
+                            return;
+                        }
+                        const courseIds = purchases.map(p => p.course_id);
+                        // 🔒 video_url/pdf_url محميين — بنحدد الأعمدة المسموحة بس
+                        const { data: cdata, error: cErr } = await StudentApp.client
+                            .from('courses').select('id, title, description, type, grade, instructor, thumbnail_url, is_free, price, original_price, is_published, sort_order, created_at, updated_at').in('id', courseIds);
+                        if (cErr || !cdata) {
+                            __lgSet(container, '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>لا توجد اشتراكات نشطة</p></div>');
+                            return;
+                        }
+                        courses = cdata;
+                        DataCache.set('p', _pk, courses);
                     }
-                    const courseIds = purchases.map(p => p.course_id);
-                    // 🔒 video_url/pdf_url محميين — بنحدد الأعمدة المسموحة بس
-                    const { data: courses, error: cErr } = await StudentApp.client
-                        .from('courses').select('id, title, description, type, grade, instructor, thumbnail_url, is_free, price, original_price, is_published, sort_order, created_at, updated_at').in('id', courseIds);
-                    if (cErr || !courses || !courses.length) {
+                    if (!courses.length) {
                         __lgSet(container, '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>لا توجد اشتراكات نشطة</p></div>');
                         return;
                     }
@@ -837,7 +912,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     if (grade) query = query.eq('grade', grade);
                     // الكورسات + المشتريات بيتجابوا في نفس الوقت (أسرع من ورا بعض)
                     const [{ data, error }] = await Promise.all([
-                        query.order('sort_order', { ascending: true }).order('created_at', { ascending: false }),
+                        DataCache.q('c', 'rc:' + type + ':' + grade, () => query.order('sort_order', { ascending: true }).order('created_at', { ascending: false })),
                         initP
                     ]);
                     if (error) { console.error('[renderContent] error:', error); }
@@ -941,7 +1016,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                     const run = async (force) => {
                         if (st.dead || st.busy) return;
                         if (!StudentApp.state.currentUser?.id) return;
-                        if (!force && (document.hidden || Date.now() - st.last < 8000)) return;
+                        if (!force && (document.hidden || Date.now() - st.last < 30000)) return;
                         st.busy = true; st.last = Date.now();
                         try {
                             const { data, error } = await StudentApp.client.rpc('student_sync', { p_session: StudentApp.state.mySessionId || null });
@@ -964,6 +1039,11 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                                 setTimeout(() => StudentApp.actions.finalLogout(), 2500);
                                 return;
                             }
+
+                            // كاش: تحديث التوكنز (لو اتغيّرت عن آخر زيارة نعتبره تغيير ونحمّل من جديد)
+                            const _cTok = DataCache.setToken('c', data.courses_v);
+                            const _pSig = JSON.stringify((data.purchases || []).map(r => [r[0], r[1]]).sort());
+                            const _pTok = DataCache.setToken('p', _pSig);
 
                             let gradeChanged = false;
                             // 3) بيانات الملف الشخصي (الصف / الاسم / الرصيد)
@@ -990,7 +1070,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             const cur = new Map((data.purchases || []).map(r => [r[0], r[1]]));
                             let purchasesChanged = false;
                             if (st.purch === null) {
-                                st.purch = cur;               // أول مرة: نحفظ الحالة الحالية بس
+                                st.purch = cur;               // أول مرة: نحفظ الحالة الحالية
+                                if (_pTok) purchasesChanged = true;   // الاشتراكات اتغيّرت من آخر زيارة → الكاش باطل
                             } else {
                                 const prev = st.purch;
                                 const removedApproved = [];
@@ -1011,7 +1092,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
 
                             // 5) نسخة الكورسات (نشر / إخفاء / تعديل / حذف من لوحة التحكم)
                             let coursesChanged = gradeChanged;
-                            if (st.courses_v === null) st.courses_v = data.courses_v;
+                            if (st.courses_v === null) { st.courses_v = data.courses_v; if (_cTok) coursesChanged = true; }
                             else if (data.courses_v !== st.courses_v) { st.courses_v = data.courses_v; coursesChanged = true; }
 
                             if (purchasesChanged) {
@@ -1558,6 +1639,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
 
                         if (rpcErr) throw rpcErr;
                         if (!result?.success) throw new Error(result?.error || 'فشل الشراء');
+                        DataCache.bump('p');
 
                         const newBalance = parseFloat(result.new_balance ?? (bal - price)).toFixed(2);
 
@@ -1644,6 +1726,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             return;
                         }
 
+                        DataCache.bump('p');
                         // حدّث الـ state فوراً
                         if (!StudentApp.state.purchasedIds.includes(currentCourse.id)) {
                             StudentApp.state.purchasedIds.push(currentCourse.id);
@@ -1801,6 +1884,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             }
                         });
 
+                        DataCache.bump('p');
                         await StudentApp.data.loadInitialData();
                         setTimeout(() => { StudentApp.ui.closePaymentModal(); PayHUD.hide(); }, 4500);
 
@@ -1885,8 +1969,8 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                         }
                         // جيب بيانات الكورسات من courses_public (فيديو/بي دي إف كل عنصر
                         // بيتجاب لحظة الفتح الفعلي عن طريق get_course_content — مش هنا)
-                        const { data: pubCourses, error: pubErr } = await StudentApp.client
-                            .from('courses_public').select('*').in('id', courseIds);
+                        const { data: pubCourses, error: pubErr } = await DataCache.q('c', 'pp:' + courseIds.join(','), () => StudentApp.client
+                            .from('courses_public').select('*').in('id', courseIds));
                         if (pubErr) throw pubErr;
                         const ordered = courseIds.map(id => {
                             const pub = pubCourses ? pubCourses.find(c => c.id === id) : null;
@@ -1955,9 +2039,9 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                             .select('*')
                             .not('instructor', 'is', null);
                         if (grade) query = query.eq('grade', grade);
-                        const { data: allData, error } = await query
+                        const { data: allData, error } = await DataCache.q('c', 'tp:' + grade, () => query
                             .order('sort_order', { ascending: true })
-                            .order('created_at', { ascending: false });
+                            .order('created_at', { ascending: false }));
                         if (error) throw error;
                         const target = ui.normalizeTeacherName(teacherName);
                         const data = (allData || []).filter(row => ui.normalizeTeacherName(row.instructor) === target);
@@ -2427,7 +2511,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                 const { data: upData, error: upErr } = await StudentApp.client.storage
                     .from('avatars')
                     .upload(filePath, compressed, {
-                        cacheControl: '1',
+                        cacheControl: '3600',
                         upsert: true,
                         contentType: 'image/jpeg'
                     });
@@ -2592,7 +2676,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                 //  FIX: استخدم user_id (= auth.uid) مش student.id عشان الـ RLS policy تقبل الرفع
                 const authUid = student.user_id || (await StudentApp.client.auth.getUser()).data?.user?.id;
                 const filePath = `${authUid}/avatar`;
-                const { error: upErr } = await StudentApp.client.storage.from('avatars').upload(filePath, _pickerBlob, { cacheControl: '1', upsert: true, contentType: 'image/jpeg' });
+                const { error: upErr } = await StudentApp.client.storage.from('avatars').upload(filePath, _pickerBlob, { cacheControl: '3600', upsert: true, contentType: 'image/jpeg' });
                 if (upErr) throw upErr;
                 const { data: urlData } = StudentApp.client.storage.from('avatars').getPublicUrl(filePath);
                 const finalUrl = urlData.publicUrl + '?t=' + Date.now();
