@@ -2158,24 +2158,9 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
             _botLink(f) { return f && f.tg ? String(f.tg).split('?')[0] : '#'; },
 
             // بداية الطلب: لو الرقم مربوط بتليجرام الكود بيتبعت تلقائي (auto_sent) والنافذة بتفتح على مرحلة الكود مباشرة
-            // هل الرقم ده عليه حساب؟ (بيتنادى قبل ما نطلب كود في استعادة كلمة المرور)
-            async accountExists(phone) {
-                try {
-                    const { data, error } = await StudentApp.client.rpc('phone_has_account', { p_phone: phone });
-                    if (error) {
-                        if (/too_many_requests/.test(error.message || '')) return 'limited'; // محاولات كتير من نفس الشبكة
-                        return null; // الدالة مش موجودة/خطأ شبكة -> منقفلش على الطالب
-                    }
-                    return data === true;
-                } catch (_) { return null; }
-            },
+            // (اتشالت الدالة العامة phone_has_account — فحص وجود الرقم بقى جوه auth-phone مع حد للمحاولات)
             async begin(p, phone, purpose) {
                 this.stop(p);
-                if (purpose === 'reset') {
-                    const exists = await this.accountExists(phone);
-                    if (exists === 'limited') return { ok: false, error: 'محاولات كتيرة. انتظر حوالي نص ساعة وحاول تاني' };
-                    if (exists === false) return { ok: false, error: 'الرقم ده مش مسجّل عندنا. تأكد من الرقم أو أنشئ حساب جديد' };
-                }
                 const r = await this.call({ action: 'start', phone, purpose });
                 if (!r.ok) return r;
                 const f = this.flows[p];
