@@ -2162,7 +2162,10 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
             async accountExists(phone) {
                 try {
                     const { data, error } = await StudentApp.client.rpc('phone_has_account', { p_phone: phone });
-                    if (error) return null; // الدالة مش موجودة/خطأ شبكة -> منقفلش على الطالب
+                    if (error) {
+                        if (/too_many_requests/.test(error.message || '')) return 'limited'; // محاولات كتير من نفس الشبكة
+                        return null; // الدالة مش موجودة/خطأ شبكة -> منقفلش على الطالب
+                    }
                     return data === true;
                 } catch (_) { return null; }
             },
@@ -2170,6 +2173,7 @@ try{var V='keys-2026-09';if(localStorage.getItem('sb_key_ver')!==V){Object.keys(
                 this.stop(p);
                 if (purpose === 'reset') {
                     const exists = await this.accountExists(phone);
+                    if (exists === 'limited') return { ok: false, error: 'محاولات كتيرة. انتظر حوالي نص ساعة وحاول تاني' };
                     if (exists === false) return { ok: false, error: 'الرقم ده مش مسجّل عندنا. تأكد من الرقم أو أنشئ حساب جديد' };
                 }
                 const r = await this.call({ action: 'start', phone, purpose });
